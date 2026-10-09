@@ -11,7 +11,7 @@ const ITEMS = [
 
 export default function Nav() {
   const path = usePathname();
-  const { user, logout } = useStore();
+  const { me: user, logout } = useStore();
   const items = user?.role === "admin" ? [...ITEMS, { href: "/admin", label: "Admin" }] : ITEMS;
   return (
     <nav className="nav" aria-label="Principal">

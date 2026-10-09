@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useStore } from "@/lib/store";
 
 export default function Entrar() {
-  const { login, user, setInPortugal } = useStore();
+  const { login, me: user, setInPortugal, ready, error } = useStore();
   const router = useRouter();
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
-  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  if (!ready) return null;
 
   if (user) {
     return (
@@ -35,9 +37,11 @@ export default function Entrar() {
       <p className="note">Usa o nome e o código pessoal que a Fran ou a Vera te enviaram.</p>
       <form
         className="card stack"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
-          if (!login(name, code)) setError("Nome ou código errado. Confirma com a Fran ou a Vera.");
+          setBusy(true);
+          await login(name, code);
+          setBusy(false);
         }}
       >
         <div>
@@ -49,7 +53,7 @@ export default function Entrar() {
           <input className="in" id="c" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" autoCapitalize="characters" />
         </div>
         {error && <p className="note" role="alert" style={{ margin: 0 }}>{error}</p>}
-        <button className="btn" type="submit">Entrar</button>
+        <button className="btn" type="submit" disabled={busy}>Entrar</button>
       </form>
     </div>
   );

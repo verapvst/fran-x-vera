@@ -4,18 +4,18 @@ import { DAYS, formatHours, totalOfficialMinutes } from "@/lib/program";
 import { useStore } from "@/lib/store";
 
 export default function Programa() {
-  const { events, user, rsvp, toggleRsvp } = useStore();
-  const mine = user ? rsvp[user.id] ?? [] : [];
+  const { events, me: user, myRsvp: mine, toggleRsvp, ready, error } = useStore();
   const total = totalOfficialMinutes(events);
 
   return (
     <div className="sec">
       <h2 className="h2">Programa</h2>
+      {error && <p className="note" role="alert">{error}</p>}
       <div className="sumbar">
         <span><b>{formatHours(total)}</b>de programação oficial</span>
         <span className="note" style={{ margin: 0 }}>O Work Day não conta.</span>
       </div>
-      {!user && (
+      {ready && !user && (
         <p className="note"><Link href="/entrar"><u>Entra</u></Link> para escolher os momentos a que vais.</p>
       )}
       {DAYS.map((d) => {

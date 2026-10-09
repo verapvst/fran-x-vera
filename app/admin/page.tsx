@@ -1,10 +1,49 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { DAYS, type DayId, type Event } from "@/lib/program";
-import { useStore } from "@/lib/store";
+import { DAYS, type Event } from "@/lib/program";
+import { useStore, type Challenge } from "@/lib/store";
 
 type Tab = "eventos" | "challenges" | "pessoas";
+
+function EventRow({ e }: { e: Event }) {
+  const { saveEvent, deleteEvent } = useStore();
+  const [d, setD] = useState(e);
+  const dirty = JSON.stringify(d) !== JSON.stringify(e);
+  const set = (p: Partial<Event>) => setD({ ...d, ...p });
+  return (
+    <div className="edrow">
+      <select className="in" value={d.day} onChange={(ev) => set({ day: ev.target.value as Event["day"] })}>
+        {DAYS.map((x) => <option key={x.id} value={x.id}>{x.label}</option>)}
+      </select>
+      <input className="in" value={d.start ?? ""} placeholder="19:00" aria-label="Início" onChange={(ev) => set({ start: ev.target.value })} />
+      <input className="in" value={d.end ?? ""} placeholder="23:30" aria-label="Fim" onChange={(ev) => set({ end: ev.target.value })} />
+      <input className="in wide" value={d.title} aria-label="Título" onChange={(ev) => set({ title: ev.target.value })} />
+      <input className="in wide" value={d.place ?? ""} placeholder="Local" aria-label="Local" onChange={(ev) => set({ place: ev.target.value })} />
+      <label className="chip"><input type="checkbox" checked={d.official} onChange={(ev) => set({ official: ev.target.checked })} /> oficial</label>
+      <div className="row">
+        <button className="btn small" disabled={!dirty} onClick={() => saveEvent(d)}>Guardar</button>
+        <button className="btn small ghost" onClick={() => confirm(`Apagar ${e.title}?`) && deleteEvent(e.id)}>Apagar</button>
+      </div>
+    </div>
+  );
+}
+
+function ChallengeRow({ c }: { c: Challenge }) {
+  const { saveChallenge, deleteChallenge } = useStore();
+  const [d, setD] = useState(c);
+  const dirty = d.text !== c.text || d.points !== c.points;
+  return (
+    <div className="edrow c">
+      <input className="in wide" value={d.text} aria-label="Texto" onChange={(ev) => setD({ ...d, text: ev.target.value })} />
+      <input className="in" type="number" min={0} value={d.points} aria-label="Pontos" onChange={(ev) => setD({ ...d, points: Number(ev.target.value) || 0 })} />
+      <div className="row">
+        <button className="btn small" disabled={!dirty} onClick={() => saveChallenge(d)}>Guardar</button>
+        <button className="btn small ghost" onClick={() => confirm("Apagar challenge?") && deleteChallenge(c.id)}>Apagar</button>
+      </div>
+    </div>
+  );
+}
 
 export default function Admin() {
   const s = useStore();
@@ -12,7 +51,7 @@ export default function Admin() {
   const [name, setName] = useState("");
 
   if (!s.ready) return null;
-  if (s.user?.role !== "admin") {
+  if (s.me?.role !== "admin") {
     return (
       <div className="sec">
         <h2 className="h2">Painel <em>admin</em></h2>
@@ -21,11 +60,10 @@ export default function Admin() {
     );
   }
 
-  const patchEvent = (e: Event, p: Partial<Event>) => s.saveEvent({ ...e, ...p });
-
   return (
     <div className="sec">
       <h2 className="h2">Painel <em>admin</em></h2>
+      {s.error && <p className="note" role="alert">{s.error}</p>}
       <div className="tabs">
         {(["eventos", "challenges", "pessoas"] as Tab[]).map((t) => (
           <button key={t} className="lk" aria-current={tab === t ? "page" : undefined} onClick={() => setTab(t)}>{t}</button>
@@ -34,33 +72,15 @@ export default function Admin() {
 
       {tab === "eventos" && (
         <>
-          {s.events.map((e) => (
-            <div className="edrow" key={e.id}>
-              <select className="in" value={e.day} onChange={(ev) => patchEvent(e, { day: ev.target.value as DayId })}>
-                {DAYS.map((d) => <option key={d.id} value={d.id}>{d.label}</option>)}
-              </select>
-              <input className="in" value={e.start ?? ""} placeholder="19:00" aria-label="Início" onChange={(ev) => patchEvent(e, { start: ev.target.value })} />
-              <input className="in" value={e.end ?? ""} placeholder="23:30" aria-label="Fim" onChange={(ev) => patchEvent(e, { end: ev.target.value })} />
-              <input className="in wide" value={e.title} aria-label="Título" onChange={(ev) => patchEvent(e, { title: ev.target.value })} />
-              <input className="in wide" value={e.place ?? ""} placeholder="Local" aria-label="Local" onChange={(ev) => patchEvent(e, { place: ev.target.value })} />
-              <label className="chip"><input type="checkbox" checked={e.official} onChange={(ev) => patchEvent(e, { official: ev.target.checked })} /> oficial</label>
-              <button className="btn small ghost" onClick={() => confirm(`Apagar ${e.title}?`) && s.deleteEvent(e.id)}>Apagar</button>
-            </div>
-          ))}
-          <button className="btn small" onClick={() => s.saveEvent({ id: s.newId(), day: "qui", title: "NOVO MOMENTO", official: true, start: "20:00", end: "21:00" })}>Novo momento</button>
+          {s.events.map((e) => <EventRow key={e.id + JSON.stringify(e)} e={e} />)}
+          <button className="btn small" onClick={() => s.saveEvent({ day: "qui", title: "NOVO MOMENTO", official: true, start: "20:00", end: "21:00" })}>Novo momento</button>
         </>
       )}
 
       {tab === "challenges" && (
         <>
-          {s.challenges.map((c) => (
-            <div className="edrow c" key={c.id}>
-              <input className="in wide" value={c.text} aria-label="Texto" onChange={(ev) => s.saveChallenge({ ...c, text: ev.target.value })} />
-              <input className="in" type="number" min={0} value={c.points} aria-label="Pontos" onChange={(ev) => s.saveChallenge({ ...c, points: Number(ev.target.value) || 0 })} />
-              <button className="btn small ghost" onClick={() => confirm("Apagar challenge?") && s.deleteChallenge(c.id)}>Apagar</button>
-            </div>
-          ))}
-          <button className="btn small" onClick={() => s.saveChallenge({ id: s.newId(), text: "Novo challenge", points: 10 })}>Novo challenge</button>
+          {s.challenges.map((c) => <ChallengeRow key={c.id + c.text + c.points} c={c} />)}
+          <button className="btn small" onClick={() => s.saveChallenge({ text: "Novo challenge", points: 10 })}>Novo challenge</button>
         </>
       )}
 
@@ -78,8 +98,8 @@ export default function Admin() {
                 {s.people.map((p) => (
                   <tr key={p.id}>
                     <td>{p.name}{p.role === "admin" ? " (admin)" : ""}</td>
-                    <td>{p.code}</td>
-                    <td>{(s.rsvp[p.id] ?? []).length}</td>
+                    <td>{p.role === "admin" ? "—" : p.code}</td>
+                    <td>{p.moments}</td>
                     <td>{p.role !== "admin" && <button className="btn small ghost" onClick={() => s.removePerson(p.id)}>Remover</button>}</td>
                   </tr>
                 ))}
