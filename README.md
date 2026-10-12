@@ -1,54 +1,45 @@
 # FRAN × VERA · 23H30 DE FESTA
 
-Site do fim de semana de aniversário (15 a 18 de outubro, Lisboa): plano com presenças, BoozeFeed, rankings, challenges (em breve) e painel de referees.
+Site do fim de semana de aniversário (15 a 18 de outubro, Lisboa): plano com presenças, BoozeFeed, rankings, rally e challenges (em breve).
 
 ## Como está montado
 
-* `site/`: o site (uma página `index.html`, sem build). É a única pasta que a Netlify publica.
-* `supabase/schema.sql`: toda a base de dados, regras de segurança incluídas. Pode ser corrida mais do que uma vez.
-* `tests/`: testes das regras de segurança.
-* Dados, contas e fotos ficam no Supabase. O site fala diretamente com o Supabase, e as regras da base de dados decidem quem pode ver e fazer o quê.
+* `site/` é o site (uma página `index.html`, sem build). O GitHub Pages publica só esta pasta.
+* `supabase/schema.sql` é a base de dados toda, com as regras de segurança. Pode ser corrido mais do que uma vez.
+* `tests/` tem os testes das regras de segurança.
+* Contas, dados e fotos ficam no Supabase. O site fala diretamente com ele e as regras da base de dados decidem quem pode ver e fazer o quê.
 
-O que muda sem publicar nada novo: eventos, pontos das bebidas, hora de abertura do BoozeFeed, apagar posts (tudo pelo painel Referee).
-O que precisa de publicar: o aspeto e funcionalidades do site (editar ficheiros em `site/`, commit, push; a Netlify publica sozinha em cerca de 30 segundos).
+## Publicar uma alteração
 
-## Passos para pôr online, por ordem
+1. Edita os ficheiros em `site/`.
+2. `git add -A`, `git commit -m "mensagem"`, `git push`.
+3. Em cerca de 1 minuto o GitHub Pages atualiza (separador Actions). O browser pode guardar a versão antiga 10 minutos: recarrega com Ctrl+Shift+R ou acrescenta `?v=2` ao endereço.
 
-### A. Supabase
+O endereço é `https://verapvst.github.io/fran-x-vera/`. O Pages está configurado em Settings, Pages, Source: GitHub Actions (o workflow é `.github/workflows/pages.yml`).
 
-1. **Project URL.** No projeto, Project Settings, API (ou o botão Connect): copia o **Project URL** (`https://xxxx.supabase.co`) e confirma que a chave publishable é a que está em `site/config.js`.
-2. **Desligar a confirmação de email.** Authentication, Sign In / Providers, Email: ativo, com **Confirm email desligado**. Em Authentication, Sign In / Providers (ou Settings), confirma que **Allow new users to sign up** está ligado. Anonymous sign-ins pode ficar desligado.
-3. **Limites de login.** Authentication, Rate Limits: sobe "Rate limit for sign-ups and sign-ins" (por IP, por defeito 30 em 5 minutos) para 300, e o limite de token refresh para 600. Na festa todos usam o mesmo wifi, logo o mesmo IP. Se estes campos não estiverem editáveis no teu plano, diz-me.
-4. **Base de dados.** SQL Editor, New query, cola o conteúdo de `supabase/schema.sql`, Run. Deve dizer "Success. No rows returned". Se aparecer um erro, copia-o e manda-mo (pode correr-se outra vez sem problema).
-5. **Conferir.** Table Editor: `events` com 11 linhas, `drinks` com 10, `admin_invites` com 2 (Vera e Fran). Storage: bucket `selfies` (public). Copia os dois **tokens** da tabela `admin_invites`: não os ponhas no GitHub nem em mensagens públicas.
+## Supabase: o que tem de estar certo
 
-### B. Site
+* Authentication, Sign In / Providers, Email: **Confirm email desligado** e **Allow new users to sign up ligado**.
+* Authentication, Rate Limits: sign-ups e sign-ins a 300 por 5 minutos, token refreshes a 600.
+* Authentication, URL Configuration: Site URL é o endereço do site.
+* SQL Editor: `supabase/schema.sql` corrido uma vez (inclui as permissões de acesso, os `GRANT`).
+* Os dois links de referee estão na tabela `admin_invites` (cada um serve uma vez). **Nunca os ponhas no GitHub.**
 
-1. Em `site/config.js`, cola o Project URL em `SUPABASE_URL`. Guarda.
-2. `git add -A`, `git commit`, `git push` (a Netlify publica sozinha).
+## Segredos
 
-### C. Netlify
+* `site/config.js` tem o URL e a chave **publishable** do Supabase. Pode estar no GitHub: é pública por desenho.
+* Nunca ponhas aqui a chave `secret` / `service_role`, nem tokens de referee, nem ficheiros `.env`.
 
-1. app.netlify.com, Add new site, Import an existing project, GitHub, repositório `fran-x-vera`, branch `main`. Build command: vazio. Publish directory: `site` (o `netlify.toml` já o define). Deploy.
-2. Site configuration, Change site name: por exemplo `fran-x-vera`.
-3. De volta ao Supabase, Authentication, URL Configuration: Site URL = o endereço da Netlify.
+## Regras do BoozeFeed (estão na base de dados, não só no site)
 
-### D. Testar (10 minutos, num telemóvel)
+* Os pontos vêm da tabela `drinks`. Ninguém consegue inventar pontos.
+* Fechado até quinta, 15 de outubro, às 19:00.
+* Máximo de 2 bebidas por hora por pessoa. "Cheguei a casa" vale 15, uma vez por noite.
+* As referees não aparecem no ranking.
 
-1. Abre `ENDEREÇO/#a=TOKEN` com o teu token de Vera. O nome vem preenchido. Tira a selfie, Criar perfil. Guarda o link pessoal. A Fran faz o mesmo com o dela. Cada token só funciona uma vez.
-2. Numa janela anónima, abre o endereço normal, cria um perfil de convidada (Nacional, email, selfie) e marca um evento no Plano.
-3. Como referee, BoozeFeed, "Abrir agora". Como convidada, publica uma selfie. Confirma que aparece no feed e no ranking. Depois "Fechar até quinta 19:00" e apaga os posts de teste.
+## Notas honestas
 
-Se algo falhar, o site mostra a mensagem de erro. Copia-a e manda-ma.
-
-## Regras do BoozeFeed (na base de dados, não só no site)
-
-* Pontos vêm da tabela `drinks`: sem álcool −1, cerveja 0,2 L = 1, 0,33 L = 2, 0,5 L = 4, sidra garrafa 3, vinho 5, cocktail 8, shot 10, bebida forte 12, "Cheguei a casa" 15 (uma vez por noite).
-* Máximo de 2 bebidas por hora por pessoa. Fechado até quinta às 19:00. As referees não jogam nem aparecem no ranking.
-
-## Notas
-
-* Quem tiver o link pessoal de alguém entra como essa pessoa. As referees podem copiar o link de qualquer convidado (Referee, Players) caso alguém o perca.
-* O bucket das selfies é público: quem tiver o endereço direto de uma foto consegue vê-la.
-* A chave `sb_publishable_...` é pública por desenho. **Nunca** coloques aqui a chave `sb_secret_...` nem a `service_role`.
-* Acesso das referees por email e palavra-passe, reset de links e o sistema de challenges são os próximos passos e ainda não estão feitos.
+* Quem tiver o link pessoal de alguém entra como essa pessoa.
+* O bucket das selfies é público: quem tiver o link direto de uma foto consegue vê-la.
+* O feed atualiza sozinho a cada 30 segundos e quando abres o separador.
+* Os projetos gratuitos do Supabase pausam depois de uma semana sem atividade e não têm backups. Exporta os dados depois da festa se quiseres guardá-los.

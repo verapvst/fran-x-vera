@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#f4e2ea"></head><body><title>FRAN × VERA</title>
+<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#f4e2ea"><meta property="og:type" content="website"><meta property="og:title" content="FRAN × VERA · 23H30 DE FESTA"><meta property="og:description" content="15 a 18 de outubro, Lisboa. Escolhe as noites, posta no BoozeFeed e entra no jogo."><meta property="og:image" content="https://verapvst.github.io/fran-x-vera/assets/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A5%82%3C/text%3E%3C/svg%3E"></head><body><title>FRAN × VERA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@300;400;900&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
@@ -224,9 +224,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       <h2 class="h2">Como <em>funciona</em></h2>
       <ol class="steps">
         <li class="step"><h3>Escolhe as tuas noites</h3><p>Diz no Plano em que momentos vais estar. Não precisas de aparecer em todos.</p></li>
-        <li class="step"><h3>Faz check in</h3><p>Nos eventos em que estás, regista a tua presença.</p></li>
-        <li class="step"><h3>Posta no BoozeFeed</h3><p>Selfie, bebida e pontos. Abre na quinta.</p></li>
-        <li class="step"><h3>Cumpre challenges</h3><p>Desafios sociais e ligeiramente caóticos. Coming soon.</p></li>
+        <li class="step"><h3>Posta no BoozeFeed</h3><p>Selfie, bebida e pontos. Abre na quinta às 19:00.</p></li>
+        <li class="step"><h3>Sobe no ranking</h3><p>Os pontos somam. Em breve também com o rally de sexta e os challenges.</p></li>
       </ol>
       <div class="band"><p>A Fran e a Vera não jogam. São as referees: validam, dão pontos e mandam no jogo.</p></div>
     </section>
@@ -259,6 +258,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
           <label class="f" for="loginContact">Email</label>
           <input class="in" id="loginContact" type="email" autocomplete="email" placeholder="Só as referees veem. Serve para recuperar o teu link.">
         </div>
+        <p class="note" id="privNote" style="margin:0">O teu nome e a tua selfie aparecem no site a quem tiver o link da festa. O email só a Fran e a Vera veem.</p>
         <div class="row"><button class="btn" type="submit" id="signupBtn">Criar perfil</button></div>
       </form>
       <form class="card narrow stack" id="linkForm" hidden novalidate>
@@ -267,6 +267,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
           <input class="in" id="linkIn" autocomplete="off" placeholder="https://...#k=...">
         </div>
         <div class="row"><button class="btn" type="submit" id="linkBtn">Entrar</button></div>
+        <p class="note" style="margin:0">Perdeste o teu link? Pede à Fran ou à Vera: elas conseguem enviar-to outra vez.</p>
       </form>
     </div>
   </section>
@@ -314,13 +315,9 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       <h2 class="h2">Rankings</h2>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:6px">Pontos <em>individuais</em></h2>
       <div class="scroll"><table class="tbl" id="rkPoints"></table></div>
-      <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Mais <em>ativos</em></h2>
-      <div class="scroll"><table class="tbl" id="rkPosts"></table></div>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Nacional <em>vs</em> Internacional</h2>
       <div class="scroll"><table class="tbl" id="rkRegion"></table></div>
       <p class="note" style="margin-top:8px">A média por pessoa é os pontos do grupo a dividir pelo número de pessoas, para ninguém ganhar só por ser mais.</p>
-      <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Equipas</h2>
-      <div class="band light"><p>Team Vera e Team Fran chegam com os challenges.</p><span class="chip">Coming soon</span></div>
     </div>
   </section>
 
@@ -344,7 +341,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       <p class="soon">COMING SOON</p>
       <p class="sub" style="margin-left:0;margin-top:14px">Os desafios chegam com o jogo. Cada um é atribuído a quem está presente e provas com foto ou vídeo.</p>
       <ol class="steps" style="margin-top:22px">
-        <li class="step"><h3>Recebes um challenge</h3><p>Escolhido com base nas pessoas que fizeram check in.</p></li>
+        <li class="step"><h3>Recebes um challenge</h3><p>Escolhido para quem está na festa.</p></li>
         <li class="step"><h3>Envias a prova</h3><p>Foto ou vídeo. Sem prova, não há pontos.</p></li>
         <li class="step"><h3>A referee valida</h3><p>A Vera valida a Team Fran. A Fran valida a Team Vera.</p></li>
         <li class="step"><h3>Pontos para a equipa</h3><p>Somam ao ranking individual e ao da equipa, normalizado por pessoa presente.</p></li>
@@ -980,9 +977,6 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     var byPts = b.slice().sort(function(x,y){ return y.points - x.points || y.posts - x.posts || String(x.name).localeCompare(y.name); });
     $('rkPoints').innerHTML = '<thead><tr><th>#</th><th>Player</th><th>Pontos</th></tr></thead><tbody>' +
       (byPts.length ? byPts.map(function(r,i){ return '<tr><td>'+(i+1)+'</td><td><span class="who2">'+av(r.avatar,r.name,'')+esc(r.name)+'</span></td><td>'+r.points+'</td></tr>'; }).join('') : '<tr><td colspan="3">Ainda não há players.</td></tr>') + '</tbody>';
-    var byPosts = b.filter(function(r){ return r.posts > 0; }).sort(function(x,y){ return y.posts - x.posts || y.points - x.points; }).slice(0,10);
-    $('rkPosts').innerHTML = '<thead><tr><th>#</th><th>Player</th><th>Posts</th></tr></thead><tbody>' +
-      (byPosts.length ? byPosts.map(function(r,i){ return '<tr><td>'+(i+1)+'</td><td><span class="who2">'+av(r.avatar,r.name,'')+esc(r.name)+'</span></td><td>'+r.posts+'</td></tr>'; }).join('') : '<tr><td colspan="3">Ainda ninguém postou.</td></tr>') + '</tbody>';
     var groups = [['national','Nacional'],['international','Internacional']].map(function(g){
       var m = b.filter(function(r){ return r.region === g[0]; }), tot = m.reduce(function(a,r){ return a + r.points; }, 0);
       return {label:g[1], n:m.length, tot:tot, avg:m.length ? tot / m.length : 0};
@@ -1060,7 +1054,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     renderLinks();
     if (v === 'perfil') loadPerfil();
     if (v === 'login'){
-      $('regBlock').hidden = !!adminToken; $('emailBlock').hidden = !!adminToken;
+      $('regBlock').hidden = !!adminToken; $('emailBlock').hidden = !!adminToken; $('privNote').hidden = !!adminToken;
       if (adminToken && !$('loginName').value) guard(api.adminName(adminToken).then(function(n){ if (n) $('loginName').value = n; else { toast('Este link de referee é inválido ou já foi usado.'); adminToken = null; show('login'); } }));
     }
     if (v === 'plano') loadPlano();
