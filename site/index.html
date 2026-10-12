@@ -1,0 +1,938 @@
+<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#f4e2ea"></head><body><title>FRAN × VERA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Londrina+Solid:wght@300;400;900&family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: the flyer as a website. Pink ground, black wavy display type, one red, pill outlines,
+   2px ink borders on rectangles. Single look by choice. */
+:root{
+  --bg:#f4e2ea; --ink:#0d0a0b; --red:#e8421f; --card:#fbf1f5; --soft:#ead0dc; --good:#1f7a4d;
+  --display:'Londrina Solid','Impact','Arial Narrow',sans-serif;
+  --body:'Archivo','Helvetica Neue',Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;margin:0}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.wrap{max-width:1080px;margin-inline:auto;padding-inline:20px}
+
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);border-bottom:2px solid var(--ink)}
+.navin{display:flex;align-items:center;justify-content:space-between;gap:10px 14px;padding-block:8px;flex-wrap:wrap}
+.logo{font-family:var(--display);font-weight:900;font-size:1.9rem;letter-spacing:.02em;line-height:1;text-decoration:none;background:none;border:0;cursor:pointer;padding:0}
+.links{display:flex;gap:4px;align-items:center;overflow-x:auto;max-width:100%;scrollbar-width:none}
+.links::-webkit-scrollbar{display:none}
+.lk{font-weight:800;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 13px;border:2px solid transparent;border-radius:999px;background:none;cursor:pointer;white-space:nowrap}
+.lk:hover,.lk[aria-current="page"]{border-color:var(--ink)}
+.lk.solid{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.who{font-size:.78rem;font-weight:600;padding-inline:4px;white-space:nowrap}
+
+.btn{font-weight:800;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--ink);background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:999px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.red{background:var(--red);color:var(--ink)}
+.btn.small{padding:8px 14px;font-size:.74rem}
+.btn:disabled{opacity:.5;cursor:default}
+.pill{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:11px 26px;font-weight:800;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase}
+.chip{display:inline-block;border:2px solid var(--ink);padding:3px 10px;font-weight:800;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;background:var(--bg);white-space:nowrap}
+.chip.red{background:var(--red)}
+.chip.ex{border-style:dashed}
+
+.hero{position:relative;text-align:center;padding-block:30px 10px}
+.names{font-family:var(--display);font-weight:900;font-size:clamp(4.6rem,19vw,14rem);line-height:.82;letter-spacing:.01em;margin:24px 0 10px;white-space:nowrap}
+.big{color:var(--red);font-weight:800;font-size:clamp(2rem,8.4vw,5rem);letter-spacing:.03em;line-height:1;margin:0}
+.when{font-weight:800;font-size:clamp(1.05rem,3.6vw,1.7rem);letter-spacing:.02em;margin:16px 0 0}
+.sub{max-width:44ch;margin:12px auto 0;font-size:1.05rem}
+.cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.x{display:inline-block;width:.62em;height:.62em;vertical-align:.04em;margin-inline:.04em}
+.logo .x{width:.55em;height:.55em;vertical-align:0}
+.xx{font-family:Arial,Helvetica,sans-serif}
+.side{display:none}
+.tagline{font-weight:600;font-size:.9rem;letter-spacing:.08em;text-transform:uppercase;margin:22px 0 0;line-height:1.7}
+.art{position:relative;width:min(640px,100%);aspect-ratio:1/.92;margin:18px auto 0}
+.art .circle{position:absolute;right:3%;top:0;width:58%;aspect-ratio:1;background:var(--red);border-radius:50%}
+.art .girls{position:absolute;right:0;bottom:0;width:64%;display:block}
+.art .hands{position:absolute;left:0;bottom:5%;width:58%;display:block}
+.age{opacity:.7;font-weight:800;margin:6px 0 0}
+
+.sec{padding-block:30px}
+.h2{font-family:var(--display);font-weight:900;font-size:clamp(2.6rem,8vw,4.6rem);line-height:.9;margin:0 0 16px;letter-spacing:.01em}
+.h2 em{font-style:normal;color:var(--red)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:0;padding:0;list-style:none}
+.step{border:2px solid var(--ink);background:var(--card);padding:16px 16px 18px;min-width:0}
+.step h3{font-family:var(--display);font-weight:900;font-size:1.8rem;line-height:.95;margin:0 0 8px}
+.step p{margin:0;font-size:.94rem}
+.band{border:2px solid var(--ink);background:var(--ink);color:var(--bg);padding:16px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:14px}
+.band p{margin:0;max-width:62ch;font-weight:600}
+.band.light{background:var(--card);color:var(--ink)}
+.note{font-size:.9rem;font-weight:600;margin:0 0 16px;max-width:70ch}
+
+.sumbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:2px solid var(--ink);background:var(--card);padding:14px 18px;margin-bottom:22px}
+.sumbar b{font-family:var(--display);font-weight:900;font-size:2.4rem;line-height:1;color:var(--red);margin-right:10px}
+.day{margin-bottom:26px}
+.dayh{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:2px}
+.dayh h3{font-family:var(--display);font-weight:900;font-size:clamp(2.4rem,7vw,3.6rem);line-height:.95;margin:0}
+.dayh span{font-weight:800;letter-spacing:.06em;font-size:.85rem}
+.ev{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:6px 18px;align-items:start;padding:14px 0;border-bottom:1px solid var(--ink)}
+.ev .t{font-weight:800;font-variant-numeric:tabular-nums;font-size:.95rem}
+.ev h4{margin:0;font-weight:800;font-size:1.15rem;letter-spacing:.02em}
+.ev p{margin:3px 0 0;font-size:.93rem}
+.ev .pl{font-weight:600;font-size:.88rem}
+.ev.off{opacity:.62}
+.ev .act{display:grid;justify-items:end;gap:4px}
+.ev .cnt{font-size:.74rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.rule{display:inline-block;margin-top:6px;border:2px solid var(--ink);padding:3px 10px;font-weight:800;font-size:.76rem}
+
+.card{border:2px solid var(--ink);background:var(--card);padding:20px;min-width:0}
+.card.narrow{max-width:520px}
+label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text-transform:uppercase;margin:0 0 6px}
+.in{width:100%;border:2px solid var(--ink);background:var(--bg);padding:11px 12px;border-radius:0;min-width:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.stack{display:grid;gap:14px}
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.door{border:2px solid var(--ink);background:var(--bg);padding:14px 12px;cursor:pointer;text-align:left}
+.door b{display:block;font-family:var(--display);font-weight:900;font-size:1.9rem;line-height:1}
+.door span{font-size:.8rem;font-weight:600}
+.door[aria-pressed="true"]{background:var(--red)}
+
+.bf-head{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+.bf-logo{font-family:var(--display);font-weight:900;font-size:clamp(3.4rem,12vw,6.4rem);line-height:.85;margin:0;letter-spacing:.01em}
+.bf-logo i{font-style:normal;background:var(--ink);color:var(--bg);padding:0 .12em}
+.drinks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.dk{border:2px solid var(--ink);background:var(--bg);padding:10px;text-align:left;cursor:pointer;min-width:0}
+.dk b{display:block;font-weight:800;font-size:.95rem}
+.dk span{font-size:.76rem;font-weight:600}
+.dk .p{font-family:var(--display);font-weight:900;font-size:1.5rem;display:block;line-height:1.1}
+.dk[aria-pressed="true"]{background:var(--red)}
+.pick{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:start}
+.selfie{width:120px;aspect-ratio:3/4;border:2px dashed var(--ink);display:grid;place-items:center;text-align:center;font-weight:800;font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;background:var(--bg);overflow:hidden}
+.selfie img{width:100%;height:100%;object-fit:cover;display:block}
+.feed{display:grid;gap:18px;margin-top:8px}
+.post{border:2px solid var(--ink);background:var(--card);min-width:0}
+.post img{width:100%;max-height:520px;object-fit:cover;display:block;border-bottom:2px solid var(--ink);background:var(--soft)}
+.post .pb{padding:14px 16px 16px}
+.post h3{font-weight:800;font-size:1.3rem;line-height:1.15;margin:8px 0 8px;text-wrap:balance}
+.post .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:.82rem;font-weight:600}
+.post .cap{margin:6px 0 0;font-size:.95rem}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tbl th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;text-align:left;padding:8px 10px;border-bottom:2px solid var(--ink)}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--ink)}
+.tbl td:last-child,.tbl th:last-child{text-align:right}
+.scroll{overflow-x:auto}
+
+.soon{font-family:var(--display);font-weight:900;font-size:clamp(3.4rem,13vw,8rem);line-height:.85;color:var(--red);margin:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.edrow{display:grid;grid-template-columns:120px 96px 96px minmax(0,1fr) minmax(0,1fr) auto auto;gap:8px;align-items:center;border:2px solid var(--ink);background:var(--card);padding:10px;margin-bottom:8px}
+.edrow.d{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 90px}
+.listrow{display:flex;gap:10px;justify-content:space-between;align-items:center;border-bottom:1px solid var(--ink);padding:10px 0;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:999px;font-weight:700;font-size:.9rem;z-index:20;max-width:calc(100% - 32px);text-align:center}
+.foot{border-top:2px solid var(--ink);margin-top:30px;padding-block:20px 30px;font-size:.82rem;font-weight:600;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+@media (min-width:900px){
+  .side{display:block;position:absolute;bottom:60px;font-weight:600;font-size:.95rem;letter-spacing:.06em;writing-mode:vertical-rl;transform:rotate(180deg);text-transform:uppercase}
+  .side.l{left:-4px}
+  .side.r{right:-4px}
+  .tagline{display:none}
+}
+@media (max-width:760px){
+  .lk{padding:8px 11px}
+  .ev{grid-template-columns:minmax(0,1fr) auto}
+  .ev .t{grid-column:1 / -1}
+  .edrow{grid-template-columns:1fr 1fr}
+  .edrow>.wide{grid-column:1 / -1}
+  .edrow.d{grid-template-columns:minmax(0,1fr) 80px}
+  .edrow.d>.wide{grid-column:1 / -1}
+  .pick{grid-template-columns:96px minmax(0,1fr)}
+  .selfie{width:96px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .btn,.lk{transition:transform .12s}
+  .btn:hover{transform:translateY(-2px)}
+}
+.lk{display:inline-flex;align-items:center;gap:6px}
+.av{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid var(--ink);background:var(--soft);flex:none;display:inline-grid;place-items:center;font-weight:800;font-size:.8rem;line-height:1}
+.av.l{width:72px;height:72px;font-size:1.6rem}
+.who2{display:inline-flex;align-items:center;gap:8px;font-weight:700;min-width:0}
+.selfie.round{border-radius:50%;aspect-ratio:1;border-style:solid}
+[hidden]{display:none!important}
+.cam{position:fixed;inset:0;z-index:40;background:var(--ink);display:grid;grid-template-rows:minmax(0,1fr) auto}
+.cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);background:#000;display:block;min-height:0}
+.cam .bar{display:flex;gap:12px;justify-content:center;align-items:center;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.cam .snap{width:72px;height:72px;border-radius:50%;border:4px solid var(--bg);background:var(--red);cursor:pointer;padding:0}
+</style>
+
+<nav class="nav" aria-label="Principal">
+  <div class="wrap navin">
+    <button class="logo" data-nav="inicio" aria-label="FRAN x VERA">FRAN <svg class="x" viewBox="0 0 10 10" aria-label="x" role="img"><path d="M1.2 1.2L8.8 8.8M8.8 1.2L1.2 8.8" stroke="currentColor" stroke-width="2.1" fill="none"/></svg> VERA</button>
+    <div class="links" id="links"></div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <section id="v-inicio" data-view>
+    <header class="hero">
+      <span class="side l">Choose your nights. Check in.</span>
+      <span class="side r">Complete challenges. Earn points.</span>
+      <span class="pill">Team Vera <span class="xx">×</span> Team Fran</span>
+      <h1 class="names">FRAN <svg class="x" viewBox="0 0 10 10" aria-label="x" role="img"><path d="M1.2 1.2L8.8 8.8M8.8 1.2L1.2 8.8" stroke="currentColor" stroke-width="2.1" fill="none"/></svg><br>VERA</h1>
+      <p class="big">23H30 DE FESTA</p>
+      <p class="when">15 — 18 OUTUBRO · LISBOA</p>
+      <p class="sub">Duas amigas, dois aniversários, quatro dias. Escolhe as noites em que queres estar e entra no jogo.</p>
+      <div class="cta">
+        <button class="btn red" data-nav="plano">Ver o plano</button>
+        <button class="btn ghost" data-nav="login" id="heroLogin">Entrar</button>
+      </div>
+      <p class="tagline">Choose your nights.<br>Check in. Complete challenges.<br>Earn points.</p>
+      <div class="art">
+        <div class="circle"></div>
+        <img class="hands" src="assets/hands.webp" alt="Duas mãos a brindar">
+        <img class="girls" src="assets/girls.webp" alt="Ilustração da Fran e da Vera">
+      </div>
+      <p class="age">23 + 24</p>
+    </header>
+
+    <section class="sec">
+      <h2 class="h2">Como <em>funciona</em></h2>
+      <ol class="steps">
+        <li class="step"><h3>Escolhe as tuas noites</h3><p>Diz no Plano em que momentos vais estar. Não precisas de aparecer em todos.</p></li>
+        <li class="step"><h3>Faz check in</h3><p>Nos eventos em que estás, regista a tua presença.</p></li>
+        <li class="step"><h3>Posta no BoozeFeed</h3><p>Selfie, bebida e pontos. Abre na quinta.</p></li>
+        <li class="step"><h3>Cumpre challenges</h3><p>Desafios sociais e ligeiramente caóticos. Coming soon.</p></li>
+      </ol>
+      <div class="band"><p>A Fran e a Vera não jogam. São as referees: validam, dão pontos e mandam no jogo.</p></div>
+    </section>
+  </section>
+
+  <section id="v-login" data-view hidden>
+    <div class="sec">
+      <h2 class="h2">Entrar</h2>
+      <p class="note">Cria o teu perfil uma vez. Ficas com um link só teu: abre-o em qualquer telemóvel e já estás dentro, sem login.</p>
+      <div class="tabs">
+        <button class="lk" data-act="ltab" data-tab="new" id="ltabNew" aria-current="page">Criar perfil</button>
+        <button class="lk" data-act="ltab" data-tab="link" id="ltabLink">Já tenho o meu link</button>
+      </div>
+      <form class="card narrow stack" id="signupForm" novalidate>
+        <div id="regBlock">
+          <label class="f">Onde estás?</label>
+          <div class="doors" role="group" aria-label="Onde estás">
+            <button type="button" class="door" id="doorNat" data-act="region" data-region="national" aria-pressed="false"><b>Nacional</b><span>Estou em Portugal e vou estar na festa.</span></button>
+            <button type="button" class="door" id="doorInt" data-act="region" data-region="international" aria-pressed="false"><b>Internacional</b><span>Estou fora do país e participo à distância.</span></button>
+          </div>
+        </div>
+        <div class="pick">
+          <label class="selfie" for="avatarFile" id="avPrev">Selfie de perfil</label>
+          <div class="stack">
+            <input id="avatarFile" type="file" accept="image/*" capture="user" hidden>
+            <div><label class="f" for="loginName">O teu nome</label><input class="in" id="loginName" autocomplete="off" placeholder="Nome"></div>
+          </div>
+        </div>
+        <div id="emailBlock">
+          <label class="f" for="loginContact">Email</label>
+          <input class="in" id="loginContact" type="email" autocomplete="email" placeholder="Só as referees veem. Serve para recuperar o teu link.">
+        </div>
+        <div class="row"><button class="btn" type="submit" id="signupBtn">Criar perfil</button></div>
+      </form>
+      <form class="card narrow stack" id="linkForm" hidden novalidate>
+        <div>
+          <label class="f" for="linkIn">Cola aqui o teu link</label>
+          <input class="in" id="linkIn" autocomplete="off" placeholder="https://...#k=...">
+        </div>
+        <div class="row"><button class="btn" type="submit" id="linkBtn">Entrar</button></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="v-perfil" data-view hidden>
+    <div class="sec">
+      <h2 class="h2">O meu <em>perfil</em></h2>
+      <div class="card narrow stack">
+        <div class="who2" id="perfilHead"></div>
+        <div><label class="f" for="myLink">O teu link pessoal</label><input class="in" id="myLink" readonly></div>
+        <div class="row"><button class="btn" data-act="copylink">Copiar link</button><button class="btn ghost" data-act="sharelink">Enviar para mim</button></div>
+        <p class="note" style="margin:0">Guarda este link, por exemplo enviando-o a ti própria no WhatsApp. Abre-o em qualquer telemóvel e entras como tu. Só tu o deves ter. Neste telemóvel a sessão fica aberta.</p>
+        <div class="row"><button class="btn red" data-nav="plano">Continuar</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-plano" data-view hidden>
+    <div class="sec">
+      <h2 class="h2">Plano</h2>
+      <div class="sumbar" id="sumbar"></div>
+      <div id="program"></div>
+    </div>
+  </section>
+
+  <section id="v-feed" data-view hidden>
+    <div class="sec">
+      <div class="bf-head">
+        <h2 class="bf-logo">Booze<i>Feed</i></h2>
+        <span class="chip red">Trending</span>
+      </div>
+      <p class="note">O site número 1 do mundo em notícias que ninguém pediu. Posta uma selfie, escolhe a bebida e ganha pontos. Máximo de 2 bebidas por hora. Água custa-te um ponto.</p>
+      <div id="feedLocked" hidden></div>
+      <div id="feedLive">
+      <div id="composer"></div>
+      <div class="row" style="margin-top:18px"><button class="btn ghost small" data-nav="rankings">Ver rankings</button></div>
+      <h2 class="h2" style="margin-top:34px">Últimas <em>notícias</em></h2>
+      <div class="feed" id="feed"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="v-rankings" data-view hidden>
+    <div class="sec">
+      <h2 class="h2">Rankings</h2>
+      <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:6px">Pontos <em>individuais</em></h2>
+      <div class="scroll"><table class="tbl" id="rkPoints"></table></div>
+      <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Mais <em>ativos</em></h2>
+      <div class="scroll"><table class="tbl" id="rkPosts"></table></div>
+      <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Nacional <em>vs</em> Internacional</h2>
+      <div class="scroll"><table class="tbl" id="rkRegion"></table></div>
+      <p class="note" style="margin-top:8px">A média por pessoa é os pontos do grupo a dividir pelo número de pessoas, para ninguém ganhar só por ser mais.</p>
+      <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Equipas</h2>
+      <div class="band light"><p>Team Vera e Team Fran chegam com os challenges.</p><span class="chip">Coming soon</span></div>
+    </div>
+  </section>
+
+  <section id="v-challenges" data-view hidden>
+    <div class="sec">
+      <h2 class="h2">Challenges</h2>
+      <p class="soon">COMING SOON</p>
+      <p class="sub" style="margin-left:0;margin-top:14px">Os desafios chegam com o jogo. Cada um é atribuído a quem está presente e provas com foto ou vídeo.</p>
+      <ol class="steps" style="margin-top:22px">
+        <li class="step"><h3>Recebes um challenge</h3><p>Escolhido com base nas pessoas que fizeram check in.</p></li>
+        <li class="step"><h3>Envias a prova</h3><p>Foto ou vídeo. Sem prova, não há pontos.</p></li>
+        <li class="step"><h3>A referee valida</h3><p>A Vera valida a Team Fran. A Fran valida a Team Vera.</p></li>
+        <li class="step"><h3>Pontos para a equipa</h3><p>Somam ao ranking individual e ao da equipa, normalizado por pessoa presente.</p></li>
+      </ol>
+      <h2 class="h2" style="margin-top:34px">Os meus <em>challenges</em></h2>
+      <div id="myChal" style="max-width:640px"></div>
+      <h2 class="h2" style="margin-top:34px">Tens uma <em>ideia</em>?</h2>
+      <p class="note">Sugere um challenge. As melhores entram no jogo.</p>
+      <form class="card stack" id="ideaForm" style="max-width:640px" novalidate>
+        <div><label class="f" for="ideaText">O teu challenge</label>
+        <textarea class="in" id="ideaText" rows="3" maxlength="240" placeholder="Ex.: convencer alguém da outra equipa a trocar de casaco"></textarea></div>
+        <div class="row"><button class="btn" type="submit">Sugerir</button></div>
+      </form>
+      <div id="ideas" style="margin-top:18px;max-width:640px"></div>
+    </div>
+  </section>
+
+  <section id="v-referee" data-view hidden>
+    <div class="sec">
+      <h2 class="h2">Painel <em>referee</em></h2>
+      <div id="refBody"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap foot">
+  <span>FRAN <span class="xx">×</span> VERA · 15 — 18 OUTUBRO · LISBOA</span>
+  <span><span id="modeNote"></span> <button class="lk" data-act="demoadmin" id="demoAdminBtn" hidden>Testar como referee</button></span>
+</footer>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="vendor/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+(function(){
+  var CFG = window.FRANVERA_CONFIG || {};
+  var LIVE = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY && window.supabase);
+
+  var DAYS = [
+    {id:'qui', label:'QUINTA', date:'15 OUTUBRO'},
+    {id:'sex', label:'SEXTA', date:'16 OUTUBRO'},
+    {id:'sab', label:'SÁBADO', date:'17 OUTUBRO'},
+    {id:'dom', label:'DOMINGO', date:'18 OUTUBRO'}
+  ];
+  var EVENTS_SEED = [
+    {id:'e1', day:'qui', start:'19:00', end:'23:30', title:'THE GRAND OPENING', place:'Corner', note:'Início oficial da festa, apresentação do conceito, equipas e jogo.', official:true, sort:1},
+    {id:'e2', day:'sex', start:'00:00', end:'00:30', title:'23.', note:'Momento de aniversário da Fran.', official:true, sort:2},
+    {id:'e3', day:'sex', start:'00:30', end:'02:00', title:'PRAIA NO PARQUE', official:true, sort:3},
+    {id:'e4', day:'sex', start:'02:00', end:'18:00', title:'WORK DAY', note:'Dia normal de trabalho. Não é programação oficial da festa.', official:false, sort:4},
+    {id:'e5', day:'sex', start:'19:00', end:'23:00', title:'RALLY TASCAS & CROQUETTE', place:'Belém → Bairro Alto', note:'Um rally pelas tascas, com diferentes challenges e pontos ao longo do percurso.', official:true, sort:5},
+    {id:'e6', day:'sex', start:'23:00', end:'02:00', title:'ZÉ DOS BOIS', official:true, sort:6},
+    {id:'e7', day:'sab', allDay:true, title:'RECOVERY DAY', official:true, sort:7},
+    {id:'e8', day:'sab', start:'20:00', end:'22:00', title:'BINGO', note:'Evento especial com sistema de pontuação próprio.', rule:'Linha: X pontos · Bingo: 100 pontos', official:true, sort:8},
+    {id:'e9', day:'sab', start:'22:00', end:'00:00', title:'PRE-DRINKS', official:true, sort:9},
+    {id:'e10', day:'dom', start:'00:00', end:'00:30', title:'24.', note:'Momento de aniversário da Vera.', official:true, sort:10},
+    {id:'e11', day:'dom', start:'00:30', end:'06:00', title:'THE FINALE', official:true, sort:11}
+  ];
+  var DRINKS_SEED = [
+    {id:'d_na', label:'Sem álcool', hint:'água, sumo, 0%', points:-1, kind:'drink', sort:1},
+    {id:'d_beer20', label:'Cerveja 0,2 L', hint:'imperial, fino', points:1, kind:'drink', sort:2},
+    {id:'d_beer33', label:'Cerveja 0,33 L', hint:'garrafa pequena', points:2, kind:'drink', sort:3},
+    {id:'d_beer50', label:'Cerveja 0,5 L', hint:'caneca', points:4, kind:'drink', sort:4},
+    {id:'d_sidra', label:'Sidra garrafa', hint:'garrafa', points:3, kind:'drink', sort:5},
+    {id:'d_wine', label:'Vinho', hint:'tinto, branco, sangria', points:5, kind:'drink', sort:6},
+    {id:'d_cock', label:'Cocktail', hint:'mojito, spritz, gin tónico', points:8, kind:'drink', sort:7},
+    {id:'d_shot', label:'Shot', hint:'jäger, tequila, ginja', points:10, kind:'drink', sort:8},
+    {id:'d_hard', label:'Bebida forte', hint:'gin, vodka, whisky', points:12, kind:'drink', sort:9},
+    {id:'d_home', label:'Cheguei a casa', hint:'em segurança, 1 vez por noite', points:15, kind:'care', sort:10}
+  ];
+
+  /* ---------- helpers ---------- */
+  function $(id){ return document.getElementById(id); }
+  function pts(n){ n = parseInt(n,10) || 0; return (n > 0 ? '+' : '') + n; }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function mins(t){ var p = String(t||'0:0').split(':'); return (parseInt(p[0],10)||0)*60 + (parseInt(p[1],10)||0); }
+  function dur(e){ if (!e.official || e.allDay || !e.start || !e.end) return 0; return (mins(e.end) - mins(e.start) + 1440) % 1440; }
+  function fmtH(m){ return Math.floor(m/60) + 'H' + String(m%60).padStart(2,'0'); }
+  function slug(n){ return String(n).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.+|\.+$/g,''); }
+  function ago(iso){
+    var m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime())/60000));
+    if (m < 1) return 'agora mesmo'; if (m < 60) return 'há '+m+' min';
+    var h = Math.round(m/60); if (h < 24) return 'há '+h+' h'; return 'há '+Math.round(h/24)+' d';
+  }
+  function av(src, name, cls){
+    var c = 'av' + (cls ? ' ' + cls : '');
+    return src ? '<img class="'+c+'" src="'+esc(src)+'" alt="">' : '<span class="'+c+'">'+esc(String(name||'?').charAt(0).toUpperCase())+'</span>';
+  }
+  function linkOf(k){ return String(location.href).split('#')[0] + '#k=' + k; }
+  function copyText(s){
+    var ta = document.createElement('textarea'); ta.value = s; ta.setAttribute('readonly',''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand('copy'); } catch(e){}
+    document.body.removeChild(ta);
+    if (ok) toast('Link copiado.');
+    else if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(s).then(function(){ toast('Link copiado.'); }, function(){ toast('Seleciona e copia o link.'); });
+    else toast('Seleciona e copia o link.');
+  }
+  function camera(done, fallback){
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)){ fallback(); return; }
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user', width:{ideal:1280}, height:{ideal:1280}}, audio:false}).then(function(stream){
+      var box = document.createElement('div'); box.className = 'cam';
+      box.innerHTML = '<video autoplay playsinline muted></video><div class="bar"><button type="button" class="btn ghost small" style="background:var(--bg)" data-c="x">Cancelar</button><button type="button" class="snap" data-c="s" aria-label="Tirar foto"></button><button type="button" class="btn ghost small" style="background:var(--bg)" data-c="g">Galeria</button></div>';
+      document.body.appendChild(box);
+      var v = box.querySelector('video'); v.srcObject = stream; v.play().catch(function(){});
+      function close(){ stream.getTracks().forEach(function(tr){ tr.stop(); }); if (box.parentNode) box.parentNode.removeChild(box); }
+      box.addEventListener('click', function(e){
+        var b = e.target.closest('[data-c]'); if (!b) return;
+        var c = b.getAttribute('data-c');
+        if (c === 'x'){ close(); }
+        else if (c === 'g'){ close(); fallback(); }
+        else if (c === 's'){
+          var w = v.videoWidth, h = v.videoHeight; if (!w || !h) return;
+          var cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+          var cx = cv.getContext('2d'); cx.translate(w, 0); cx.scale(-1, 1); cx.drawImage(v, 0, 0, w, h);
+          cv.toBlob(function(bl){ close(); if (bl) done(bl); }, 'image/jpeg', .85);
+        }
+      });
+    }).catch(function(){ fallback(); });
+  }
+  function toast(msg){ var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(function(){ t.hidden = true; }, 3200); }
+  function hash(s){ var h = 0; for (var i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
+  function shrink(file, max){
+    return new Promise(function(res, rej){
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function(){
+        var s = Math.min(1, max / Math.max(img.width, img.height));
+        var c = document.createElement('canvas'); c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function(b){ URL.revokeObjectURL(url); b ? res(b) : rej(new Error('Imagem inválida.')); }, 'image/jpeg', .72);
+      };
+      img.onerror = function(){ rej(new Error('Não consegui ler a imagem.')); };
+      img.src = url;
+    });
+  }
+  function headline(post){
+    var n = post.name || 'Alguém', d = (post.drink || '').toLowerCase();
+    if (post.kind === 'care') return n + ' chegou a casa em segurança. Eis porque devias fazer o mesmo.';
+    var t = [
+      n+' bebeu '+d+' e o que aconteceu a seguir vai surpreender-te',
+      'A escolha de '+n+' ('+d+') está a dividir a internet',
+      n+' jura que foi só '+d+'. As fotos dizem outra coisa.',
+      'Cientistas confirmam que '+n+' aguenta mais uma ronda. Último registo: '+d+'.',
+      n+' escolheu '+d+' e ninguém estava preparado',
+      '10 sinais de que '+n+' está a divertir-se (o nº 7 é '+d+')'
+    ];
+    return t[hash(post.id) % t.length];
+  }
+
+  /* ---------- data: demo adapter (in memory) ---------- */
+  var demo = (function(){
+    var users = [], me = null;
+    var ev = JSON.parse(JSON.stringify(EVENTS_SEED)), dr = JSON.parse(JSON.stringify(DRINKS_SEED));
+    var rs = [], ps = [], ideas = [], seq = 1, unlockAt = new Date('2026-10-15T19:00:00+01:00').getTime();
+    var sample = document.querySelector('.art .hands').src;
+    users.push({id:'x1', name:'Convidado exemplo', role:'player', region:'national', avatar:sample, key:'x1.demo', contact:'a@exemplo.pt'}, {id:'x2', name:'Outro exemplo', role:'player', region:'international', avatar:sample, key:'x2.demo', contact:'ex@exemplo.pt'});
+    ps.push({id:'p1', user_id:'x1', name:'Convidado exemplo', avatar:sample, drink:'Cocktail', kind:'drink', points:8, photo:sample, caption:'Exemplo de post.', created_at:new Date(Date.now()-14*60000).toISOString()});
+    ps.push({id:'p2', user_id:'x2', name:'Outro exemplo', avatar:sample, drink:'Sem álcool', kind:'drink', points:3, photo:sample, caption:'', created_at:new Date(Date.now()-52*60000).toISOString()});
+    function pub(u){ return {id:u.id, name:u.name, role:u.role, region:u.region, avatar:u.avatar}; }
+    return {
+      label: 'Modo demonstração: nada fica guardado.',
+      init: function(){ return Promise.resolve(null); },
+      signUp: function(o){
+        var isRef = !!o.token;
+        var id = 'u' + (++seq);
+        var u = {id:id, name:o.name, role:isRef ? 'referee' : 'player', region:o.region, avatar:URL.createObjectURL(o.blob), contact:o.contact || '', key:id + '.' + Math.random().toString(36).slice(2,12)};
+        users.push(u); me = u; return Promise.resolve({user:pub(u), key:u.key});
+      },
+      signInKey: function(k){
+        var u = users.filter(function(x){ return x.key === k; })[0];
+        if (!u) return Promise.reject(new Error('Link inválido.'));
+        me = u; return Promise.resolve(pub(u));
+      },
+      getKey: function(){ return Promise.resolve(me.key); },
+      adminName: function(tk){ return Promise.resolve(tk === 'demo' ? 'Vera' : null); },
+      getUnlock: function(){ return Promise.resolve(unlockAt); },
+      setUnlock: function(iso){ unlockAt = new Date(iso).getTime(); return Promise.resolve(); },
+      signOut: function(){ me = null; return Promise.resolve(); },
+      listEvents: function(){ return Promise.resolve(ev.slice().sort(function(a,b){ return a.sort - b.sort; })); },
+      saveEvent: function(e){ var i = ev.findIndex(function(x){ return x.id === e.id; }); if (i < 0) ev.push(e); else ev[i] = e; return Promise.resolve(); },
+      deleteEvent: function(id){ ev = ev.filter(function(x){ return x.id !== id; }); rs = rs.filter(function(r){ return r.event_id !== id; }); return Promise.resolve(); },
+      listRsvps: function(){ return Promise.resolve(rs.slice()); },
+      setRsvp: function(id, going){
+        rs = rs.filter(function(r){ return !(r.event_id === id && r.user_id === me.id); });
+        if (going) rs.push({event_id:id, user_id:me.id, name:me.name});
+        return Promise.resolve();
+      },
+      listDrinks: function(){ return Promise.resolve(dr.slice().sort(function(a,b){ return a.sort - b.sort; })); },
+      saveDrink: function(d){ var i = dr.findIndex(function(x){ return x.id === d.id; }); if (i >= 0) dr[i] = d; return Promise.resolve(); },
+      listPosts: function(){ return Promise.resolve(ps.slice().sort(function(a,b){ return b.created_at < a.created_at ? -1 : 1; })); },
+      createPost: function(o){
+        if (Date.now() < unlockAt) return Promise.reject(new Error('O BoozeFeed ainda está fechado.'));
+        var d = dr.filter(function(x){ return x.id === o.drink_id; })[0];
+        var cut = Date.now() - (d.kind === 'care' ? 12*3600000 : 3600000);
+        var n = ps.filter(function(p){ return p.user_id === me.id && p.kind === d.kind && new Date(p.created_at).getTime() > cut; }).length;
+        if (d.kind === 'care' && n >= 1) return Promise.reject(new Error('Limite: o check de chegada a casa conta uma vez por noite.'));
+        if (d.kind !== 'care' && n >= 2) return Promise.reject(new Error('Limite: no máximo 2 bebidas por hora. Bebe água e volta já.'));
+        ps.push({id:'p'+(++seq), user_id:me.id, name:me.name, avatar:me.avatar, drink:d.label, kind:d.kind, points:d.points, photo:URL.createObjectURL(o.blob), caption:o.caption, created_at:new Date().toISOString()});
+        return Promise.resolve();
+      },
+      deletePost: function(id){ ps = ps.filter(function(p){ return p.id !== id; }); return Promise.resolve(); },
+      leaderboard: function(){
+        var t = {};
+        users.filter(function(u){ return u.role === 'player'; }).forEach(function(u){ t[u.id] = {name:u.name, avatar:u.avatar, region:u.region, points:0, posts:0}; });
+        ps.forEach(function(p){ if (t[p.user_id]){ t[p.user_id].points += p.points; t[p.user_id].posts++; } });
+        return Promise.resolve(Object.keys(t).map(function(k){ return t[k]; }).sort(function(a,b){ return b.points - a.points; }));
+      },
+      listIdeas: function(){ return Promise.resolve(ideas.slice().reverse()); },
+      addIdea: function(text){ ideas.push({id:'i'+(++seq), user_id:me.id, name:me.name, text:text}); return Promise.resolve(); },
+      deleteIdea: function(id){ ideas = ideas.filter(function(i){ return i.id !== id; }); return Promise.resolve(); },
+      listPlayers: function(){ return Promise.resolve(users.map(function(u){ return {id:u.id, name:u.name, role:u.role, avatar:u.avatar, region:u.region, contact:u.contact, key:u.key}; })); }
+    };
+  })();
+
+  /* ---------- data: Supabase adapter ---------- */
+  function makeLive(){
+    var sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+    function fail(r){ if (r.error) throw new Error(r.error.message || 'Erro.'); return r.data; }
+    function rid(n){ var a = new Uint8Array(n), s = '', c = 'abcdefghijklmnopqrstuvwxyz0123456789'; (window.crypto || window.msCrypto).getRandomValues(a); for (var i=0;i<n;i++) s += c[a[i] % 36]; return s; }
+    function emailFor(id){ return String(CFG.AUTH_EMAIL_TEMPLATE || 'fv.{id}@gmail.com').replace('{id}', id); }
+    function pubUrl(p){ return p ? sb.storage.from('selfies').getPublicUrl(p).data.publicUrl : ''; }
+    function evFrom(r){ return {id:r.id, day:r.day, start:r.start_time||'', end:r.end_time||'', allDay:!!r.all_day, title:r.title, place:r.place||'', note:r.note||'', rule:r.rule_text||'', official:!!r.official, sort:r.sort||0}; }
+    function evTo(e){ return {id:e.id, day:e.day, start_time:e.start||null, end_time:e.end||null, all_day:!!e.allDay, title:e.title, place:e.place||null, note:e.note||null, rule_text:e.rule||null, official:!!e.official, sort:e.sort||0}; }
+    function profile(id){
+      return sb.from('profiles').select('id,name,role,region,avatar_path').eq('id', id).single().then(fail).then(function(p){ return {id:p.id, name:p.name, role:p.role, region:p.region, avatar:pubUrl(p.avatar_path)}; });
+    }
+    function loginKey(key){
+      var i = key.indexOf('.');
+      if (i < 1) return Promise.reject(new Error('Link inválido.'));
+      return sb.auth.signInWithPassword({email:emailFor(key.slice(0,i)), password:key.slice(i+1)}).then(function(r){
+        if (r.error) throw new Error('Link inválido.'); return profile(r.data.user.id);
+      });
+    }
+    return {
+      label: 'Online.',
+      init: function(){
+        if (adminToken) return Promise.resolve(null);
+        var m = String(location.hash).match(/k=([a-z0-9.]+)/);
+        if (m){ try { history.replaceState(null, '', location.pathname + location.search); } catch(e){} return loginKey(m[1]); }
+        return sb.auth.getSession().then(function(r){ var s = r.data && r.data.session; return s ? profile(s.user.id) : null; }).catch(function(){ return null; });
+      },
+      signUp: function(o){
+        var id = rid(10), secret = rid(20), key = id + '.' + secret;
+        var pre = o.token ? sb.rpc('check_admin_token', {tok:o.token}).then(function(r){ if (r.error || !r.data) throw new Error('Este link de referee é inválido ou já foi usado.'); }) : Promise.resolve();
+        return pre.then(function(){
+          return sb.auth.signUp({email:emailFor(id), password:secret, options:{data:{name:o.name}}});
+        }).then(function(s){
+          if (s.error) throw new Error('Não consegui criar o perfil: ' + s.error.message);
+          if (!s.data.session) throw new Error('A confirmação de email está ligada no Supabase. Desliga-a (ver README).');
+          var uid = s.data.user.id, path = uid + '/avatar.jpg';
+          return sb.storage.from('selfies').upload(path, o.blob, {contentType:'image/jpeg'}).then(function(u){
+            if (u.error) throw new Error('Não consegui enviar a foto de perfil.');
+            return sb.rpc('finish_signup', {p_key:key, p_contact:o.contact || null, p_region:o.region || null, p_avatar:path, p_token:o.token || null});
+          }).then(function(r){ if (r.error) throw new Error(r.error.message); return profile(uid); });
+        }).then(function(u){ return {user:u, key:key}; });
+      },
+      signInKey: function(k){ return loginKey(k); },
+      adminName: function(tk){ return sb.rpc('check_admin_token', {tok:tk}).then(function(r){ return r.error ? null : r.data; }); },
+      getUnlock: function(){ return sb.rpc('get_feed_unlock').then(fail).then(function(v){ return new Date(v).getTime(); }); },
+      setUnlock: function(iso){ return sb.rpc('set_feed_unlock', {ts:iso}).then(fail); },
+      getKey: function(){
+        return sb.auth.getUser().then(function(u){ return sb.from('member_keys').select('link_key').eq('user_id', u.data.user.id).single(); }).then(fail).then(function(r){ return r.link_key; });
+      },
+      signOut: function(){ return sb.auth.signOut(); },
+      listEvents: function(){ return sb.from('events').select('*').order('sort').then(fail).then(function(a){ return a.map(evFrom); }); },
+      saveEvent: function(e){ return sb.from('events').upsert(evTo(e)).then(fail); },
+      deleteEvent: function(id){ return sb.from('events').delete().eq('id', id).then(fail); },
+      listRsvps: function(){ return sb.from('rsvps').select('event_id,user_id,profiles(name)').then(fail).then(function(a){ return a.map(function(r){ return {event_id:r.event_id, user_id:r.user_id, name:(r.profiles && r.profiles.name) || ''}; }); }); },
+      setRsvp: function(id, going){
+        return sb.auth.getUser().then(function(u){
+          var uid = u.data.user.id;
+          return going ? sb.from('rsvps').upsert({event_id:id, user_id:uid}, {onConflict:'event_id,user_id', ignoreDuplicates:true}).then(fail) : sb.from('rsvps').delete().eq('event_id', id).eq('user_id', uid).then(fail);
+        });
+      },
+      listDrinks: function(){ return sb.from('drinks').select('*').order('sort').then(fail); },
+      saveDrink: function(d){ return sb.from('drinks').update({label:d.label, hint:d.hint, points:d.points}).eq('id', d.id).then(fail); },
+      listPosts: function(){
+        return sb.from('posts').select('id,user_id,points,caption,photo_path,created_at,profiles(name,avatar_path),drinks(label,kind)').order('created_at', {ascending:false}).limit(60).then(fail).then(function(a){
+          return a.map(function(p){
+            return {id:p.id, user_id:p.user_id, name:(p.profiles && p.profiles.name) || '', avatar:pubUrl(p.profiles && p.profiles.avatar_path), drink:(p.drinks && p.drinks.label) || '', kind:(p.drinks && p.drinks.kind) || 'drink', points:p.points, caption:p.caption || '',
+              photo:pubUrl(p.photo_path), created_at:p.created_at};
+          });
+        });
+      },
+      createPost: function(o){
+        return sb.auth.getUser().then(function(u){
+          var uid = u.data.user.id, path = uid + '/' + Date.now() + '.jpg';
+          return sb.storage.from('selfies').upload(path, o.blob, {contentType:'image/jpeg'}).then(function(r){
+            if (r.error) throw new Error('Não consegui enviar a selfie.');
+            return sb.from('posts').insert({drink_id:o.drink_id, caption:o.caption || null, photo_path:path}).then(function(r2){
+              if (r2.error){ sb.storage.from('selfies').remove([path]); throw new Error(r2.error.message); }
+            });
+          });
+        });
+      },
+      deletePost: function(id){ return sb.from('posts').delete().eq('id', id).then(fail); },
+      leaderboard: function(){ return sb.from('leaderboard').select('name,points,posts,avatar_path,region').order('points', {ascending:false}).limit(300).then(fail).then(function(a){ return a.map(function(b){ return {name:b.name, points:b.points, posts:b.posts, region:b.region, avatar:pubUrl(b.avatar_path)}; }); }); },
+      listIdeas: function(){ return sb.from('challenge_ideas').select('id,user_id,text,profiles(name)').order('created_at', {ascending:false}).then(fail).then(function(a){ return a.map(function(i){ return {id:i.id, user_id:i.user_id, name:(i.profiles && i.profiles.name) || '', text:i.text}; }); }); },
+      addIdea: function(text){ return sb.from('challenge_ideas').insert({text:text}).then(fail); },
+      deleteIdea: function(id){ return sb.from('challenge_ideas').delete().eq('id', id).then(fail); },
+      listPlayers: function(){
+        return sb.from('profiles').select('id,name,role,region,avatar_path,member_keys(contact,link_key)').order('name').then(fail).then(function(a){
+          return a.map(function(p){ var k = p.member_keys; if (Array.isArray(k)) k = k[0]; return {id:p.id, name:p.name, role:p.role, region:p.region, avatar:pubUrl(p.avatar_path), contact:(k && k.contact) || '', key:(k && k.link_key) || ''}; });
+        });
+      }
+    };
+  }
+
+  var api = demo;
+  if (LIVE){ try { api = makeLive(); } catch(e){ api = demo; } }
+
+  /* ---------- state ---------- */
+  var user = null, view = 'inicio', rtab = 'going', region = null;
+  var adminToken = (String(location.hash).match(/a=([a-z0-9-]+)/) || [])[1] || null;
+  var unlockMs = 0, UNLOCK_DEFAULT = '2026-10-15T19:00:00+01:00';
+  function regLabel(r){ return r === 'international' ? 'Internacional' : r === 'national' ? 'Nacional' : ''; }
+  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [];
+  var pick = {drink:null, blob:null, preview:null, caption:''}, signup = {blob:null};
+  var busy = false;
+  function isRef(){ return !!(user && user.role === 'referee'); }
+  function need(msg){ if (!user){ toast(msg || 'Entra primeiro.'); show('login'); return false; } return true; }
+
+  /* ---------- rendering ---------- */
+  function renderLinks(){
+    var items = [['inicio','Início'],['plano','Plano'],['feed','BoozeFeed'],['rankings','Rankings'],['challenges','Challenges']];
+    if (isRef()) items.push(['referee','Referee']);
+    var h = items.map(function(it){ return '<button class="lk" data-nav="'+it[0]+'"'+(view===it[0]?' aria-current="page"':'')+'>'+it[1]+'</button>'; }).join('');
+    h += user ? '<button class="lk" data-nav="perfil"'+(view==='perfil'?' aria-current="page"':'')+'>'+av(user.avatar,user.name,'')+esc(user.name)+'</button><button class="lk" data-act="logout">Sair</button>'
+              : '<button class="lk solid" data-nav="login">Entrar</button>';
+    $('links').innerHTML = h;
+  }
+
+  function renderPlano(){
+    var official = events.filter(function(e){ return e.official; });
+    var total = events.reduce(function(a,e){ return a + dur(e); }, 0);
+    var mine = {}; rsvps.forEach(function(r){ if (user && r.user_id === user.id) mine[r.event_id] = true; });
+    var n = official.filter(function(e){ return mine[e.id]; }).length;
+    var cnt = {}; rsvps.forEach(function(r){ cnt[r.event_id] = (cnt[r.event_id]||0) + 1; });
+    $('sumbar').innerHTML = '<div><b>'+fmtH(total)+'</b><span style="font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">de programa oficial · '+official.length+' momentos</span></div>' +
+      (isRef() ? '<span style="font-weight:800">Vês o plano como referee</span>' : (user ? '<div style="font-weight:800">Vais estar em '+n+' de '+official.length+'</div>' : '<div class="row"><span style="font-weight:800">Entra para escolher as tuas noites</span><button class="btn small" data-nav="login">Entrar</button></div>'));
+    var h = '';
+    DAYS.forEach(function(d){
+      h += '<div class="day"><div class="dayh"><h3>'+d.label+'</h3><span>'+d.date+'</span></div>';
+      events.filter(function(e){ return e.day === d.id; }).forEach(function(e){
+        var time = e.allDay ? 'DURANTE O DIA' : esc(e.start)+' — '+esc(e.end);
+        var sel = !!mine[e.id], c = cnt[e.id] || 0;
+        h += '<div class="ev'+(e.official?'':' off')+'"><div class="t">'+time+'</div><div><h4>'+esc(e.title)+'</h4>' +
+          (e.place ? '<div class="pl">'+esc(e.place)+'</div>' : '') + (e.note ? '<p>'+esc(e.note)+'</p>' : '') +
+          (e.rule ? '<span class="rule">'+esc(e.rule)+'</span>' : '') + '</div><div class="act">' +
+          (e.official ? (isRef() ? '' : '<button class="btn small '+(sel?'red':'ghost')+'" data-act="rsvp" data-id="'+esc(e.id)+'" aria-pressed="'+sel+'">'+(sel?'Vou estar':'Vou')+'</button>') + '<span class="cnt">'+c+' '+(c===1?'vai':'vão')+'</span>'
+                      : '<span class="chip">Fora da festa</span>') + '</div></div>';
+      });
+      h += '</div>';
+    });
+    $('program').innerHTML = h;
+  }
+
+  function renderLocked(){
+    var d = new Date(unlockMs), ms = Math.max(0, unlockMs - Date.now());
+    var dd = Math.floor(ms/86400000), hh = Math.floor(ms%86400000/3600000), mm = Math.floor(ms%3600000/60000);
+    var tz = {timeZone:'Europe/Lisbon'};
+    var wk = d.toLocaleDateString('pt-PT', {weekday:'long', timeZone:'Europe/Lisbon'}).toUpperCase();
+    var when = d.toLocaleString('pt-PT', {weekday:'long', day:'numeric', month:'long', hour:'2-digit', minute:'2-digit', timeZone:'Europe/Lisbon'});
+    var rows = drinks.map(function(x){ return '<tr><td>'+esc(x.label)+' <span style="font-weight:400">'+esc(x.hint||'')+'</span></td><td>'+pts(x.points)+'</td></tr>'; }).join('');
+    $('feedLocked').innerHTML = '<div class="card stack"><p class="soon" style="font-size:clamp(2.6rem,10vw,5.4rem)">ABRE '+esc(wk)+'</p>' +
+      '<p style="margin:0;font-weight:800">'+esc(when)+'. Faltam '+dd+' d '+hh+' h '+mm+' min.</p>' +
+      '<p class="note" style="margin:0">Até lá, treina a pose. Aqui ficam os pontos por bebida.</p>' +
+      '<div class="scroll"><table class="tbl"><thead><tr><th>Bebida</th><th>Pontos</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
+      (isRef() ? '<div class="row"><button class="btn red" data-act="unlocknow">Abrir agora</button><button class="btn ghost" data-act="relock">Fechar até quinta 19:00</button></div>' : '') + '</div>';
+  }
+  function renderFeed(){
+    var lk = Date.now() < unlockMs;
+    $('feedLocked').hidden = !lk; $('feedLive').hidden = lk;
+    if (lk){ renderLocked(); return; }
+    var c = $('composer');
+    if (!user){
+      c.innerHTML = '<div class="band light"><p>Entra para postares a tua selfie e ganhares pontos.</p><button class="btn small" data-nav="login">Entrar</button></div>';
+    } else if (isRef()){
+      c.innerHTML = '<div class="band light"><p>As referees não jogam, mas podem apagar posts e mudar os pontos no painel.</p></div>';
+    } else {
+      var ds = drinks.map(function(d){
+        return '<button type="button" class="dk" data-act="drink" data-id="'+esc(d.id)+'" aria-pressed="'+(pick.drink===d.id)+'"><span class="p">'+pts(d.points)+'</span><b>'+esc(d.label)+'</b><span>'+esc(d.hint||'')+'</span></button>';
+      }).join('');
+      c.innerHTML = '<div class="card stack"><div class="pick"><label class="selfie" for="selfie">' +
+        (pick.preview ? '<img src="'+pick.preview+'" alt="A tua selfie">' : 'Tira uma selfie') +
+        '</label><div class="stack"><input id="selfie" type="file" accept="image/*" capture="user" hidden>' +
+        '<div><label class="f" for="caption">Legenda (opcional)</label><input class="in" id="caption" maxlength="120" value="'+esc(pick.caption)+'" placeholder="O que se passa?"></div></div></div>' +
+        '<div><label class="f">O que estás a beber?</label><div class="drinks">'+ds+'</div></div>' +
+        '<div class="row"><button class="btn" data-act="post" id="postBtn"'+(busy?' disabled':'')+'>Publicar</button></div></div>';
+    }
+    $('feed').innerHTML = posts.length ? posts.map(function(p){
+      return '<article class="post"><img src="'+esc(p.photo)+'" alt="Selfie de '+esc(p.name)+'" loading="lazy"><div class="pb">' +
+        '<div class="meta"><span class="chip red">'+pts(p.points)+' pts</span><span>'+esc(p.drink)+'</span></div>' +
+        '<h3>'+esc(headline(p))+'</h3><div class="meta">'+av(p.avatar,p.name,'')+'<span>'+esc(p.name)+' · '+ago(p.created_at)+'</span>' +
+        ((isRef() || (user && p.user_id === user.id)) ? '<button class="btn small ghost" data-act="delpost" data-id="'+esc(p.id)+'">Apagar</button>' : '') + '</div>' +
+        (p.caption ? '<p class="cap">'+esc(p.caption)+'</p>' : '') + '</div></article>';
+    }).join('') : '<p class="note">Ainda não há notícias. A primeira selfie fica com a manchete.</p>';
+  }
+
+  function renderMyChal(){
+    $('myChal').innerHTML = user
+      ? '<div class="card"><p style="margin:0;font-weight:600">Ainda não tens challenges. Aparecem aqui quando o jogo começar.</p></div>'
+      : '<div class="band light"><p>Entra para veres os teus challenges.</p><button class="btn small" data-nav="login">Entrar</button></div>';
+  }
+  function renderRankings(){
+    var b = board.slice();
+    var byPts = b.slice().sort(function(x,y){ return y.points - x.points || y.posts - x.posts || String(x.name).localeCompare(y.name); });
+    $('rkPoints').innerHTML = '<thead><tr><th>#</th><th>Player</th><th>Pontos</th></tr></thead><tbody>' +
+      (byPts.length ? byPts.map(function(r,i){ return '<tr><td>'+(i+1)+'</td><td><span class="who2">'+av(r.avatar,r.name,'')+esc(r.name)+'</span></td><td>'+r.points+'</td></tr>'; }).join('') : '<tr><td colspan="3">Ainda não há players.</td></tr>') + '</tbody>';
+    var byPosts = b.filter(function(r){ return r.posts > 0; }).sort(function(x,y){ return y.posts - x.posts || y.points - x.points; }).slice(0,10);
+    $('rkPosts').innerHTML = '<thead><tr><th>#</th><th>Player</th><th>Posts</th></tr></thead><tbody>' +
+      (byPosts.length ? byPosts.map(function(r,i){ return '<tr><td>'+(i+1)+'</td><td><span class="who2">'+av(r.avatar,r.name,'')+esc(r.name)+'</span></td><td>'+r.posts+'</td></tr>'; }).join('') : '<tr><td colspan="3">Ainda ninguém postou.</td></tr>') + '</tbody>';
+    var groups = [['national','Nacional'],['international','Internacional']].map(function(g){
+      var m = b.filter(function(r){ return r.region === g[0]; }), tot = m.reduce(function(a,r){ return a + r.points; }, 0);
+      return {label:g[1], n:m.length, tot:tot, avg:m.length ? tot / m.length : 0};
+    }).sort(function(x,y){ return y.avg - x.avg; });
+    $('rkRegion').innerHTML = '<thead><tr><th>Grupo</th><th>Pessoas</th><th>Pontos</th><th>Média</th></tr></thead><tbody>' +
+      groups.map(function(g){ return '<tr><td>'+g.label+'</td><td>'+g.n+'</td><td>'+g.tot+'</td><td>'+(Math.round(g.avg*10)/10)+'</td></tr>'; }).join('') + '</tbody>';
+  }
+  function loadRankings(){ return guard(api.leaderboard().then(function(r){ board = r; renderRankings(); })); }
+  function renderIdeas(){
+    renderMyChal();
+    $('ideas').innerHTML = ideas.length ? ideas.map(function(i){
+      return '<div class="listrow"><span>'+esc(i.text)+' <span class="chip">'+esc(i.name)+'</span></span>' +
+        ((isRef() || (user && i.user_id === user.id)) ? '<button class="btn small ghost" data-act="delidea" data-id="'+esc(i.id)+'">Apagar</button>' : '') + '</div>';
+    }).join('') : '<p class="note">Ainda sem sugestões.</p>';
+  }
+
+  function renderRef(){
+    var b = $('refBody');
+    if (!isRef()){ b.innerHTML = '<p class="note">Esta área é só para a Fran e a Vera.</p>'; return; }
+    var tabs = [['going','Quem vai'],['events','Eventos'],['drinks','Pontos'],['players','Players']];
+    var h = '<div class="tabs">' + tabs.map(function(t){ return '<button class="lk" data-act="rtab" data-tab="'+t[0]+'"'+(rtab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>'; }).join('') + '</div>';
+    if (rtab === 'going'){
+      events.filter(function(e){ return e.official; }).forEach(function(e){
+        var names = rsvps.filter(function(r){ return r.event_id === e.id; }).map(function(r){ return r.name; });
+        h += '<div class="listrow"><div><b>'+esc(e.title)+'</b> <span class="chip">'+names.length+'</span><div style="font-size:.88rem">'+(names.length ? esc(names.join(', ')) : 'Ninguém ainda.')+'</div></div></div>';
+      });
+    } else if (rtab === 'events'){
+      h += '<p class="note">Edita e sai do campo para guardar. As alterações aparecem logo no Plano.</p>';
+      events.forEach(function(e){
+        h += '<div class="edrow">' +
+          '<select class="in" data-edit="ev" data-id="'+esc(e.id)+'" data-f="day" aria-label="Dia">'+DAYS.map(function(d){ return '<option value="'+d.id+'"'+(d.id===e.day?' selected':'')+'>'+d.label+'</option>'; }).join('')+'</select>' +
+          '<input class="in" type="time" value="'+esc(e.start)+'" data-edit="ev" data-id="'+esc(e.id)+'" data-f="start" aria-label="Início"'+(e.allDay?' disabled':'')+'>' +
+          '<input class="in" type="time" value="'+esc(e.end)+'" data-edit="ev" data-id="'+esc(e.id)+'" data-f="end" aria-label="Fim"'+(e.allDay?' disabled':'')+'>' +
+          '<input class="in wide" value="'+esc(e.title)+'" data-edit="ev" data-id="'+esc(e.id)+'" data-f="title" aria-label="Título">' +
+          '<input class="in wide" value="'+esc(e.note)+'" placeholder="Nota" data-edit="ev" data-id="'+esc(e.id)+'" data-f="note" aria-label="Nota">' +
+          '<label style="font-weight:800;font-size:.78rem;white-space:nowrap"><input type="checkbox" data-edit="ev" data-id="'+esc(e.id)+'" data-f="official"'+(e.official?' checked':'')+'> Oficial</label>' +
+          '<button class="btn small ghost" data-act="evdel" data-id="'+esc(e.id)+'">Apagar</button></div>';
+      });
+      h += '<button class="btn" data-act="evadd" style="margin-top:8px">Adicionar momento</button>';
+    } else if (rtab === 'drinks'){
+      h += '<p class="note">Os pontos de cada bebida. Aceita números negativos.</p>';
+      drinks.forEach(function(d){
+        h += '<div class="edrow d"><input class="in wide" value="'+esc(d.label)+'" data-edit="dr" data-id="'+esc(d.id)+'" data-f="label" aria-label="Nome">' +
+          '<input class="in wide" value="'+esc(d.hint||'')+'" data-edit="dr" data-id="'+esc(d.id)+'" data-f="hint" aria-label="Exemplos">' +
+          '<input class="in" type="number" value="'+esc(d.points)+'" data-edit="dr" data-id="'+esc(d.id)+'" data-f="points" aria-label="Pontos"></div>';
+      });
+    } else {
+      h += '<p class="note">Se alguém perder o link, copia o dele aqui e envia-lho.</p>' + (players.map(function(p){ return '<div class="listrow"><span class="who2">'+av(p.avatar,p.name,'')+esc(p.name)+(p.contact?' <span class="chip">'+esc(p.contact)+'</span>':'')+'</span><span class="row"><span class="chip">'+esc(p.role === 'referee' ? 'referee' : (regLabel(p.region) || 'player'))+'</span>'+(p.key?'<button class="btn small ghost" data-act="copykey" data-key="'+esc(p.key)+'">Copiar link</button>':'')+'</span></div>'; }).join('') || '<p class="note">Sem players ainda.</p>');
+    }
+    b.innerHTML = h;
+  }
+
+  /* ---------- loading ---------- */
+  function guard(p){ return p.catch(function(e){ toast(e.message || 'Algo falhou.'); }); }
+  function loadPlano(){ return guard(Promise.all([api.listEvents(), api.listRsvps()]).then(function(r){ events = r[0]; rsvps = r[1]; renderPlano(); })); }
+  function loadFeed(){ return guard(Promise.all([api.listDrinks(), api.listPosts(), api.leaderboard(), api.getUnlock()]).then(function(r){ drinks = r[0]; posts = r[1]; board = r[2]; unlockMs = r[3]; if (!pick.drink && drinks[0]) pick.drink = null; if (view === 'feed') renderFeed(); })); }
+  function loadIdeas(){ return guard(api.listIdeas().then(function(r){ ideas = r; renderIdeas(); })); }
+  function loadRef(){
+    if (!isRef()) return renderRef();
+    return guard(Promise.all([api.listEvents(), api.listRsvps(), api.listDrinks(), api.listPlayers()]).then(function(r){ events = r[0]; rsvps = r[1]; drinks = r[2]; players = r[3]; renderRef(); }));
+  }
+
+  function loadPerfil(){
+    $('perfilHead').innerHTML = av(user.avatar,user.name,'l') + '<span style="font-family:var(--display);font-weight:900;font-size:2.2rem;line-height:1">'+esc(user.name)+'</span><span class="chip">'+(isRef()?'referee':esc(regLabel(user.region)||'player'))+'</span>';
+    $('myLink').value = '';
+    guard(api.getKey().then(function(k){ $('myLink').value = linkOf(k); }));
+  }
+  function show(v){
+    var gated = ['referee','perfil'];
+    if (gated.indexOf(v) > -1 && !user){ toast('Entra primeiro.'); v = 'login'; }
+    if (v === 'referee' && !isRef()){ toast('Área só para a Fran e a Vera.'); v = 'inicio'; }
+    view = v;
+    var secs = document.querySelectorAll('[data-view]');
+    for (var i=0;i<secs.length;i++) secs[i].hidden = (secs[i].id !== 'v-'+v);
+    renderLinks();
+    if (v === 'perfil') loadPerfil();
+    if (v === 'login'){
+      $('regBlock').hidden = !!adminToken; $('emailBlock').hidden = !!adminToken;
+      if (adminToken && !$('loginName').value) guard(api.adminName(adminToken).then(function(n){ if (n) $('loginName').value = n; else { toast('Este link de referee é inválido ou já foi usado.'); adminToken = null; show('login'); } }));
+    }
+    if (v === 'plano') loadPlano();
+    if (v === 'feed') loadFeed();
+    if (v === 'rankings') loadRankings();
+    if (v === 'challenges') loadIdeas();
+    if (v === 'referee') loadRef();
+    window.scrollTo(0,0);
+  }
+
+  /* ---------- events ---------- */
+  function find(list, id){ for (var i=0;i<list.length;i++) if (list[i].id === id) return list[i]; return null; }
+
+  document.addEventListener('click', function(ev){
+    var sl = ev.target.closest('label.selfie');
+    if (sl){
+      ev.preventDefault();
+      var fid = sl.getAttribute('for');
+      camera(function(bl){
+        if (fid === 'avatarFile'){
+          shrink(bl, 480).then(function(b){ signup.blob = b; var pv = $('avPrev'); pv.classList.add('round'); pv.innerHTML = '<img src="'+URL.createObjectURL(b)+'" alt="A tua selfie de perfil">'; }).catch(function(e){ toast(e.message); });
+        } else {
+          var cap = $('caption'); if (cap) pick.caption = cap.value;
+          shrink(bl, 900).then(function(b){ pick.blob = b; pick.preview = URL.createObjectURL(b); renderFeed(); }).catch(function(e){ toast(e.message); });
+        }
+      }, function(){ var inp = $(fid); if (inp) inp.click(); });
+      return;
+    }
+    var nav = ev.target.closest('[data-nav]');
+    if (nav){ ev.preventDefault(); show(nav.getAttribute('data-nav')); return; }
+    var b = ev.target.closest('[data-act]'); if (!b) return;
+    var act = b.getAttribute('data-act'), id = b.getAttribute('data-id');
+    if (act === 'logout'){ api.signOut().then(function(){ user = null; pick = {drink:null, blob:null, preview:null, caption:''}; var pv = $('avPrev'); pv.classList.remove('round'); pv.textContent = 'Selfie de perfil'; $('avatarFile').value = ''; signup = {blob:null}; toast('Sessão terminada.'); show('inicio'); }); }
+    else if (act === 'demoadmin'){ adminToken = 'demo'; $('loginName').value = ''; show('login'); }
+    else if (act === 'unlocknow'){ guard(api.setUnlock(new Date().toISOString()).then(loadFeed)); }
+    else if (act === 'relock'){ guard(api.setUnlock(UNLOCK_DEFAULT).then(loadFeed)); }
+    else if (act === 'ltab'){
+      var isNew = b.getAttribute('data-tab') === 'new';
+      $('signupForm').hidden = !isNew; $('linkForm').hidden = isNew;
+      if (isNew) $('ltabNew').setAttribute('aria-current','page'); else $('ltabNew').removeAttribute('aria-current');
+      if (!isNew) $('ltabLink').setAttribute('aria-current','page'); else $('ltabLink').removeAttribute('aria-current');
+    }
+    else if (act === 'copylink'){ copyText($('myLink').value); }
+    else if (act === 'copykey'){ copyText(linkOf(b.getAttribute('data-key'))); }
+    else if (act === 'sharelink'){
+      var u = $('myLink').value; if (!u) return;
+      if (navigator.share) navigator.share({title:'FRAN × VERA', text:'O meu link da festa', url:u}).catch(function(){});
+      else window.open('https://wa.me/?text=' + encodeURIComponent('O meu link da festa: ' + u), '_blank');
+    }
+    else if (act === 'region'){
+      region = b.getAttribute('data-region');
+      $('doorNat').setAttribute('aria-pressed', region === 'national'); $('doorInt').setAttribute('aria-pressed', region === 'international');
+    }
+    else if (act === 'rsvp'){
+      if (!need('Entra para escolher as tuas noites.')) return;
+      var going = !rsvps.some(function(r){ return r.event_id === id && r.user_id === user.id; });
+      guard(api.setRsvp(id, going).then(function(){
+        rsvps = rsvps.filter(function(r){ return !(r.event_id === id && r.user_id === user.id); });
+        if (going) rsvps.push({event_id:id, user_id:user.id, name:user.name});
+        renderPlano();
+      }));
+    }
+    else if (act === 'drink'){ pick.drink = id; var cap = $('caption'); if (cap) pick.caption = cap.value; renderFeed(); }
+    else if (act === 'post'){
+      var c2 = $('caption'); if (c2) pick.caption = c2.value;
+      if (!pick.blob){ toast('Falta a selfie.'); return; }
+      if (!pick.drink){ toast('Escolhe a bebida.'); return; }
+      busy = true; renderFeed();
+      api.createPost({drink_id:pick.drink, blob:pick.blob, caption:pick.caption.trim()}).then(function(){
+        pick = {drink:null, blob:null, preview:null, caption:''}; toast('Publicado. Já és notícia.');
+      }).catch(function(e){ toast(e.message || 'Não consegui publicar.'); }).then(function(){ busy = false; loadFeed(); });
+    }
+    else if (act === 'delpost'){ guard(api.deletePost(id).then(loadFeed)); }
+    else if (act === 'delidea'){ guard(api.deleteIdea(id).then(loadIdeas)); }
+    else if (act === 'rtab'){ rtab = b.getAttribute('data-tab'); renderRef(); }
+    else if (act === 'evadd'){
+      var nid = 'e' + Date.now().toString(36);
+      guard(api.saveEvent({id:nid, day:'sex', start:'20:00', end:'21:00', title:'NOVO MOMENTO', note:'', place:'', rule:'', official:true, sort:events.length+1}).then(loadRef));
+    }
+    else if (act === 'evdel'){ guard(api.deleteEvent(id).then(loadRef)); }
+  });
+
+  document.addEventListener('change', function(ev){
+    var t = ev.target;
+    if (t.id === 'selfie'){
+      var f = t.files && t.files[0]; if (!f) return;
+      var cap = $('caption'); if (cap) pick.caption = cap.value;
+      shrink(f, 900).then(function(b){ pick.blob = b; pick.preview = URL.createObjectURL(b); renderFeed(); }).catch(function(e){ toast(e.message); });
+      return;
+    }
+    if (t.id === 'avatarFile'){
+      var f0 = t.files && t.files[0]; if (!f0) return;
+      shrink(f0, 480).then(function(b){ signup.blob = b; var pv = $('avPrev'); pv.classList.add('round'); pv.innerHTML = '<img src="'+URL.createObjectURL(b)+'" alt="A tua selfie de perfil">'; }).catch(function(e){ toast(e.message); });
+      return;
+    }
+    var kind = t.getAttribute && t.getAttribute('data-edit'); if (!kind) return;
+    var id = t.getAttribute('data-id'), f2 = t.getAttribute('data-f');
+    var o = find(kind === 'ev' ? events : drinks, id); if (!o) return;
+    if (t.type === 'checkbox') o[f2] = t.checked;
+    else if (f2 === 'points') o[f2] = parseInt(t.value,10) || 0;
+    else o[f2] = t.value;
+    guard((kind === 'ev' ? api.saveEvent(o) : api.saveDrink(o)).then(function(){ toast('Guardado.'); }));
+  });
+
+  $('signupForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var name = $('loginName').value.trim(), email = $('loginContact').value.trim(), tok = adminToken;
+    if (!name){ toast('Escreve o teu nome.'); $('loginName').focus(); return; }
+    if (!tok && !region){ toast('Escolhe Nacional ou Internacional.'); return; }
+    if (!tok && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast('Escreve um email válido.'); $('loginContact').focus(); return; }
+    if (!signup.blob){ toast('Tira uma selfie para o teu perfil.'); return; }
+    $('signupBtn').disabled = true;
+    api.signUp({name:name, contact:tok ? '' : email, region:tok ? null : region, blob:signup.blob, token:tok}).then(function(r){ user = r.user; if (tok){ adminToken = null; try { history.replaceState(null, '', String(location.href).split('#')[0]); } catch(e){} } toast('Perfil criado. Guarda o teu link.'); show('perfil'); })
+      .catch(function(e){ toast(e.message || 'Não consegui criar o perfil.'); })
+      .then(function(){ $('signupBtn').disabled = false; });
+  });
+
+  $('linkForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    var v = $('linkIn').value.trim(), m = v.match(/k=([a-z0-9.]+)/), key = m ? m[1] : v;
+    if (!key){ toast('Cola o teu link.'); return; }
+    $('linkBtn').disabled = true;
+    api.signInKey(key).then(function(u){ user = u; toast('Bem-vinda(o), '+u.name+'.'); show(u.role === 'referee' ? 'referee' : 'plano'); })
+      .catch(function(e){ toast(e.message || 'Link inválido.'); })
+      .then(function(){ $('linkBtn').disabled = false; });
+  });
+
+  $('ideaForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    if (!need('Entra para sugerires um challenge.')) return;
+    var t = $('ideaText').value.trim(); if (!t){ toast('Escreve a ideia.'); return; }
+    guard(api.addIdea(t).then(function(){ $('ideaText').value = ''; toast('Obrigada pela ideia.'); return loadIdeas(); }));
+  });
+
+  setInterval(function(){ if (view === 'feed' && !busy && document.activeElement && document.activeElement.tagName !== 'INPUT') loadFeed(); }, 30000);
+
+  $('modeNote').textContent = api.label;
+  $('demoAdminBtn').hidden = LIVE;
+  api.init().then(function(u){ user = u; if (u){ toast('Olá, '+u.name+'.'); show('plano'); } else if (adminToken) show('login'); else show('inicio'); })
+    .catch(function(e){ toast(e.message || 'Não consegui entrar.'); show('inicio'); });
+})();
+</script>
+</body></html>
