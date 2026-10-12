@@ -258,7 +258,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
           <label class="f" for="loginContact">Email</label>
           <input class="in" id="loginContact" type="email" autocomplete="email" placeholder="Só as referees veem. Serve para recuperar o teu link.">
         </div>
-        <p class="note" id="privNote" style="margin:0">O teu nome e a tua selfie aparecem no site a quem tiver o link da festa. O email só a Fran e a Vera veem.</p>
+        <p class="note" id="privNote" style="margin:0">O teu nome e a tua selfie aparecem no site a quem tiver o link da festa. O email só a Fran e a Vera veem, e serve para te enviarmos o teu link.</p>
         <div class="row"><button class="btn" type="submit" id="signupBtn">Criar perfil</button></div>
       </form>
       <form class="card narrow stack" id="linkForm" hidden novalidate>
@@ -278,7 +278,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       <div class="card narrow stack">
         <div class="who2" id="perfilHead"></div>
         <div><label class="f" for="myLink">O teu link pessoal</label><input class="in" id="myLink" readonly></div>
-        <div class="row"><button class="btn" data-act="copylink">Copiar link</button><button class="btn ghost" data-act="sharelink">Enviar para mim</button></div>
+        <div class="row"><button class="btn" data-act="copylink">Copiar link</button><button class="btn ghost" data-act="sharelink">Enviar para mim</button><button class="btn ghost" data-act="mailme" id="mailMeBtn" hidden>Enviar por email</button></div>
         <p class="note" style="margin:0">Guarda este link, por exemplo enviando-o a ti própria no WhatsApp. Abre-o em qualquer telemóvel e entras como tu. Só tu o deves ter. Neste telemóvel a sessão fica aberta.</p>
         <div class="row"><button class="btn red" data-nav="plano">Continuar</button></div>
       </div>
@@ -742,6 +742,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         me = u; return Promise.resolve(pub(u));
       },
       getKey: function(){ return Promise.resolve(me.key); },
+      emailLink: function(){ return Promise.resolve(false); },
       adminName: function(tk){ return Promise.resolve(tk === 'demo' ? 'Vera' : null); },
       getUnlock: function(){ return Promise.resolve(unlockAt); },
       setUnlock: function(iso){ unlockAt = new Date(iso).getTime(); return Promise.resolve(); },
@@ -828,6 +829,13 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       adminName: function(tk){ return sb.rpc('check_admin_token', {tok:tk}).then(function(r){ return r.error ? null : r.data; }); },
       getUnlock: function(){ return sb.rpc('get_feed_unlock').then(fail).then(function(v){ return new Date(v).getTime(); }); },
       setUnlock: function(iso){ return sb.rpc('set_feed_unlock', {ts:iso}).then(fail); },
+      emailLink: function(){
+        if (!CFG.MAIL_URL) return Promise.resolve(false);
+        return sb.auth.getSession().then(function(s){
+          var tok = s.data && s.data.session && s.data.session.access_token; if (!tok) return false;
+          return fetch(CFG.MAIL_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({token:tok})}).then(function(){ return true; }, function(){ return false; });
+        }).catch(function(){ return false; });
+      },
       getKey: function(){
         return sb.auth.getUser().then(function(u){ return sb.from('member_keys').select('link_key').eq('user_id', u.data.user.id).single(); }).then(fail).then(function(r){ return r.link_key; });
       },
@@ -1041,7 +1049,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 
   function loadPerfil(){
     $('perfilHead').innerHTML = av(user.avatar,user.name,'l') + '<span style="font-family:var(--display);font-weight:900;font-size:2.2rem;line-height:1">'+esc(user.name)+'</span><span class="chip">'+(isRef()?'referee':esc(regLabel(user.region)||'player'))+'</span>';
-    $('myLink').value = '';
+    $('myLink').value = ''; $('mailMeBtn').hidden = !(CFG.MAIL_URL && !isRef());
     guard(api.getKey().then(function(k){ $('myLink').value = linkOf(k); }));
   }
   function show(v){
@@ -1099,6 +1107,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     }
     else if (act === 'copylink'){ copyText($('myLink').value); }
     else if (act === 'copykey'){ copyText(linkOf(b.getAttribute('data-key'))); }
+    else if (act === 'mailme'){ toast('A enviar o link para o teu email. Vê também o spam.'); api.emailLink(); }
     else if (act === 'sharelink'){
       var u = $('myLink').value; if (!u) return;
       if (navigator.share) navigator.share({title:'FRAN × VERA', text:'O meu link da festa', url:u}).catch(function(){});
@@ -1167,7 +1176,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     if (!tok && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast('Escreve um email válido.'); $('loginContact').focus(); return; }
     if (!signup.blob){ toast('Tira uma selfie para o teu perfil.'); return; }
     $('signupBtn').disabled = true;
-    api.signUp({name:name, contact:tok ? '' : email, region:tok ? null : region, blob:signup.blob, token:tok}).then(function(r){ user = r.user; if (tok){ adminToken = null; try { history.replaceState(null, '', String(location.href).split('#')[0]); } catch(e){} } toast('Perfil criado. Guarda o teu link.'); show('perfil'); })
+    api.signUp({name:name, contact:tok ? '' : email, region:tok ? null : region, blob:signup.blob, token:tok}).then(function(r){ user = r.user; if (tok){ adminToken = null; try { history.replaceState(null, '', String(location.href).split('#')[0]); } catch(e){} } var wantMail = !tok && !!CFG.MAIL_URL; if (wantMail) api.emailLink(); toast(wantMail ? 'Perfil criado. Enviámos o teu link para o email (vê também o spam).' : 'Perfil criado. Guarda o teu link.'); show('perfil'); })
       .catch(function(e){ toast(e.message || 'Não consegui criar o perfil.'); })
       .then(function(){ $('signupBtn').disabled = false; });
   });

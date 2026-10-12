@@ -1,0 +1,60 @@
+// FRAN x VERA: envia a cada convidado o link pessoal por email, a partir do Gmail de quem publica este script.
+// O site chama este script depois de a pessoa criar o perfil. O script nunca recebe o email nem o link do site:
+// recebe apenas a sessao da pessoa, confirma-a no Supabase e envia para o email que a propria pessoa registou.
+// Valores publicos (podem ficar no GitHub): o URL e a chave publishable do Supabase.
+var SUPABASE_URL = 'https://oufnoztwmusshqhwjblg.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_ns7MB8BcCNKVQLKe8WCDhQ_Fo5eUOIT';
+var SITE = 'https://verapvst.github.io/fran-x-vera/';
+var MAX_POR_DIA = 3;   // emails por pessoa por dia
+
+function doPost(e) {
+  try {
+    var body = JSON.parse(e.postData.contents);
+    var tok = String(body.token || '');
+    if (tok.length < 20) return out_({ok: false, error: 'sem sessao'});
+    var h = {apikey: SUPABASE_KEY, Authorization: 'Bearer ' + tok};
+    var ru = UrlFetchApp.fetch(SUPABASE_URL + '/auth/v1/user', {headers: h, muteHttpExceptions: true});
+    if (ru.getResponseCode() !== 200) return out_({ok: false, error: 'sessao invalida'});
+    var uid = JSON.parse(ru.getContentText()).id;
+    var rk = UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/member_keys?select=link_key,contact&user_id=eq.' + encodeURIComponent(uid), {headers: h, muteHttpExceptions: true});
+    var rows = JSON.parse(rk.getContentText());
+    if (!rows || !rows.length || !rows[0].contact || !rows[0].link_key) return out_({ok: false, error: 'sem email'});
+    var rp = UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/profiles?select=name&id=eq.' + encodeURIComponent(uid), {headers: h, muteHttpExceptions: true});
+    var prof = JSON.parse(rp.getContentText());
+    var name = (prof && prof[0] && prof[0].name) ? prof[0].name : '';
+
+    // limite por pessoa e por dia
+    var lock = LockService.getScriptLock(); lock.waitLock(10000);
+    try {
+      var props = PropertiesService.getScriptProperties();
+      var day = Utilities.formatDate(new Date(), 'Europe/Lisbon', 'yyyyMMdd');
+      var key = 'n_' + uid + '_' + day;
+      var n = parseInt(props.getProperty(key) || '0', 10);
+      if (n >= MAX_POR_DIA) return out_({ok: false, error: 'limite'});
+      props.setProperty(key, String(n + 1));
+    } finally { lock.releaseLock(); }
+
+    var link = SITE + '#k=' + rows[0].link_key;
+    var first = name ? name.split(' ')[0] : '';
+    var texto = 'Olá' + (first ? ' ' + first : '') + '!\n\n' +
+      'Este é o teu link pessoal para a festa FRAN × VERA (15 a 18 de outubro, Lisboa):\n\n' + link + '\n\n' +
+      'Abre-o em qualquer telemóvel e entras logo como tu, sem password. Guarda este email. Só tu deves ter este link: quem o tiver entra como tu.\n\n' +
+      'Até já,\nFran e Vera';
+    var html = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:auto;padding:24px;background:#f4e2ea;color:#0d0a0b">' +
+      '<h2 style="margin:0 0 12px;font-size:22px">FRAN × VERA · 23H30 DE FESTA</h2>' +
+      '<p>Olá' + (first ? ' ' + esc_(first) : '') + '!</p>' +
+      '<p>Este é o teu link pessoal para a festa (15 a 18 de outubro, Lisboa). Abre-o em qualquer telemóvel e entras logo como tu, sem password.</p>' +
+      '<p style="margin:22px 0"><a href="' + link + '" style="background:#e8421f;color:#0d0a0b;text-decoration:none;font-weight:bold;padding:14px 22px;border-radius:999px;border:2px solid #0d0a0b">Abrir o meu link</a></p>' +
+      '<p style="font-size:13px;word-break:break-all">Se o botão não abrir, copia este endereço:<br>' + esc_(link) + '</p>' +
+      '<p style="font-size:13px">Guarda este email. Só tu deves ter este link: quem o tiver entra como tu.</p>' +
+      '<p>Até já,<br>Fran e Vera</p></div>';
+    MailApp.sendEmail(rows[0].contact, 'O teu link para a festa FRAN × VERA', texto, {htmlBody: html, name: 'FRAN × VERA'});
+    return out_({ok: true});
+  } catch (err) {
+    return out_({ok: false, error: String(err)});
+  }
+}
+
+function doGet() { return out_({ok: true, info: 'FRAN x VERA mailer'}); }
+function out_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function esc_(s) { return String(s).replace(/[&<>"']/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]; }); }
