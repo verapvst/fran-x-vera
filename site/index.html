@@ -322,6 +322,20 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     </div>
   </section>
 
+  <section id="v-rally" data-view hidden>
+    <div class="sec">
+      <h2 class="h2">Rally</h2>
+      <p class="soon">ROTA EM BREVE</p>
+      <p class="sub" style="margin-left:0;margin-top:14px">A rota de sexta, 16 de outubro, aparece aqui: um rally pelas tascas, de Belém ao Bairro Alto.</p>
+      <ol class="steps" style="margin-top:22px">
+        <li class="step"><h3>Vês a rota</h3><p>Todas as paragens, por ordem, com a hora e a morada.</p></li>
+        <li class="step"><h3>Dás a tua nota</h3><p>Em cada paragem, avalias a tasca e o croquete.</p></li>
+        <li class="step"><h3>Sai o ranking</h3><p>No fim, sabemos quais foram as melhores paragens do rally.</p></li>
+      </ol>
+      <div class="band light" style="margin-top:22px"><p>Queres estar no rally? Marca a noite de sexta no Plano.</p><button class="btn small" data-nav="plano">Ver o plano</button></div>
+    </div>
+  </section>
+
   <section id="v-challenges" data-view hidden>
     <div class="sec">
       <h2 class="h2">Challenges</h2>
@@ -867,7 +881,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 
   /* ---------- rendering ---------- */
   function renderLinks(){
-    var items = [['inicio','Início'],['plano','Plano'],['feed','BoozeFeed'],['rankings','Rankings'],['challenges','Challenges']];
+    var items = [['inicio','Início'],['plano','Plano'],['rally','Rally'],['feed','BoozeFeed'],['rankings','Rankings'],['challenges','Challenges']];
     if (isRef()) items.push(['referee','Referee']);
     var h = items.map(function(it){ return '<button class="lk" data-nav="'+it[0]+'"'+(view===it[0]?' aria-current="page"':'')+'>'+it[1]+'</button>'; }).join('');
     h += user ? '<button class="lk" data-nav="perfil"'+(view==='perfil'?' aria-current="page"':'')+'>'+av(user.avatar,user.name,'')+esc(user.name)+'</button><button class="lk" data-act="logout">Sair</button>'
