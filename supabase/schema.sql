@@ -234,3 +234,19 @@ create policy "selfies_insert" on storage.objects for insert to authenticated
 drop policy if exists "selfies_delete" on storage.objects;
 create policy "selfies_delete" on storage.objects for delete to authenticated
   using (bucket_id = 'selfies' and ((storage.foldername(name))[1] = auth.uid()::text or is_ref()));
+
+-- 8. Permissoes de acesso (GRANTs). Projetos novos do Supabase nao dao acesso automatico
+-- as tabelas: sem isto a API responde "permission denied". As regras RLS acima continuam a decidir quem ve e faz o que.
+grant usage on schema public to anon, authenticated;
+grant select on profiles, events, rsvps, drinks, posts, challenge_ideas, leaderboard to anon, authenticated;
+grant select on member_keys to authenticated;
+grant insert, update, delete on events to authenticated;
+grant insert, delete on rsvps to authenticated;
+grant update on drinks to authenticated;
+grant insert, delete on posts to authenticated;
+grant insert, delete on challenge_ideas to authenticated;
+grant execute on function is_ref() to anon, authenticated;
+grant execute on function check_admin_token(text) to anon, authenticated;
+grant execute on function get_feed_unlock() to anon, authenticated;
+grant execute on function finish_signup(text, text, text, text, text) to authenticated;
+grant execute on function set_feed_unlock(timestamptz) to authenticated;
