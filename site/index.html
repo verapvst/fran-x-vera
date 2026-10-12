@@ -164,6 +164,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 .cam .stage{position:relative;flex:1 1 0;overflow:hidden;min-height:0;background:#000}
 .cam video,.cam .still,.cam canvas.live{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#000}
 .cam video.mir{transform:scaleX(-1)}
+.cam .pic{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#000}
+.cam .nocam{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:30px;font-weight:700;opacity:.9}
 .cam .vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.5) 125%)}
 .cam .count{position:absolute;inset:0;display:grid;place-items:center;font-size:7rem;font-weight:800;color:#fff;text-shadow:0 2px 24px rgba(0,0,0,.6);pointer-events:none}
 .cam .stk{position:absolute;inset:0;overflow:hidden}
@@ -544,25 +546,26 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   }
   function doWarp(cx, w, h, mode, t){ cx.putImageData(warpPx(mode, cx.getImageData(0, 0, w, h), w, h, t), 0, 0); }
   function drawCover(cx, v, w, h, mirror){
-    var vw = v.videoWidth, vh = v.videoHeight, sc = Math.max(w/vw, h/vh), sw = w/sc, sh = h/sc;
+    var vw = v.videoWidth || v.naturalWidth, vh = v.videoHeight || v.naturalHeight, sc = Math.max(w/vw, h/vh), sw = w/sc, sh = h/sc;
     cx.save(); if (mirror){ cx.translate(w, 0); cx.scale(-1, 1); }
     cx.drawImage(v, (vw-sw)/2, (vh-sh)/2, sw, sh, 0, 0, w, h); cx.restore();
   }
   var IC = {
     x:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>',
     flip:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8h13l-3-3M21 16H8l3 3"/></svg>',
+    cam:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
     gal:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5-5-8 9"/></svg>'
   };
   function camera(done, fallback, opts){
-    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)){ fallback(); return; }
     var facing = (opts && opts.facing) || 'user', stream = null, fi = 0, timer = 0, busy = false, shot = null, box = null, raf = 0, last = 0, stks = [];
     function open(f){
+      if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) return Promise.reject(new Error('sem camara'));
       return navigator.mediaDevices.getUserMedia({video:{facingMode:f, width:{ideal:1280}, height:{ideal:1280}}, audio:false});
     }
     function stop(){ if (stream) stream.getTracks().forEach(function(tr){ tr.stop(); }); stream = null; }
     function close(){ stop(); cancelAnimationFrame(raf); document.removeEventListener('keydown', onKey); if (box && box.parentNode) box.parentNode.removeChild(box); box = null; }
     function onKey(e){ if (e.key === 'Escape') close(); }
-    open(facing).then(function(s){
+    function build(s){
       stream = s;
       box = document.createElement('div'); box.className = 'cam'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Câmara');
       var chips = CAM_FILTERS.map(function(x, i){ return '<button type="button" class="fb'+(x.sil ? ' sil' : '')+'" data-fi="'+i+'" aria-pressed="'+(i === 0)+'">'+x.name+'</button>'; }).join('');
@@ -571,30 +574,40 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         '<div class="top"><button type="button" class="ib" data-c="x" aria-label="Fechar câmara">'+IC.x+'</button>' +
         '<button type="button" class="ib" data-c="t" aria-label="Temporizador de 3 segundos" aria-pressed="false">3s</button>' +
         '<button type="button" class="ib" data-c="f" aria-label="Virar câmara">'+IC.flip+'</button></div>' +
-        '<div class="stage"><video autoplay playsinline muted></video><canvas class="live" hidden></canvas><img class="still" alt="" hidden><div class="vig" hidden></div><div class="stk"></div><div class="count" hidden></div><div class="hint" hidden>Arrasta para mover. Toca para mudar o tamanho.</div></div>' +
+        '<div class="stage"><video autoplay playsinline muted></video><img class="pic" alt="" hidden><canvas class="live" hidden></canvas><img class="still" alt="" hidden><div class="vig" hidden></div><div class="stk"></div><div class="count" hidden></div><div class="nocam" hidden>Câmara indisponível. Escolhe uma foto da galeria.</div><div class="hint" hidden>Arrasta para mover. Toca para mudar o tamanho.</div></div><input type="file" class="gal" accept="image/*" hidden>' +
         '<div class="tray" role="group" aria-label="Autocolantes" hidden>'+tray+'</div>' +
         '<div class="flt" role="group" aria-label="Filtros">'+chips+'</div>' +
         '<div class="bar"><span class="l"><button type="button" class="ib" data-c="g" aria-label="Escolher da galeria">'+IC.gal+'</button></span>' +
         '<button type="button" class="snap" data-c="s" aria-label="Tirar foto"></button><span class="r"><button type="button" class="ib em" data-c="k" aria-label="Autocolantes" aria-pressed="false">🤪</button></span></div>';
       document.body.appendChild(box);
       document.addEventListener('keydown', onKey);
+      var pic = box.querySelector('.pic'), gal = box.querySelector('.gal'), nocam = box.querySelector('.nocam'), galBtn = box.querySelector('[data-c=g]'), src = null;
       var v = box.querySelector('video'), lv = box.querySelector('canvas.live'), lx = lv.getContext('2d', {willReadFrequently:true}), st = box.querySelector('.still'), vg = box.querySelector('.vig'), cn = box.querySelector('.count'),
           stage = box.querySelector('.stage'), layer = box.querySelector('.stk'), trayEl = box.querySelector('.tray'), hint = box.querySelector('.hint');
-      function show(){ v.srcObject = stream; v.classList.toggle('mir', facing === 'user'); v.play().catch(function(){}); }
+      function dims(){ var e = src || v; return [e.videoWidth || e.naturalWidth || 0, e.videoHeight || e.naturalHeight || 0]; }
+      function show(){ if (!stream){ nocam.hidden = !!src; return; } v.srcObject = stream; v.classList.toggle('mir', facing === 'user'); v.play().catch(function(){}); }
       function paint(){
         var fl = CAM_FILTERS[fi], css = filterCss(fl.f);
         vg.hidden = !fl.vig;
+        pic.hidden = !src; nocam.hidden = !!(stream || src);
         if (fl.fx){
           var r = stage.getBoundingClientRect(); lv.width = 300; lv.height = Math.max(100, Math.round(300 * r.height / Math.max(1, r.width)));
-          lv.hidden = false; lv.style.filter = css; v.style.visibility = 'hidden'; v.style.filter = 'none';
-        } else { lv.hidden = true; v.style.visibility = ''; v.style.filter = css; }
+          lv.hidden = false; lv.style.filter = css; v.style.visibility = 'hidden'; v.style.filter = 'none'; pic.style.filter = 'none';
+        } else { lv.hidden = true; v.style.visibility = src ? 'hidden' : ''; v.style.filter = css; pic.style.filter = css; }
       }
       function loop(ts){
         if (!box) return; raf = requestAnimationFrame(loop);
-        var fl = CAM_FILTERS[fi]; if (!fl.fx || shot || ts - last < 50 || !v.videoWidth) return; last = ts;
-        drawCover(lx, v, lv.width, lv.height, facing === 'user'); doWarp(lx, lv.width, lv.height, fl.fx, ts/1000);
+        var fl = CAM_FILTERS[fi]; if (!fl.fx || shot || ts - last < 50 || !dims()[0]) return; last = ts;
+        drawCover(lx, src || v, lv.width, lv.height, !src && facing === 'user'); doWarp(lx, lv.width, lv.height, fl.fx, ts/1000);
       }
       show(); paint(); raf = requestAnimationFrame(loop);
+      function setSrc(img){
+        src = img; pic.src = img ? img.src : ''; galBtn.innerHTML = img ? IC.cam : IC.gal; galBtn.setAttribute('aria-label', img ? 'Voltar à câmara' : 'Escolher da galeria'); paint();
+      }
+      gal.addEventListener('change', function(){
+        var f = gal.files && gal.files[0]; gal.value = ''; if (!f) return;
+        var im = new Image(); im.onload = function(){ setSrc(im); }; im.onerror = function(){ toast('Não consegui ler essa foto.'); }; im.src = URL.createObjectURL(f);
+      });
       // autocolantes
       function sizeEl(o){ o.el.style.fontSize = (o.s * stage.clientWidth * (o.t ? .42 : 1)) + 'px'; }
       function placeEl(o){ o.el.style.left = (o.x*100) + '%'; o.el.style.top = (o.y*100) + '%'; }
@@ -622,12 +635,12 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         o.el.addEventListener('pointerup', up); o.el.addEventListener('pointercancel', function(){ drag = false; });
       }
       function snap(){
-        var fl = CAM_FILTERS[fi], vw = v.videoWidth, vh = v.videoHeight; if (!vw || !vh){ busy = false; return; }
+        var fl = CAM_FILTERS[fi], dm = dims(); if (!dm[0] || !dm[1]){ busy = false; return; }
         var r = stage.getBoundingClientRect(), cw, ch;
         if (r.width >= r.height){ cw = 1280; ch = Math.round(1280 * r.height / r.width); } else { ch = 1280; cw = Math.round(1280 * r.width / r.height); }
         var cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
         var cx = cv.getContext('2d', {willReadFrequently:true});
-        drawCover(cx, v, cw, ch, facing === 'user');
+        drawCover(cx, src || v, cw, ch, !src && facing === 'user');
         if (fl.fx) doWarp(cx, cw, ch, fl.fx, Date.now()/1000);
         applyFilter(cx, cw, ch, fl);
         cx.textAlign = 'center'; cx.textBaseline = 'middle';
@@ -638,7 +651,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         });
         cv.toBlob(function(bl){
           busy = false; if (!bl){ toast('Não consegui tirar a foto.'); return; }
-          shot = bl; st.src = URL.createObjectURL(bl); st.hidden = false; v.style.visibility = 'hidden'; lv.hidden = true; vg.hidden = true; layer.hidden = true; hint.hidden = true;
+          shot = bl; st.src = URL.createObjectURL(bl); st.hidden = false; v.style.visibility = 'hidden'; pic.hidden = true; nocam.hidden = true; lv.hidden = true; vg.hidden = true; layer.hidden = true; hint.hidden = true;
           box.querySelector('.top').style.visibility = 'hidden'; box.querySelector('.flt').hidden = true; trayEl.hidden = true;
           box.querySelector('.bar').outerHTML = '<div class="rv"><button type="button" class="tx" data-c="r">Repetir</button><button type="button" class="tx go" data-c="u">Usar foto</button></div>';
         }, 'image/jpeg', .85);
@@ -659,7 +672,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         var b = e.target.closest('[data-c]'); if (!b) return;
         var c = b.getAttribute('data-c');
         if (c === 'x'){ close(); }
-        else if (c === 'g'){ close(); fallback(); }
+        else if (c === 'g'){ if (src) setSrc(null); else gal.click(); }
         else if (c === 'k'){ trayEl.hidden = !trayEl.hidden; b.classList.toggle('on', !trayEl.hidden); b.setAttribute('aria-pressed', trayEl.hidden ? 'false' : 'true'); setTimeout(paint, 30); }
         else if (c === 'cl'){ stks.forEach(function(o){ if (o.el.parentNode) o.el.parentNode.removeChild(o.el); }); stks = []; }
         else if (c === 't'){ timer = timer ? 0 : 3; b.classList.toggle('on', !!timer); b.setAttribute('aria-pressed', timer ? 'true' : 'false'); }
@@ -671,11 +684,12 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
             open(facing).then(function(s){ stream = s; show(); }).catch(function(){ close(); fallback(); });
           });
         }
-        else if (c === 's'){ if (busy) return; busy = true; timer ? countdown(timer) : snap(); }
+        else if (c === 's'){ if (busy) return; if (!stream && !src){ gal.click(); return; } busy = true; (timer && !src) ? countdown(timer) : snap(); }
         else if (c === 'r'){ close(); camera(done, fallback, {facing: facing}); }
         else if (c === 'u'){ var out = shot; close(); if (out) done(out); }
       });
-    }).catch(function(){ fallback(); });
+    }
+    open(facing).then(build, function(){ build(null); });
   }
   function toast(msg){ var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(function(){ t.hidden = true; }, 3200); }
   function hash(s){ var h = 0; for (var i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
