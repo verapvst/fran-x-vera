@@ -109,16 +109,15 @@ create policy "events_write" on events for all to authenticated using (is_ref())
 
 insert into events (id, day, start_time, end_time, all_day, title, place, note, rule_text, official, sort) values
  ('e1','qui','19:00','23:30',false,'THE GRAND OPENING','Corner','Início oficial da festa, apresentação do conceito, equipas e jogo.',null,true,1),
- ('e2','sex','00:00','00:30',false,'23.',null,'Momento de aniversário da Fran.',null,true,2),
+ ('e2','sex','00:00','00:30',false,'23.',null,'Meia-noite da Fran. A Fran faz 23 anos.',null,true,2),
  ('e3','sex','00:30','02:00',false,'PRAIA NO PARQUE',null,null,null,true,3),
  ('e4','sex','02:00','18:00',false,'WORK DAY',null,'Dia normal de trabalho. Não é programação oficial da festa.',null,false,4),
- ('e5','sex','19:00','23:00',false,'RALLY TASCAS & CROQUETTE','Belém → Bairro Alto','Um rally pelas tascas, com diferentes challenges e pontos ao longo do percurso.',null,true,5),
- ('e6','sex','23:00','02:00',false,'ZÉ DOS BOIS',null,null,null,true,6),
+ ('e12','sex','19:00','23:00',false,'JANTAR','Local a definir','O sítio depende de quantas pessoas alinharem. Diz já se vais, para a organização reservar mesa.',null,true,5),
+ ('e6','sex','23:00','02:00',false,'BAIRRO ALTO + ZÉ DOS BOIS','Bairro Alto',null,null,true,6),
  ('e7','sab',null,null,true,'RECOVERY DAY',null,null,null,true,7),
- ('e8','sab','20:00','22:00',false,'BINGO',null,'Evento especial com sistema de pontuação próprio.','Linha: X pontos · Bingo: 100 pontos',true,8),
- ('e9','sab','22:00','00:00',false,'PRE-DRINKS',null,null,null,true,9),
- ('e10','dom','00:00','00:30',false,'24.',null,'Momento de aniversário da Vera.',null,true,10),
- ('e11','dom','00:30','06:00',false,'THE FINALE',null,null,null,true,11)
+ ('e5','sab','20:00','00:00',false,'RALLY TASCAS & CROQUETTE','Rota a definir','Um rally pelas tascas, com diferentes challenges e pontos ao longo do percurso.',null,true,8),
+ ('e10','dom','00:00','00:30',false,'24.',null,'Meia-noite da Vera. A Vera faz 24 anos.',null,true,9),
+ ('e11','dom','00:30','06:00',false,'THE FINALE','Discoteca',null,null,true,10)
 on conflict (id) do nothing;
 
 -- 4. Quem vai a que momentos
