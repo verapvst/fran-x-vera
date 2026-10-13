@@ -14,5 +14,12 @@ TF=$(psql -d fv_test -Atc "select token from admin_invites where name='Fran'")
 sed "s/TOKEN_VERA/$TV/g; s/TOKEN_FRAN/$TF/g" tests/rls_test.sql | psql -d fv_test -At | grep -E "^(PASS|FAIL)"
 ```
 
+Fase 2 (equipas, check in, challenges, validação, rankings): corre também `supabase/fase2.sql` e usa `tests/fase2_test.sql`:
+
+```
+psql -d fv_test -f supabase/fase2.sql
+sed "s/TOKEN_VERA/$TV/g; s/TOKEN_FRAN/$TF/g" tests/fase2_test.sql | psql -d fv_test -At | grep -E "^(PASS|FAIL)"
+```
+
 Tudo deve dizer PASS. Corre isto sempre que mudares `supabase/schema.sql`.
 Isto NAO substitui testar num projeto Supabase real e em telemoveis reais.
