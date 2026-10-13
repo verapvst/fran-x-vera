@@ -288,7 +288,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       <div class="card narrow stack">
         <div class="who2" id="perfilHead"></div>
         <div><label class="f" for="myLink">O teu link pessoal</label><input class="in" id="myLink" readonly></div>
-        <div class="row"><button class="btn" data-act="copylink">Copiar link</button><button class="btn ghost" data-act="sharelink">Enviar para mim</button><button class="btn ghost" data-act="mailme" id="mailMeBtn" hidden>Enviar por email</button></div>
+        <div class="row"><button class="btn" data-act="copylink">Copiar link</button><button class="btn ghost" data-act="whatsapp">WhatsApp</button><button class="btn ghost" data-act="mailto">Email</button><button class="btn ghost" data-act="mailme" id="mailMeBtn" hidden>Enviar para o meu email</button></div>
         <p class="note" style="margin:0">Guarda este link, por exemplo enviando-o a ti própria no WhatsApp. Abre-o em qualquer telemóvel e entras como tu. Só tu o deves ter. Neste telemóvel a sessão fica aberta.</p>
         <div class="row"><button class="btn red" data-nav="plano">Continuar</button></div>
       </div>
@@ -1418,6 +1418,14 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     else if (act === 'copylink'){ copyText($('myLink').value); }
     else if (act === 'copykey'){ copyText(linkOf(b.getAttribute('data-key'))); }
     else if (act === 'mailme'){ toast('A enviar o link para o teu email. Vê também o spam.'); api.emailLink(); }
+    else if (act === 'whatsapp'){
+      var uw = $('myLink').value; if (!uw) return;
+      window.open('https://wa.me/?text=' + encodeURIComponent('O meu link da festa FRAN × VERA: ' + uw), '_blank');
+    }
+    else if (act === 'mailto'){
+      var um = $('myLink').value; if (!um) return;
+      window.location.href = 'mailto:?subject=' + encodeURIComponent('O meu link da festa FRAN × VERA') + '&body=' + encodeURIComponent('Guarda este link. Abre-o em qualquer telemóvel e entras como tu:\n\n' + um);
+    }
     else if (act === 'sharelink'){
       var u = $('myLink').value; if (!u) return;
       if (navigator.share) navigator.share({title:'FRAN × VERA', text:'O meu link da festa', url:u}).catch(function(){});
