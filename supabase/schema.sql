@@ -128,7 +128,7 @@ create table if not exists rsvps (
 );
 alter table rsvps enable row level security;
 drop policy if exists "rsvps_read" on rsvps;
-create policy "rsvps_read" on rsvps for select to anon, authenticated using (true);
+create policy "rsvps_read" on rsvps for select to authenticated using (user_id = auth.uid() or is_ref());  -- só as referees veem quem vai a quê
 drop policy if exists "rsvps_insert" on rsvps;
 create policy "rsvps_insert" on rsvps for insert to authenticated with check (user_id = auth.uid());
 drop policy if exists "rsvps_delete" on rsvps;

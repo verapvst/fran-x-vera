@@ -936,7 +936,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       events.filter(function(e){ return e.day === d.id; }).forEach(function(e){
         var time = e.allDay ? 'DURANTE O DIA' : esc(e.start)+' — '+esc(e.end);
         var sel = !!mine[e.id], c = cnt[e.id] || 0;
-        var btn = e.official ? (isRef() ? '' : '<button class="btn small '+(sel?'red':'ghost')+'" data-act="rsvp" data-id="'+esc(e.id)+'" aria-pressed="'+sel+'">'+(sel?'Vou estar':'Vou')+'</button>') + '<span class="cnt">'+c+' '+(c===1?'vai':'vão')+'</span>'
+        var btn = e.official ? (isRef() ? '' : '<button class="btn small '+(sel?'red':'ghost')+'" data-act="rsvp" data-id="'+esc(e.id)+'" aria-pressed="'+sel+'">'+(sel?'Vou estar':'Vou')+'</button>') + (isRef() ? '<span class="cnt">'+c+' '+(c===1?'vai':'vão')+'</span>' : '')
                               : '<span class="chip">Fora da festa</span>';
         var soon = /a definir/i.test((e.place||'')+' '+(e.note||'')) ? '<span class="chip ex">Coming soon</span>' : '';
         if (BDAY[e.title]){
