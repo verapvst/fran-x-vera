@@ -80,6 +80,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ev .pl{font-weight:600;font-size:.88rem}
 .ev.off{opacity:.62}
 .ev .act{display:grid;justify-items:end;gap:4px}
+.gate{display:none}
+.gated .gate{display:flex}
+.gated .sec > *:not(.gate):not(h2:first-child){display:none}
+.chip[data-nav]{cursor:pointer}
 .flow .step{position:relative;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 .flow .step .no{font-family:var(--display);font-weight:900;font-size:3rem;line-height:.8;color:var(--red)}
 .flow .step .btn{margin-top:8px}
@@ -327,6 +331,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   <section id="v-rankings" data-view hidden>
     <div class="sec">
       <h2 class="h2">Rankings</h2>
+      <div class="band light gate"><p>Entra para veres o ranking e jogares.</p><button class="btn small" data-nav="login">Entrar</button></div>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:6px"><em>Equipas</em></h2>
       <div class="scroll"><table class="tbl" id="rkTeams"></table></div>
       <p class="note" style="margin-top:8px">Pontuação da equipa = pontos totais a dividir pelas pessoas que fizeram check in, para ninguém ganhar só por ter mais gente.</p>
@@ -355,6 +360,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   <section id="v-challenges" data-view hidden>
     <div class="sec">
       <h2 class="h2">Challenges</h2>
+      <div class="band light gate"><p>Entra para receberes challenges e enviares provas.</p><button class="btn small" data-nav="login">Entrar</button></div>
       <p class="sub" style="margin-left:0;margin-top:14px">Os desafios são atribuídos a quem está presente. Provas com foto ou vídeo e ganhas pontos para a tua equipa.</p>
       <ol class="steps" style="margin-top:22px">
         <li class="step"><h3>Recebes um challenge</h3><p>Escolhido para quem está na festa.</p></li>
@@ -1114,7 +1120,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         var tbd = /a definir/i.test((e.place||'')+' '+(e.note||''));
         var place = e.place && !/a definir/i.test(e.place) && e.title.toLowerCase().indexOf(e.place.toLowerCase()) < 0 ? e.place : '';
         h += '<div class="ev'+(PRIORITY[e.id] ? ' prio' : '')+'"><div class="t">'+esc(e.start)+'</div><div><h4>'+esc(e.title)+'</h4>' +
-          (place ? '<div class="pl">'+esc(place)+'</div>' : '') + (tbd ? '<div style="margin-top:6px"><span class="chip ex">Coming soon</span></div>' : '') +
+          (place ? '<div class="pl">'+esc(place)+'</div>' : '') + (tbd ? '<div style="margin-top:6px">'+(/rally/i.test(e.title) ? '<button type="button" class="chip ex" data-nav="rally">Coming soon · ver rally</button>' : '<span class="chip ex">Coming soon</span>')+'</div>' : '') +
           '</div><div class="act">' + btn + '</div></div>';
       });
       h += '</div>';
@@ -1300,8 +1306,10 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function renderRef(){
     var b = $('refBody');
     if (!isRef()){ b.innerHTML = '<p class="note">Esta área é só para a Fran e a Vera.</p>'; return; }
-    var tabs = [['going','Quem vai'],['teams','Equipas'],['checkin','Check in'],['chal','Challenges'],['review','Validar'],['events','Eventos'],['drinks','Pontos'],['players','Players']];
-    var h = '<div class="tabs">' + tabs.map(function(t){ return '<button class="lk" data-act="rtab" data-tab="'+t[0]+'"'+(rtab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>'; }).join('') + '</div>';
+    var MORE = ['events','drinks','players'], inMore = MORE.indexOf(rtab) > -1;
+    var tabs = [['going','Quem vai'],['teams','Equipas'],['checkin','Check in'],['chal','Challenges'],['review','Validar'],['events','Mais']];
+    var h = '<div class="tabs">' + tabs.map(function(t){ var on = t[0] === 'events' ? inMore : rtab === t[0]; return '<button class="lk" data-act="rtab" data-tab="'+t[0]+'"'+(on?' aria-current="page"':'')+'>'+t[1]+'</button>'; }).join('') + '</div>';
+    if (inMore) h += '<div class="tabs" style="margin-top:-8px">' + [['events','Eventos'],['drinks','Pontos'],['players','Players']].map(function(t){ return '<button class="lk" data-act="rtab" data-tab="'+t[0]+'"'+(rtab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>'; }).join('') + '</div>';
     if (rtab === 'going'){
       events.filter(function(e){ return e.official; }).forEach(function(e){
         var names = rsvps.filter(function(r){ return r.event_id === e.id; }).map(function(r){ return r.name; });
@@ -1379,6 +1387,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         }
       }));
     }
+    ['rankings','challenges'].forEach(function(id){ var el = $('v-'+id); if (el) el.classList.toggle('gated', !user); });
     if (v === 'plano') loadPlano();
     if (v === 'feed') loadFeed();
     if (v === 'rankings') loadRankings();
