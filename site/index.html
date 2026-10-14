@@ -80,6 +80,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ev .pl{font-weight:600;font-size:.88rem}
 .ev.off{opacity:.62}
 .ev .act{display:grid;justify-items:end;gap:4px}
+.rx{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.rxb{border:2px solid var(--ink);background:var(--bg);border-radius:999px;padding:4px 12px;font-weight:800;font-size:.9rem;cursor:pointer}
+.rxb[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.howto li{font-size:.95rem}
 .gate{display:none}
 .gated .gate{display:flex}
 .gated .sec > *:not(.gate):not(h2:first-child){display:none}
@@ -241,8 +245,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       <h2 class="h2">Em <em>3 passos</em></h2>
       <ol class="steps flow">
         <li class="step"><span class="no">1</span><h3>Cria o teu perfil</h3><p>Nome e selfie. Demora 1 minuto.</p><button class="btn small" data-nav="login">Criar perfil</button></li>
-        <li class="step"><span class="no">2</span><h3>Vota quando vais</h3><p>No Plano, marca as noites em que estás. Responde primeiro ao jantar de sexta.</p><button class="btn small ghost" data-nav="plano">Ver o plano</button></li>
-        <li class="step"><span class="no">3</span><h3>Joga</h3><p>BoozeFeed abre na quinta às 19:00. Check in, challenges e pontos para a tua equipa.</p></li>
+        <li class="step"><span class="no">2</span><h3>Vota no jantar</h3><p>É a única coisa em que precisas de votar: diz se vais ao jantar de sexta.</p><button class="btn small ghost" data-nav="plano">Ver o plano</button></li>
+        <li class="step"><span class="no">3</span><h3>Posta no BoozeFeed</h3><p>O primeiro post da noite mete-te numa equipa. Bebe, fica até tarde e ganha pontos. Abre na quinta às 19:00.</p><button class="btn small ghost" data-nav="feed">Como funciona</button></li>
       </ol>
       <div class="band"><p>A Fran e a Vera jogam no BoozeFeed, mas não nos challenges. São as referees.</p></div>
     </section>
@@ -318,6 +322,16 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         <span class="chip red">Trending</span>
       </div>
       <p class="note">O site número 1 do mundo em notícias que ninguém pediu. Posta uma selfie, escolhe a bebida e ganha pontos. Máximo de 2 bebidas por hora. Água custa-te um ponto.</p>
+      <div class="card howto" style="max-width:none;margin-bottom:18px">
+        <h3 style="margin:0 0 8px;font-family:var(--display);font-weight:900;font-size:1.9rem;line-height:1">Como funciona</h3>
+        <ol style="margin:0;padding-left:20px;display:grid;gap:6px">
+          <li><b>O teu primeiro post da noite mete-te numa equipa.</b> Team Vera ou Team Fran. As equipas mudam todas as noites.</li>
+          <li><b>Bebe e posta.</b> Cada bebida dá pontos à tua equipa. Máximo de 2 por hora.</li>
+          <li><b>Fica o mais tempo que conseguires.</b> Ganhas 5 pontos por hora entre o teu primeiro e o teu último post da noite. Quando saíres, faz o último post (por exemplo "Cheguei a casa").</li>
+          <li><b>No fim da noite</b> vê-se que equipa fez mais pontos por pessoa e quantas horas de festa juntou.</li>
+          <li><b>Reage às fotos</b> dos outros. Ninguém precisa de se inscrever em nada.</li>
+        </ol>
+      </div>
       <div id="feedLocked" hidden></div>
       <div id="feedLive">
       <div id="composer"></div>
@@ -333,8 +347,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       <h2 class="h2">Rankings</h2>
       <div class="band light gate"><p>Entra para veres o ranking e jogares.</p><button class="btn small" data-nav="login">Entrar</button></div>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:6px"><em>Equipas</em></h2>
-      <div class="scroll"><table class="tbl" id="rkTeams"></table></div>
-      <p class="note" style="margin-top:8px">Pontuação da equipa = pontos totais a dividir pelas pessoas que fizeram check in, para ninguém ganhar só por ter mais gente.</p>
+      <div id="rkTeams"></div>
+      <p class="note" style="margin-top:8px">Pontuação da equipa = pontos totais a dividir pelas pessoas da equipa nessa noite, para ninguém ganhar só por ter mais gente. As equipas mudam todas as noites.</p>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Pontos <em>individuais</em></h2>
       <div class="scroll"><table class="tbl" id="rkPoints"></table></div>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Nacional <em>vs</em> Internacional</h2>
@@ -361,7 +375,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     <div class="sec">
       <h2 class="h2">Challenges</h2>
       <div class="band light gate"><p>Entra para receberes challenges e enviares provas.</p><button class="btn small" data-nav="login">Entrar</button></div>
-      <p class="sub" style="margin-left:0;margin-top:14px">Os desafios são atribuídos a quem está presente. Provas com foto ou vídeo e ganhas pontos para a tua equipa.</p>
+      <p class="sub" style="margin-left:0;margin-top:14px">Os desafios são atribuídos a quem já postou nessa noite. Provas com foto ou vídeo e ganhas pontos para a tua equipa.</p>
       <ol class="steps" style="margin-top:22px">
         <li class="step"><h3>Recebes um challenge</h3><p>Escolhido para quem está na festa.</p></li>
         <li class="step"><h3>Envias a prova</h3><p>Foto ou vídeo. Sem prova, não há pontos.</p></li>
@@ -753,49 +767,38 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function teamScore(points, present){ return present > 0 ? Math.round(points / present * 10) / 10 : 0; }
   function teamLabel(t){ return t === 'vera' ? 'Team Vera' : t === 'fran' ? 'Team Fran' : ''; }
   function refTeam(){ var n = user ? String(user.name).toLowerCase() : ''; return n === 'vera' ? 'vera' : n === 'fran' ? 'fran' : null; }
-  // reparte os players por duas equipas: equilibra quantos vão a cada momento, o tamanho e Nacional/Internacional
-  function balanceTeams(pls, rs, evs){
-    var official = evs.filter(function(e){ return e.official; }).map(function(e){ return e.id; });
-    var going = {}; rs.forEach(function(r){ (going[r.user_id] = going[r.user_id] || {})[r.event_id] = 1; });
-    var cnt = {vera:{}, fran:{}}, size = {vera:0, fran:0}, reg = {vera:{national:0, international:0}, fran:{national:0, international:0}};
-    official.forEach(function(id){ cnt.vera[id] = 0; cnt.fran[id] = 0; });
-    var order = pls.slice().sort(function(a,b){
-      var na = Object.keys(going[a.id] || {}).length, nb = Object.keys(going[b.id] || {}).length;
-      return nb - na || String(a.name).localeCompare(String(b.name));
+  /* ---------- noites, equipas automáticas, presença ---------- */
+  var PRESENCE_RATE = 5; // pontos por hora na festa (o valor a sério está na base de dados: app_settings)
+  var REACTIONS = [['fire','🔥'],['beer','🍻'],['laugh','😂'],['kiss','💋']];
+  // a noite vai das 08:00 às 08:00 (hora de Lisboa): 01:00 de sexta ainda é a noite de quinta
+  function nightKey(ms){ return new Date((ms || Date.now()) - 8*3600000).toLocaleDateString('sv-SE', {timeZone:'Europe/Lisbon'}); }
+  function presenceOf(list){
+    var by = {};
+    list.forEach(function(p){
+      var t = new Date(p.created_at).getTime(), n = nightKey(t), k = p.user_id + '|' + n;
+      var x = by[k] = by[k] || {user:p.user_id, night:n, first:t, last:t};
+      x.first = Math.min(x.first, t); x.last = Math.max(x.last, t);
     });
-    var out = {};
-    order.forEach(function(p){
-      var g = going[p.id] || {}, r = p.region === 'international' ? 'international' : 'national';
-      function cost(t){
-        var o = t === 'vera' ? 'fran' : 'vera', c = 0;
-        official.forEach(function(id){ var d = cnt[t][id] + (g[id] ? 1 : 0) - cnt[o][id]; c += d*d; });
-        var ds = size[t] + 1 - size[o]; c += 3*ds*ds;
-        var dr = reg[t][r] + 1 - reg[o][r]; c += 2*dr*dr;
-        return c;
-      }
-      var cv = cost('vera'), cf = cost('fran');
-      var t = cv < cf ? 'vera' : cf < cv ? 'fran' : (size.vera <= size.fran ? 'vera' : 'fran');
-      out[p.id] = t; size[t]++; reg[t][r]++;
-      official.forEach(function(id){ if (g[id]) cnt[t][id]++; });
-    });
-    return out;
+    Object.keys(by).forEach(function(k){ var x = by[k], h = Math.min((x.last - x.first) / 3600000, 12); x.hours = Math.round(h*10)/10; x.points = Math.floor(h * PRESENCE_RATE); });
+    return by;
   }
 
   /* ---------- data: demo adapter (in memory) ---------- */
   var demo = (function(){
     var users = [], me = null;
     var ev = JSON.parse(JSON.stringify(EVENTS_SEED)), dr = JSON.parse(JSON.stringify(DRINKS_SEED));
-    var cks = [], chs = [], asg = [];
+    var cks = [], chs = [], asg = [], rx = [], nts = {};
     var rs = [], ps = [], ideas = [], seq = 1, unlockAt = new Date('2026-10-15T19:00:00+01:00').getTime();
     var sample = document.querySelector('.art .hands').src;
     users.push({id:'x1', name:'Convidado exemplo', role:'player', region:'national', avatar:sample, key:'x1.demo', contact:'a@exemplo.pt'}, {id:'x2', name:'Outro exemplo', role:'player', region:'international', avatar:sample, key:'x2.demo', contact:'ex@exemplo.pt'});
     ps.push({id:'p1', user_id:'x1', name:'Convidado exemplo', avatar:sample, drink:'Cocktail', kind:'drink', points:8, photo:sample, caption:'Exemplo de post.', created_at:new Date(Date.now()-14*60000).toISOString()});
     ps.push({id:'p2', user_id:'x2', name:'Outro exemplo', avatar:sample, drink:'Sem álcool', kind:'drink', points:3, photo:sample, caption:'', created_at:new Date(Date.now()-52*60000).toISOString()});
-    function pub(u){ return {id:u.id, name:u.name, role:u.role, region:u.region, avatar:u.avatar, team:u.team || null}; }
+    function pub(u){ return {id:u.id, name:u.name, role:u.role, region:u.region, avatar:u.avatar, team:nts[nightKey() + '|' + u.id] || null}; }
     function pointsOf(uid){
       var t = 0;
       ps.forEach(function(p){ if (p.user_id === uid) t += p.points; });
       asg.forEach(function(a){ if (a.user_id === uid && a.status === 'approved') t += a.awarded; });
+      var pr = presenceOf(ps); Object.keys(pr).forEach(function(k){ if (pr[k].user === uid) t += pr[k].points; });
       return t;
     }
     return {
@@ -838,13 +841,18 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         if (d.kind === 'care' && n >= 1) return Promise.reject(new Error('Limite: o check de chegada a casa conta uma vez por noite.'));
         if (d.kind !== 'care' && n >= 2) return Promise.reject(new Error('Limite: no máximo 2 bebidas por hora. Bebe água e volta já.'));
         ps.push({id:'p'+(++seq), user_id:me.id, name:me.name, avatar:me.avatar, drink:d.label, kind:d.kind, points:d.points, photo:URL.createObjectURL(o.blob), caption:o.caption, created_at:new Date().toISOString()});
+        var nk = nightKey();
+        if (me.role === 'player' && !nts[nk + '|' + me.id]){
+          var v = 0, f = 0; Object.keys(nts).forEach(function(k){ if (k.split('|')[0] === nk){ if (nts[k] === 'vera') v++; else f++; } });
+          nts[nk + '|' + me.id] = v <= f ? 'vera' : 'fran';
+        }
         return Promise.resolve();
       },
       deletePost: function(id){ ps = ps.filter(function(p){ return p.id !== id; }); return Promise.resolve(); },
       leaderboard: function(){
         var rows = users.map(function(u){
-          return {name:u.name, avatar:u.avatar, region:u.region, team:u.team || null, points:pointsOf(u.id),
-            posts:ps.filter(function(p){ return p.user_id === u.id; }).length, challenges:asg.filter(function(x){ return x.user_id === u.id && x.status === 'approved'; }).length};
+          return {name:u.name, avatar:u.avatar, region:u.region, team:Object.keys(nts).filter(function(k){ return k.split('|')[1] === u.id; }).sort().map(function(k){ return nts[k]; }).pop() || null, points:pointsOf(u.id),
+            hours:(function(){ var h = 0, pr = presenceOf(ps); Object.keys(pr).forEach(function(k){ if (pr[k].user === u.id) h += pr[k].hours; }); return Math.round(h*10)/10; })(), posts:ps.filter(function(p){ return p.user_id === u.id; }).length, challenges:asg.filter(function(x){ return x.user_id === u.id && x.status === 'approved'; }).length};
         });
         return Promise.resolve(rows.sort(function(x,y){ return y.points - x.points; }));
       },
@@ -875,15 +883,15 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         return Promise.resolve();
       },
       deleteChallenge: function(id){ chs = chs.filter(function(c){ return c.id !== id; }); return Promise.resolve(); },
-      assignChallenge: function(cid, eid){
-        var c = chs.filter(function(x){ return x.id === cid; })[0], n = 0;
-        var here = users.filter(function(u){ return u.role === 'player' && cks.some(function(k){ return k.event_id === eid && k.user_id === u.id; }); });
+      assignChallenge: function(cid){
+        var c = chs.filter(function(x){ return x.id === cid; })[0], n = 0, nk = nightKey();
+        var here = users.filter(function(u){ return nts[nk + '|' + u.id]; });
         here.forEach(function(u){
           if (asg.some(function(a){ return a.challenge_id === cid && a.user_id === u.id; })) return;
           var others = here.filter(function(o){ return o.id !== u.id; });
-          var tg = others.filter(function(o){ return o.team !== u.team; }); tg = tg.length ? tg : others;
+          var tg = others.filter(function(o){ return nts[nk + '|' + o.id] !== nts[nk + '|' + u.id]; }); tg = tg.length ? tg : others;
           var t = tg.length ? tg[Math.floor(Math.random()*tg.length)].name : 'alguém';
-          asg.push({id:'a'+(++seq), challenge_id:cid, user_id:u.id, name:u.name, avatar:u.avatar, team:u.team || null, text:c.text.replace(/\[B\]/g, t), points:c.points, status:'open', media:'', media_type:null, awarded:0, created_at:new Date().toISOString()});
+          asg.push({id:'a'+(++seq), challenge_id:cid, user_id:u.id, name:u.name, avatar:u.avatar, team:nts[nk + '|' + u.id], text:c.text.replace(/\[B\]/g, t), points:c.points, status:'open', media:'', media_type:null, awarded:0, created_at:new Date().toISOString()});
           n++;
         });
         return Promise.resolve(n);
@@ -907,6 +915,34 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         a.status = ok ? 'approved' : 'rejected'; a.awarded = ok ? (pts == null ? a.points : pts) : 0;
         return Promise.resolve();
       },
+      myNight: function(){
+        var pr = presenceOf(ps)[me.id + '|' + nightKey()];
+        return Promise.resolve({team:nts[nightKey() + '|' + me.id] || null, hours:pr ? pr.hours : 0, first_at:pr ? new Date(pr.first).toISOString() : null});
+      },
+      teamNightBoard: function(){
+        var pr = presenceOf(ps), t = {};
+        Object.keys(nts).forEach(function(k){
+          var night = k.split('|')[0], uid = k.split('|')[1], team = nts[k], key = night + '|' + team;
+          var x = t[key] = t[key] || {night:night, team:team, people:0, points:0, hours:0, score:0}, p = pr[uid + '|' + night];
+          x.people++; x.hours += p ? p.hours : 0;
+          x.points += ps.filter(function(q){ return q.user_id === uid && nightKey(new Date(q.created_at).getTime()) === night; }).reduce(function(a,q){ return a + q.points; }, 0) + (p ? p.points : 0);
+        });
+        return Promise.resolve(Object.keys(t).map(function(k){ var x = t[k]; x.hours = Math.round(x.hours*10)/10; x.score = teamScore(x.points, x.people); return x; }));
+      },
+      listReactions: function(){ return Promise.resolve(rx.slice()); },
+      react: function(postId, kind){
+        rx = rx.filter(function(r){ return !(r.post_id === postId && r.user_id === me.id); });
+        if (kind) rx.push({post_id:postId, user_id:me.id, kind:kind});
+        return Promise.resolve();
+      },
+      listTonight: function(){
+        var k = nightKey(), pr = presenceOf(ps);
+        return Promise.resolve(Object.keys(nts).filter(function(x){ return x.split('|')[0] === k; }).map(function(x){
+          var u = users.filter(function(y){ return y.id === x.split('|')[1]; })[0], p = pr[u.id + '|' + k];
+          return {user_id:u.id, name:u.name, avatar:u.avatar, team:nts[x], hours:p ? p.hours : 0};
+        }));
+      },
+      setNightTeam: function(uid, team){ nts[nightKey() + '|' + uid] = team; return Promise.resolve(); },
       listIdeas: function(){ return Promise.resolve(ideas.slice().reverse()); },
       addIdea: function(text){ ideas.push({id:'i'+(++seq), user_id:me.id, name:me.name, text:text}); return Promise.resolve(); },
       deleteIdea: function(id){ ideas = ideas.filter(function(i){ return i.id !== id; }); return Promise.resolve(); },
@@ -924,9 +960,13 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     function evFrom(r){ return {id:r.id, day:r.day, start:r.start_time||'', end:r.end_time||'', allDay:!!r.all_day, title:r.title, place:r.place||'', note:r.note||'', rule:r.rule_text||'', official:!!r.official, sort:r.sort||0}; }
     function evTo(e){ return {id:e.id, day:e.day, start_time:e.start||null, end_time:e.end||null, all_day:!!e.allDay, title:e.title, place:e.place||null, note:e.note||null, rule_text:e.rule||null, official:!!e.official, sort:e.sort||0}; }
     function profile(id){
-      function q(cols){ return sb.from('profiles').select(cols).eq('id', id).single(); }
-      // sem a coluna "team" (fase 2 ainda não corrida no Supabase) o site continua a funcionar
-      return q('id,name,role,region,avatar_path,team').then(function(r){ return r.error ? q('id,name,role,region,avatar_path') : r; }).then(fail).then(function(p){ return {id:p.id, name:p.name, role:p.role, region:p.region, avatar:pubUrl(p.avatar_path), team:p.team || null}; });
+      return sb.from('profiles').select('id,name,role,region,avatar_path').eq('id', id).single().then(fail).then(function(p){
+        var u = {id:p.id, name:p.name, role:p.role, region:p.region, avatar:pubUrl(p.avatar_path), team:null};
+        // a equipa muda todas as noites. Sem a fase 3 na base de dados, fica sem equipa e o site continua a funcionar.
+        return sb.from('night_teams').select('team').eq('user_id', id).eq('night', nightKey()).limit(1).then(function(r){
+          u.team = (r.data && r.data[0] && r.data[0].team) || null; return u;
+        }, function(){ return u; });
+      });
     }
     function loginKey(key){
       var i = key.indexOf('.');
@@ -1007,7 +1047,10 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       deletePost: function(id){ return sb.from('posts').delete().eq('id', id).then(fail); },
       leaderboard: function(){
         function q(cols){ return sb.from('leaderboard').select(cols).order('points', {ascending:false}).limit(300); }
-        return q('name,points,posts,avatar_path,region,team,challenges').then(function(r){ return r.error ? q('name,points,posts,avatar_path,region') : r; }).then(fail).then(function(a){ return a.map(function(b){ return {name:b.name, points:b.points, posts:b.posts, region:b.region, team:b.team || null, challenges:b.challenges || 0, avatar:pubUrl(b.avatar_path)}; }); });
+        return q('name,points,posts,avatar_path,region,team,challenges,hours')
+          .then(function(r){ return r.error ? q('name,points,posts,avatar_path,region,team,challenges') : r; })
+          .then(function(r){ return r.error ? q('name,points,posts,avatar_path,region') : r; })
+          .then(fail).then(function(a){ return a.map(function(b){ return {name:b.name, points:b.points, posts:b.posts, region:b.region, team:b.team || null, challenges:b.challenges || 0, hours:Number(b.hours) || 0, avatar:pubUrl(b.avatar_path)}; }); });
       },
       me: function(){ return sb.auth.getSession().then(function(r){ var s = r.data && r.data.session; return s ? profile(s.user.id) : null; }); },
       listCheckins: function(){ return sb.from('checkins').select('event_id,user_id,profiles(name)').then(fail).then(function(a){ return a.map(function(r){ return {event_id:r.event_id, user_id:r.user_id, name:(r.profiles && r.profiles.name) || ''}; }); }); },
@@ -1018,7 +1061,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       listChallenges: function(){ return sb.from('challenges').select('id,text,points').order('created_at').then(fail); },
       saveChallenge: function(c){ return (c.id ? sb.from('challenges').update({text:c.text, points:c.points}).eq('id', c.id) : sb.from('challenges').insert({text:c.text, points:c.points})).then(fail); },
       deleteChallenge: function(id){ return sb.from('challenges').delete().eq('id', id).then(fail); },
-      assignChallenge: function(cid, eid){ return sb.rpc('assign_challenge', {p_challenge:cid, p_event:eid}).then(fail); },
+      assignChallenge: function(cid){ return sb.rpc('assign_challenge', {p_challenge:cid}).then(fail); },
       listAssignments: function(){
         return Promise.all([
           sb.from('assignments').select('id,user_id,text,points,status,media_path,media_type,points_awarded,created_at').order('created_at', {ascending:false}).limit(300).then(fail),
@@ -1046,6 +1089,41 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         });
       },
       reviewAssignment: function(id, ok, pts){ return sb.rpc('review_assignment', {p_id:id, p_approve:ok, p_points:pts}).then(fail); },
+      myNight: function(){
+        return sb.auth.getUser().then(function(u){
+          var uid = u.data.user.id, k = nightKey();
+          return Promise.all([
+            sb.from('night_teams').select('team').eq('user_id', uid).eq('night', k).limit(1),
+            sb.from('night_presence').select('hours,first_at,last_at').eq('user_id', uid).eq('night', k).limit(1)
+          ]).then(function(r){
+            var t = r[0].data && r[0].data[0], p = r[1].data && r[1].data[0];
+            return {team:t ? t.team : null, hours:p ? Number(p.hours) : 0, first_at:p ? p.first_at : null};
+          });
+        });
+      },
+      teamNightBoard: function(){ return sb.from('team_night_board').select('night,team,people,points,hours,score').order('night').then(fail).then(function(a){ return a.map(function(x){ return {night:x.night, team:x.team, people:x.people, points:x.points, hours:Number(x.hours), score:Number(x.score)}; }); }); },
+      listReactions: function(){ return sb.from('reactions').select('post_id,user_id,kind').limit(3000).then(fail); },
+      react: function(postId, kind){
+        return sb.auth.getUser().then(function(u){
+          var uid = u.data.user.id;
+          return sb.from('reactions').delete().eq('post_id', postId).eq('user_id', uid).then(fail).then(function(){
+            return kind ? sb.from('reactions').insert({post_id:postId, kind:kind}).then(fail) : null;
+          });
+        });
+      },
+      listTonight: function(){
+        var k = nightKey();
+        return Promise.all([
+          sb.from('night_teams').select('user_id,team').eq('night', k).then(fail),
+          sb.from('night_presence').select('user_id,hours').eq('night', k).then(fail),
+          sb.from('profiles').select('id,name,avatar_path').then(fail)
+        ]).then(function(r){
+          var by = {}; r[2].forEach(function(p){ by[p.id] = p; });
+          var hrs = {}; r[1].forEach(function(p){ hrs[p.user_id] = Number(p.hours); });
+          return r[0].map(function(t){ var p = by[t.user_id] || {}; return {user_id:t.user_id, name:p.name || '', avatar:pubUrl(p.avatar_path), team:t.team, hours:hrs[t.user_id] || 0}; });
+        });
+      },
+      setNightTeam: function(uid, team){ return sb.rpc('set_night_team', {p_user:uid, p_night:nightKey(), p_team:team}).then(fail); },
       listIdeas: function(){ return sb.from('challenge_ideas').select('id,user_id,text,profiles(name)').order('created_at', {ascending:false}).then(fail).then(function(a){ return a.map(function(i){ return {id:i.id, user_id:i.user_id, name:(i.profiles && i.profiles.name) || '', text:i.text}; }); }); },
       addIdea: function(text){ return sb.from('challenge_ideas').insert({text:text}).then(fail); },
       deleteIdea: function(id){ return sb.from('challenge_ideas').delete().eq('id', id).then(fail); },
@@ -1066,7 +1144,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   var adminToken = (String(location.hash).match(/a=([a-z0-9-]+)/) || [])[1] || null;
   var unlockMs = 0, UNLOCK_DEFAULT = '2026-10-15T19:00:00+01:00';
   function regLabel(r){ return r === 'international' ? 'Internacional' : r === 'national' ? 'Nacional' : ''; }
-  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [], checkins = [], chals = [], asg = [], tboard = [];
+  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [], checkins = [], chals = [], asg = [], tboard = [], reactions = [], nightInfo = null, tonight = [];
   var pick = {drink:null, blob:null, preview:null, caption:''}, signup = {blob:null};
   var busy = false;
   function isRef(){ return !!(user && user.role === 'referee'); }
@@ -1093,33 +1171,30 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     var shown = events.filter(function(e){ return e.official && !e.allDay; });
     var total = events.reduce(function(a,e){ return a + dur(e); }, 0);
     var mine = {}; rsvps.forEach(function(r){ if (user && r.user_id === user.id) mine[r.event_id] = true; });
-    var n = shown.filter(function(e){ return mine[e.id]; }).length;
     var cnt = {}; rsvps.forEach(function(r){ cnt[r.event_id] = (cnt[r.event_id]||0) + 1; });
-    var myCk = {}; checkins.forEach(function(c){ if (user && c.user_id === user.id) myCk[c.event_id] = true; });
     $('sumbar').innerHTML = '<div><b>'+fmtH(total)+'</b><span style="font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">de festa · '+shown.length+' momentos</span></div>' +
-      (isRef() ? '<span style="font-weight:800">Vês o plano como referee</span>' : (user ? '<div style="font-weight:800">'+(user.team ? '<span class="chip red">'+teamLabel(user.team)+'</span> ' : '')+'Vais estar em '+n+' de '+shown.length+'</div>' : '<div class="row"><span style="font-weight:800">Entra para votar quando vais</span><button class="btn small" data-nav="login">Entrar</button></div>'));
+      (isRef() ? '<span style="font-weight:800">Vês o plano como referee</span>' : (user ? (user.team ? '<div style="font-weight:800">Esta noite: <span class="chip red">'+teamLabel(user.team)+'</span></div>' : '') : '<div class="row"><span style="font-weight:800">Entra para votar no jantar</span><button class="btn small" data-nav="login">Entrar</button></div>'));
     var h = '';
     shown.filter(function(e){ return PRIORITY[e.id] && !mine[e.id] && !isRef(); }).forEach(function(e){
-      h += '<div class="band light" style="margin:0 0 22px"><p><b>Jantar de sexta:</b> o sítio depende de quantas pessoas alinharem. Diz já se vais.</p><button class="btn small red" data-act="rsvp" data-id="'+esc(e.id)+'">Vou ao jantar</button></div>';
+      h += '<div class="band light" style="margin:0 0 22px"><p><b>Jantar de sexta:</b> é a única coisa em que precisas de votar. O sítio depende de quantas pessoas alinharem.</p><button class="btn small red" data-act="rsvp" data-id="'+esc(e.id)+'">Vou ao jantar</button></div>';
     });
     DAYS.forEach(function(d){
       var list = shown.filter(function(e){ return nightOf(e) === d.id; });
       if (!list.length) return;
       h += '<div class="day"><div class="dayh"><h3>'+d.label+'</h3><span>'+d.date+'</span></div>';
       list.forEach(function(e){
-        var sel = !!mine[e.id], c = cnt[e.id] || 0;
-        var cbtn = (user && !isRef()) ? (myCk[e.id] ? '<span class="chip">Check in feito</span>' : (checkinOpen(e, Date.now()) ? '<button class="btn small red" data-act="checkin" data-id="'+esc(e.id)+'">Check in</button>' : '')) : '';
-        var btn = cbtn + (isRef() ? '' : '<button class="btn small '+(sel?'red':'ghost')+'" data-act="rsvp" data-id="'+esc(e.id)+'" aria-pressed="'+sel+'">'+(sel?'Vou estar':'Vou')+'</button>') +
-          (isRef() ? '<span class="cnt">'+c+' '+(c===1?'vai':'vão')+'</span>' : '');
+        var sel = !!mine[e.id], c = cnt[e.id] || 0, dinner = !!PRIORITY[e.id];
+        var btn = !dinner ? '' : (isRef() ? '<span class="cnt">'+c+' '+(c===1?'vai':'vão')+'</span>'
+          : '<button class="btn small '+(sel?'':'red')+'" data-act="rsvp" data-id="'+esc(e.id)+'" aria-pressed="'+sel+'">'+(sel?'Confirmado':'Vou ao jantar')+'</button>');
         if (BDAY[e.title]){
           var b = BDAY[e.title];
           h += '<div class="bday"><div class="n" aria-hidden="true">'+esc(e.title.replace('.',''))+'</div><div><div class="k">'+b.when+' · '+esc(e.start)+'</div>' +
-            '<h4>Meia-noite da '+b.who+'</h4></div><div class="act">'+btn+'</div></div>';
+            '<h4>Meia-noite da '+b.who+'</h4></div></div>';
           return;
         }
         var tbd = /a definir/i.test((e.place||'')+' '+(e.note||''));
         var place = e.place && !/a definir/i.test(e.place) && e.title.toLowerCase().indexOf(e.place.toLowerCase()) < 0 ? e.place : '';
-        h += '<div class="ev'+(PRIORITY[e.id] ? ' prio' : '')+'"><div class="t">'+esc(e.start)+'</div><div><h4>'+esc(e.title)+'</h4>' +
+        h += '<div class="ev'+(dinner ? ' prio' : '')+'"><div class="t">'+esc(e.start)+'</div><div><h4>'+esc(e.title)+'</h4>' +
           (place ? '<div class="pl">'+esc(place)+'</div>' : '') + (tbd ? '<div style="margin-top:6px">'+(/rally/i.test(e.title) ? '<button type="button" class="chip ex" data-nav="rally">Coming soon · ver rally</button>' : '<span class="chip ex">Coming soon</span>')+'</div>' : '') +
           '</div><div class="act">' + btn + '</div></div>';
       });
@@ -1152,7 +1227,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       var ds = drinks.map(function(d){
         return '<button type="button" class="dk" data-act="drink" data-id="'+esc(d.id)+'" aria-pressed="'+(pick.drink===d.id)+'"><span class="p">'+pts(d.points)+'</span><b>'+esc(d.label)+'</b><span>'+esc(d.hint||'')+'</span></button>';
       }).join('');
-      c.innerHTML = '<div class="card stack"><div class="pick"><label class="selfie" for="selfie">' +
+      var tn = nightInfo ? (isRef() ? '<div class="band light" style="margin-bottom:14px"><p>Como referee jogas a título individual: não tens equipa.</p></div>' : (nightInfo.team ? '<div class="band light" style="margin-bottom:14px"><p><b>Esta noite:</b> '+teamLabel(nightInfo.team)+' · '+nightInfo.hours+' h na festa</p></div>' : '<div class="band light" style="margin-bottom:14px"><p>Ainda não tens equipa esta noite. O teu primeiro post mete-te numa.</p></div>')) : '';
+      c.innerHTML = tn + '<div class="card stack"><div class="pick"><label class="selfie" for="selfie">' +
         (pick.preview ? '<img src="'+pick.preview+'" alt="A tua selfie">' : 'Tira uma selfie') +
         '</label><div class="stack"><input id="selfie" type="file" accept="image/*" capture="user" hidden>' +
         '<div><label class="f" for="caption">Legenda (opcional)</label><input class="in" id="caption" maxlength="120" value="'+esc(pick.caption)+'" placeholder="O que se passa?"></div></div></div>' +
@@ -1164,7 +1240,11 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         '<div class="meta"><span class="chip red">'+pts(p.points)+' pts</span><span>'+esc(p.drink)+'</span></div>' +
         '<h3>'+esc(headline(p))+'</h3><div class="meta">'+av(p.avatar,p.name,'')+'<span>'+esc(p.name)+' · '+ago(p.created_at)+'</span>' +
         ((isRef() || (user && p.user_id === user.id)) ? '<button class="btn small ghost" data-act="delpost" data-id="'+esc(p.id)+'">Apagar</button>' : '') + '</div>' +
-        (p.caption ? '<p class="cap">'+esc(p.caption)+'</p>' : '') + '</div></article>';
+        (p.caption ? '<p class="cap">'+esc(p.caption)+'</p>' : '') +
+        '<div class="rx">' + REACTIONS.map(function(r){
+          var n = reactions.filter(function(x){ return x.post_id === p.id && x.kind === r[0]; }).length, on = !!(user && reactions.some(function(x){ return x.post_id === p.id && x.kind === r[0] && x.user_id === user.id; }));
+          return '<button type="button" class="rxb" data-act="react" data-id="'+esc(p.id)+'" data-kind="'+r[0]+'" aria-pressed="'+on+'" aria-label="Reagir">'+r[1]+(n ? ' <span>'+n+'</span>' : '')+'</button>';
+        }).join('') + '</div></div></article>';
     }).join('') : '<p class="note">Ainda não há notícias. A primeira selfie fica com a manchete.</p>';
   }
 
@@ -1205,64 +1285,25 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     }));
   }
 
-  /* referee: equipas */
-  var teamPrev = null, ckEvent = null, chEvent = null;
-  function refTeams(){
-    var pl = players.filter(function(p){ return p.role === 'player'; });
-    var cur = {}; pl.forEach(function(p){ if (p.team) cur[p.id] = p.team; });
-    var map = teamPrev || cur;
-    var h = '<p class="note">Cria duas equipas equilibradas pelo que cada pessoa marcou no Plano. Vês a pré-visualização antes de confirmar e podes trocar pessoas. Podes refazer quando quiseres.</p>';
-    h += '<div class="row" style="margin-bottom:14px">' + (teamPrev
-      ? '<button class="btn red" data-act="tpok">Confirmar equipas</button><button class="btn ghost" data-act="tpgen">Gerar outra vez</button><button class="btn ghost" data-act="tpno">Cancelar</button>'
-      : '<button class="btn" data-act="tpgen"'+(pl.length ? '' : ' disabled')+'>Gerar equipas</button>') + '</div>';
-    if (!pl.length) return h + '<p class="note">Ainda não há players.</p>';
-    var offs = events.filter(function(e){ return e.official && !e.allDay; });
-    var going = {}; rsvps.forEach(function(r){ (going[r.user_id] = going[r.user_id] || {})[r.event_id] = 1; });
-    var col = {vera:[], fran:[], none:[]};
-    pl.forEach(function(p){ col[map[p.id] || 'none'].push(p); });
-    h += '<div class="teams2">';
-    ['vera','fran'].forEach(function(t){
-      h += '<div class="card" style="max-width:none"><div class="row" style="justify-content:space-between"><b style="font-size:1.1rem">'+teamLabel(t)+'</b><span class="chip">'+col[t].length+' pessoas</span></div>' +
-        col[t].map(function(p){
-          return '<div class="listrow"><span class="who2">'+av(p.avatar,p.name,'')+esc(p.name)+' <span class="chip">'+esc(regLabel(p.region))+'</span></span>' +
-            (teamPrev ? '<button class="btn small ghost" data-act="tpswap" data-id="'+esc(p.id)+'">Trocar</button>' : '') + '</div>';
-        }).join('') + '</div>';
-    });
-    h += '</div>';
-    if (col.none.length) h += '<p class="note">Sem equipa: '+col.none.map(function(p){ return esc(p.name); }).join(', ')+'.</p>';
-    h += '<div class="scroll"><table class="tbl"><thead><tr><th>Momento</th><th>Vera</th><th>Fran</th></tr></thead><tbody>' + offs.map(function(e){
-      var c = {vera:0, fran:0}; pl.forEach(function(p){ var t = map[p.id]; if (t && going[p.id] && going[p.id][e.id]) c[t]++; });
-      return '<tr><td>'+esc(e.title)+'</td><td>'+c.vera+'</td><td>'+c.fran+'</td></tr>';
-    }).join('') + '</tbody></table></div>';
-    return h;
-  }
-  /* referee: check in */
-  function refCheckin(){
-    var offs = events.filter(function(e){ return e.official; });
-    if (!offs.length) return '<p class="note">Sem momentos.</p>';
-    if (!ckEvent || !find(offs, ckEvent)) ckEvent = offs[0].id;
-    var pl = players.filter(function(p){ return p.role === 'player'; });
-    var here = {}; checkins.forEach(function(c){ if (c.event_id === ckEvent) here[c.user_id] = 1; });
-    var h = '<p class="note">Os players fazem o check in sozinhos no Plano, 1 hora antes até 1 hora depois do momento. Aqui podes fazê-lo por quem se esqueceu.</p>' +
-      '<select class="in" data-act="ckpick" style="max-width:420px;margin-bottom:12px">' + offs.map(function(e){ return '<option value="'+esc(e.id)+'"'+(e.id === ckEvent ? ' selected' : '')+'>'+esc(e.title)+'</option>'; }).join('') + '</select>' +
-      '<p style="font-weight:800;margin:0 0 8px">'+Object.keys(here).length+' com check in</p>';
-    h += pl.length ? pl.map(function(p){
-      return '<div class="listrow"><span class="who2">'+av(p.avatar,p.name,'')+esc(p.name)+(p.team ? ' <span class="chip">'+teamLabel(p.team)+'</span>' : '')+'</span>' +
-        (here[p.id] ? '<button class="btn small ghost" data-act="ckdel" data-id="'+esc(p.id)+'">Remover</button>' : '<button class="btn small" data-act="ckadd" data-id="'+esc(p.id)+'">Check in</button>') + '</div>';
-    }).join('') : '<p class="note">Ainda não há players.</p>';
+  /* referee: esta noite */
+  function refToday(){
+    var nv = tonight.filter(function(t){ return t.team === 'vera'; }).length, nf = tonight.length - nv;
+    var h = '<p class="note">Quem já postou esta noite (das 08:00 às 08:00) e a equipa em que ficou. Se precisares, passa uma pessoa para a outra equipa.</p>' +
+      '<p style="font-weight:800;margin:0 0 10px">Team Vera '+nv+' · Team Fran '+nf+'</p>';
+    h += tonight.length ? tonight.slice().sort(function(a,b){ return String(a.name).localeCompare(String(b.name)); }).map(function(t){
+      return '<div class="listrow"><span class="who2">'+av(t.avatar,t.name,'')+esc(t.name)+' <span class="chip">'+teamLabel(t.team)+'</span> <span class="chip">'+t.hours+' h</span></span>' +
+        '<button class="btn small ghost" data-act="swapteam" data-id="'+esc(t.user_id)+'" data-team="'+esc(t.team)+'">Passar para a '+teamLabel(t.team === 'vera' ? 'fran' : 'vera')+'</button></div>';
+    }).join('') : '<div class="empty">Ainda ninguém postou esta noite.</div>';
     return h;
   }
   /* referee: challenges */
   function refChal(){
-    var offs = events.filter(function(e){ return e.official; });
-    if (!chEvent || !find(offs, chEvent)) chEvent = offs.length ? offs[0].id : null;
-    var h = '<p class="note">Escreve um challenge. Usa [B] para meter o nome de outra pessoa presente (de preferência da outra equipa). Escolhe o momento e entrega-o a todos os que fizeram check in nele.</p>' +
+    var h = '<p class="note">Escreve um challenge. Usa [B] para meter o nome de outra pessoa presente (de preferência da outra equipa). Entrega-o a todos os que já postaram esta noite.</p>' +
       '<form class="card stack" id="chalForm" style="max-width:640px;margin-bottom:16px" novalidate><div><label class="f" for="chalText">Challenge</label><textarea class="in" id="chalText" rows="2" maxlength="240" placeholder="Ex.: convence a [B] a fazer uma pose de capa de revista"></textarea></div>' +
       '<div class="row"><div><label class="f" for="chalPts">Pontos</label><input class="in" id="chalPts" type="number" min="0" max="500" value="20" style="width:110px"></div><button class="btn" type="submit" style="align-self:end">Criar</button></div></form>';
-    if (offs.length) h += '<label class="f">Momento para atribuir</label><select class="in" data-act="chpick" style="max-width:420px;margin-bottom:14px">' + offs.map(function(e){ return '<option value="'+esc(e.id)+'"'+(e.id === chEvent ? ' selected' : '')+'>'+esc(e.title)+'</option>'; }).join('') + '</select>';
     h += chals.length ? chals.map(function(c){
       var n = asg.filter(function(a){ return a.challenge_id === c.id; }).length;
-      return '<div class="listrow"><div><b>'+esc(c.text)+'</b> <span class="chip">'+c.points+' pts</span> <span class="chip">'+n+' atribuídos</span></div><span class="row"><button class="btn small" data-act="chassign" data-id="'+esc(c.id)+'">Atribuir aos presentes</button><button class="btn small ghost" data-act="chdel" data-id="'+esc(c.id)+'">Apagar</button></span></div>';
+      return '<div class="listrow"><div><b>'+esc(c.text)+'</b> <span class="chip">'+c.points+' pts</span> <span class="chip">'+n+' atribuídos</span></div><span class="row"><button class="btn small" data-act="chassign" data-id="'+esc(c.id)+'">Atribuir a quem já postou</button><button class="btn small ghost" data-act="chdel" data-id="'+esc(c.id)+'">Apagar</button></span></div>';
     }).join('') : '<p class="note">Ainda não criaste challenges.</p>';
     return h;
   }
@@ -1282,11 +1323,22 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function renderRankings(){
     var b = board.slice();
     var byPts = b.slice().sort(function(x,y){ return y.points - x.points || y.posts - x.posts || String(x.name).localeCompare(y.name); });
-    $('rkPoints').innerHTML = '<thead><tr><th>#</th><th>Player</th><th>Pontos</th></tr></thead><tbody>' +
-      (byPts.length ? byPts.map(function(r,i){ return '<tr><td>'+(i+1)+'</td><td><span class="who2">'+av(r.avatar,r.name,'')+esc(r.name)+(r.team ? ' <span class="chip">'+teamLabel(r.team)+'</span>' : '')+'</span></td><td>'+r.points+'</td></tr>'; }).join('') : '<tr><td colspan="3">Ainda não há players.</td></tr>') + '</tbody>';
-    var tb = tboard.slice().sort(function(x,y){ return y.score - x.score; });
-    $('rkTeams').innerHTML = '<thead><tr><th>Equipa</th><th>Presentes</th><th>Pontos</th><th>Pontuação</th></tr></thead><tbody>' +
-      (tb.length ? tb.map(function(t){ return '<tr><td>'+teamLabel(t.team)+'</td><td>'+t.present+' de '+t.people+'</td><td>'+t.points+'</td><td><b>'+t.score+'</b></td></tr>'; }).join('') : '<tr><td colspan="4">As equipas são criadas na quinta.</td></tr>') + '</tbody>';
+    $('rkPoints').innerHTML = '<thead><tr><th>#</th><th>Player</th><th>Horas</th><th>Pontos</th></tr></thead><tbody>' +
+      (byPts.length ? byPts.map(function(r,i){ return '<tr><td>'+(i+1)+'</td><td><span class="who2">'+av(r.avatar,r.name,'')+esc(r.name)+(r.team ? ' <span class="chip">'+teamLabel(r.team)+'</span>' : '')+'</span></td><td>'+(r.hours || 0)+' h</td><td>'+r.points+'</td></tr>'; }).join('') : '<tr><td colspan="4">Ainda não há players.</td></tr>') + '</tbody>';
+    var NIGHTS = {'2026-10-15':'Quinta', '2026-10-16':'Sexta', '2026-10-17':'Sábado'};
+    var nights = tboard.map(function(x){ return x.night; }).filter(function(n,i,a){ return a.indexOf(n) === i; }).sort().reverse();
+    function trow(x){ return '<tr><td>'+teamLabel(x.team)+'</td><td>'+x.people+'</td><td>'+(Math.round(x.hours*10)/10)+' h</td><td>'+x.points+'</td><td><b>'+x.score+'</b></td></tr>'; }
+    var th = '<thead><tr><th>Equipa</th><th>Pessoas</th><th>Horas</th><th>Pontos</th><th>Pontuação</th></tr></thead>';
+    var out = nights.map(function(n){
+      var rows = tboard.filter(function(x){ return x.night === n; }).sort(function(x,y){ return y.score - x.score; });
+      return '<h3 style="margin:14px 0 4px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">'+(NIGHTS[n] || n)+'</h3><div class="scroll"><table class="tbl">'+th+'<tbody>'+rows.map(trow).join('')+'</tbody></table></div>';
+    }).join('');
+    if (nights.length > 1){
+      var tot = {}; tboard.forEach(function(x){ var t = tot[x.team] = tot[x.team] || {team:x.team, people:0, hours:0, points:0, score:0}; t.people += x.people; t.hours += x.hours; t.points += x.points; t.score += x.score; });
+      var tr = Object.keys(tot).map(function(k){ tot[k].score = Math.round(tot[k].score*10)/10; return tot[k]; }).sort(function(x,y){ return y.score - x.score; });
+      out += '<h3 style="margin:14px 0 4px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">Total das noites (soma das pontuações)</h3><div class="scroll"><table class="tbl">'+th+'<tbody>'+tr.map(trow).join('')+'</tbody></table></div>';
+    }
+    $('rkTeams').innerHTML = out || '<p class="note">As equipas são criadas quando as pessoas começarem a postar, na quinta.</p>';
     var groups = [['national','Nacional'],['international','Internacional']].map(function(g){
       var m = b.filter(function(r){ return r.region === g[0]; }), tot = m.reduce(function(a,r){ return a + r.points; }, 0);
       return {label:g[1], n:m.length, tot:tot, avg:m.length ? tot / m.length : 0};
@@ -1294,7 +1346,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     $('rkRegion').innerHTML = '<thead><tr><th>Grupo</th><th>Pessoas</th><th>Pontos</th><th>Média</th></tr></thead><tbody>' +
       groups.map(function(g){ return '<tr><td>'+g.label+'</td><td>'+g.n+'</td><td>'+g.tot+'</td><td>'+(Math.round(g.avg*10)/10)+'</td></tr>'; }).join('') + '</tbody>';
   }
-  function loadRankings(){ return guard(Promise.all([api.leaderboard(), api.teamBoard().catch(function(){ return []; })]).then(function(r){ board = r[0]; tboard = r[1]; renderRankings(); })); }
+  function loadRankings(){ return guard(Promise.all([api.leaderboard(), api.teamNightBoard().catch(function(){ return []; })]).then(function(r){ board = r[0]; tboard = r[1]; renderRankings(); })); }
   function renderIdeas(){
     renderMyChal();
     $('ideas').innerHTML = ideas.length ? ideas.map(function(i){
@@ -1307,16 +1359,17 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     var b = $('refBody');
     if (!isRef()){ b.innerHTML = '<p class="note">Esta área é só para a Fran e a Vera.</p>'; return; }
     var MORE = ['events','drinks','players'], inMore = MORE.indexOf(rtab) > -1;
-    var tabs = [['going','Quem vai'],['teams','Equipas'],['checkin','Check in'],['chal','Challenges'],['review','Validar'],['events','Mais']];
+    var tabs = [['going','Jantar'],['today','Hoje'],['chal','Challenges'],['review','Validar'],['events','Mais']];
     var h = '<div class="tabs">' + tabs.map(function(t){ var on = t[0] === 'events' ? inMore : rtab === t[0]; return '<button class="lk" data-act="rtab" data-tab="'+t[0]+'"'+(on?' aria-current="page"':'')+'>'+t[1]+'</button>'; }).join('') + '</div>';
     if (inMore) h += '<div class="tabs" style="margin-top:-8px">' + [['events','Eventos'],['drinks','Pontos'],['players','Players']].map(function(t){ return '<button class="lk" data-act="rtab" data-tab="'+t[0]+'"'+(rtab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>'; }).join('') + '</div>';
     if (rtab === 'going'){
-      events.filter(function(e){ return e.official; }).forEach(function(e){
+      var din = events.filter(function(e){ return PRIORITY[e.id]; });
+      h += '<p class="note">É a única coisa em que as pessoas votam. As equipas e a presença vêm dos posts no BoozeFeed.</p>';
+      h += din.map(function(e){
         var names = rsvps.filter(function(r){ return r.event_id === e.id; }).map(function(r){ return r.name; });
-        h += '<div class="listrow"><div><b>'+esc(e.title)+'</b> <span class="chip">'+names.length+'</span><div style="font-size:.88rem">'+(names.length ? esc(names.join(', ')) : 'Ninguém ainda.')+'</div></div></div>';
-      });
-    } else if (rtab === 'teams'){ h += refTeams();
-    } else if (rtab === 'checkin'){ h += refCheckin();
+        return '<div class="listrow"><div><b>'+esc(e.title)+'</b> <span class="chip">'+names.length+' vão</span><div style="font-size:.88rem">'+(names.length ? esc(names.join(', ')) : 'Ninguém ainda.')+'</div></div></div>';
+      }).join('') || '<p class="note">Não há jantar no programa.</p>';
+    } else if (rtab === 'today'){ h += refToday();
     } else if (rtab === 'chal'){ h += refChal();
     } else if (rtab === 'review'){ h += refReview();
     } else if (rtab === 'events'){
@@ -1347,12 +1400,12 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 
   /* ---------- loading ---------- */
   function guard(p){ return p.catch(function(e){ toast(e.message || 'Algo falhou.'); }); }
-  function loadPlano(){ return guard(Promise.all([api.listEvents(), api.listRsvps(), api.listCheckins().catch(function(){ return []; }), user ? api.me().catch(function(){ return null; }) : Promise.resolve(null)]).then(function(r){ events = r[0]; rsvps = r[1]; checkins = r[2]; if (r[3] && user) user.team = r[3].team || null; renderPlano(); })); }
-  function loadFeed(){ return guard(Promise.all([api.listDrinks(), api.listPosts(), api.leaderboard(), api.getUnlock()]).then(function(r){ drinks = r[0]; posts = r[1]; board = r[2]; unlockMs = r[3]; if (!pick.drink && drinks[0]) pick.drink = null; if (view === 'feed') renderFeed(); })); }
+  function loadPlano(){ return guard(Promise.all([api.listEvents(), api.listRsvps(), user ? api.me().catch(function(){ return null; }) : Promise.resolve(null)]).then(function(r){ events = r[0]; rsvps = r[1]; if (r[2] && user) user.team = r[2].team || null; renderPlano(); })); }
+  function loadFeed(){ return guard(Promise.all([api.listDrinks(), api.listPosts(), api.leaderboard(), api.getUnlock(), api.listReactions().catch(function(){ return []; }), user ? api.myNight().catch(function(){ return null; }) : Promise.resolve(null)]).then(function(r){ drinks = r[0]; posts = r[1]; board = r[2]; unlockMs = r[3]; reactions = r[4]; nightInfo = r[5]; if (nightInfo && user) user.team = nightInfo.team; if (!pick.drink && drinks[0]) pick.drink = null; if (view === 'feed') renderFeed(); })); }
   function loadIdeas(){ return guard(api.listIdeas().then(function(r){ ideas = r; renderIdeas(); })); }
   function loadRef(){
     if (!isRef()) return renderRef();
-    return guard(Promise.all([api.listEvents(), api.listRsvps(), api.listDrinks(), api.listPlayers(), api.listCheckins().catch(function(){ return []; }), api.listChallenges().catch(function(){ return []; }), api.listAssignments().catch(function(){ return []; })]).then(function(r){ events = r[0]; rsvps = r[1]; drinks = r[2]; players = r[3]; checkins = r[4]; chals = r[5]; asg = r[6]; renderRef(); }));
+    return guard(Promise.all([api.listEvents(), api.listRsvps(), api.listDrinks(), api.listPlayers(), api.listTonight().catch(function(){ return []; }), api.listChallenges().catch(function(){ return []; }), api.listAssignments().catch(function(){ return []; })]).then(function(r){ events = r[0]; rsvps = r[1]; drinks = r[2]; players = r[3]; tonight = r[4]; chals = r[5]; asg = r[6]; renderRef(); }));
   }
 
   function loadPerfil(){
@@ -1469,31 +1522,25 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     }
     else if (act === 'delpost'){ guard(api.deletePost(id).then(loadFeed)); }
     else if (act === 'delidea'){ guard(api.deleteIdea(id).then(loadIdeas)); }
-    else if (act === 'checkin'){
-      if (!need('Entra para fazeres check in.')) return;
-      guard(api.checkIn(id).then(function(){ toast('Check in feito.'); return loadPlano(); }));
-    }
-    else if (act === 'tpgen'){
-      teamPrev = balanceTeams(players.filter(function(p){ return p.role === 'player'; }), rsvps, events); renderRef();
-    }
-    else if (act === 'tpswap'){ if (teamPrev) teamPrev[id] = teamPrev[id] === 'vera' ? 'fran' : 'vera'; renderRef(); }
-    else if (act === 'tpno'){ teamPrev = null; renderRef(); }
-    else if (act === 'tpok'){
-      if (!teamPrev) return;
-      if (!confirm('Confirmar estas equipas? Os players passam a ver a equipa deles.')) return;
-      guard(api.setTeams(teamPrev).then(function(){ teamPrev = null; toast('Equipas confirmadas.'); return loadRef(); }));
-    }
-    else if (act === 'ckadd'){ guard(api.checkIn(ckEvent, id).then(loadRef)); }
-    else if (act === 'ckdel'){ guard(api.removeCheckin(ckEvent, id).then(loadRef)); }
     else if (act === 'chassign'){
-      if (!chEvent){ toast('Escolhe o momento.'); return; }
-      guard(api.assignChallenge(id, chEvent).then(function(n){ toast(n ? 'Entregue a '+n+' pessoa(s).' : 'Ninguém novo com check in neste momento.'); return loadRef(); }));
+      guard(api.assignChallenge(id).then(function(n){ toast(n ? 'Entregue a '+n+' pessoa(s).' : 'Ninguém novo para receber, ainda.'); return loadRef(); }));
     }
     else if (act === 'chdel'){ if (confirm('Apagar este challenge?')) guard(api.deleteChallenge(id).then(loadRef)); }
     else if (act === 'approve' || act === 'reject'){
       var inp = $('pts-'+id), v = inp ? parseInt(inp.value, 10) : null;
       guard(api.reviewAssignment(id, act === 'approve', act === 'approve' && !isNaN(v) ? v : null).then(function(){ toast(act === 'approve' ? 'Aprovado.' : 'Rejeitado.'); return loadRef(); }));
     }
+    else if (act === 'react'){
+      if (!need('Entra para reagires.')) return;
+      var rk = b.getAttribute('data-kind'), curR = reactions.filter(function(x){ return x.post_id === id && x.user_id === user.id; })[0], nextR = curR && curR.kind === rk ? null : rk;
+      var capR = $('caption'); if (capR) pick.caption = capR.value;
+      guard(api.react(id, nextR).then(function(){
+        reactions = reactions.filter(function(x){ return !(x.post_id === id && x.user_id === user.id); });
+        if (nextR) reactions.push({post_id:id, user_id:user.id, kind:nextR});
+        renderFeed();
+      }));
+    }
+    else if (act === 'swapteam'){ guard(api.setNightTeam(id, b.getAttribute('data-team') === 'vera' ? 'fran' : 'vera').then(loadRef)); }
     else if (act === 'rtab'){ rtab = b.getAttribute('data-tab'); renderRef(); }
     else if (act === 'evadd'){
       var nid = 'e' + Date.now().toString(36);
@@ -1526,8 +1573,6 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         .catch(function(e){ toast(e.message || 'Não consegui enviar a prova.'); });
       return;
     }
-    if (t.getAttribute && t.getAttribute('data-act') === 'ckpick'){ ckEvent = t.value; renderRef(); return; }
-    if (t.getAttribute && t.getAttribute('data-act') === 'chpick'){ chEvent = t.value; renderRef(); return; }
     var kind = t.getAttribute && t.getAttribute('data-edit'); if (!kind) return;
     var id = t.getAttribute('data-id'), f2 = t.getAttribute('data-f');
     var o = find(kind === 'ev' ? events : drinks, id); if (!o) return;
