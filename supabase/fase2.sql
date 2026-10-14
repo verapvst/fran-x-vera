@@ -212,7 +212,7 @@ create or replace view leaderboard with (security_invoker = true) as
          p.avatar_path, p.region, p.team,
          (select count(*) from assignments a where a.user_id = p.id and a.status = 'approved')::int as challenges
     from profiles p
-   where p.role = 'player';
+   where p.role in ('player', 'referee');
 
 create or replace view team_board with (security_invoker = true) as
   select t.team,

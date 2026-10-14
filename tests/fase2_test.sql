@@ -21,6 +21,9 @@ insert into auth.users(id,email,raw_user_meta_data) values
  (:'A1','a1@x','{"name":"Ana"}'),(:'A2','a2@x','{"name":"Bia"}'),(:'V','v@x','{"name":"Vera"}'),(:'F','f@x','{"name":"Fran"}');
 update profiles set role = 'referee' where id in (:'V', :'F');
 
+-- eventos que já não estão no programa mas servem de casos de teste (não oficial e dia inteiro)
+insert into events(id,day,start_time,end_time,all_day,title,official,sort) values ('e4','sex','02:00','18:00',false,'WORK DAY',false,4),('e7','sab',null,null,true,'RECOVERY DAY',true,7) on conflict do nothing;
+
 -- janela do check in (função pura, hora de Lisboa, outubro = UTC+1)
 select tt.eq('check in abre 1h antes', $$select checkin_open(e, '2026-10-15 18:00:00+01') from events e where id='e1'$$, 'true');
 select tt.eq('check in fechado 2h antes', $$select checkin_open(e, '2026-10-15 16:59:00+01') from events e where id='e1'$$, 'false');

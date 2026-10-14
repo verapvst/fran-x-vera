@@ -80,6 +80,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ev .pl{font-weight:600;font-size:.88rem}
 .ev.off{opacity:.62}
 .ev .act{display:grid;justify-items:end;gap:4px}
+.flow .step{position:relative;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.flow .step .no{font-family:var(--display);font-weight:900;font-size:3rem;line-height:.8;color:var(--red)}
+.flow .step .btn{margin-top:8px}
+@media (min-width:900px){.flow .step:not(:last-child)::after{content:"→";position:absolute;right:-20px;top:50%;font-weight:800;font-size:1.4rem;z-index:1}}
 .teams2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:16px}
 .bday{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 22px;align-items:center;border:2px solid var(--ink);background:var(--red);color:var(--ink);padding:18px 20px;margin:16px 0}
 .bday .n{font-family:var(--display);font-weight:900;font-size:clamp(4.6rem,20vw,8rem);line-height:.8}
@@ -215,10 +219,10 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       <h1 class="names">FRAN <svg class="x" viewBox="0 0 10 10" aria-label="x" role="img"><path d="M1.2 1.2L8.8 8.8M8.8 1.2L1.2 8.8" stroke="currentColor" stroke-width="2.1" fill="none"/></svg><br>VERA</h1>
       <p class="big">23H30 DE FESTA</p>
       <p class="when">15 — 18 OUTUBRO · LISBOA</p>
-      <p class="sub">Duas amigas, dois aniversários, quatro dias. Escolhe as noites em que queres estar e entra no jogo.</p>
+      <p class="sub">Duas amigas, dois aniversários, quatro dias.</p>
       <div class="cta">
-        <button class="btn red" data-nav="plano">Ver o plano</button>
-        <button class="btn ghost" data-nav="login" id="heroLogin">Entrar</button>
+        <button class="btn red" data-nav="login" id="heroLogin">Criar perfil</button>
+        <button class="btn ghost" data-nav="plano">Ver o plano</button>
       </div>
       <p class="tagline">Choose your nights.<br>Check in. Complete challenges.<br>Earn points.</p>
       <div class="art">
@@ -230,13 +234,13 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     </header>
 
     <section class="sec">
-      <h2 class="h2">Como <em>funciona</em></h2>
-      <ol class="steps">
-        <li class="step"><h3>Escolhe as tuas noites</h3><p>Diz no Plano em que momentos vais estar. Não precisas de aparecer em todos.</p></li>
-        <li class="step"><h3>Posta no BoozeFeed</h3><p>Selfie, bebida e pontos. Abre na quinta às 19:00.</p></li>
-        <li class="step"><h3>Sobe no ranking</h3><p>Os pontos somam. Em breve também com o rally de sábado e os challenges.</p></li>
+      <h2 class="h2">Em <em>3 passos</em></h2>
+      <ol class="steps flow">
+        <li class="step"><span class="no">1</span><h3>Cria o teu perfil</h3><p>Nome e selfie. Demora 1 minuto.</p><button class="btn small" data-nav="login">Criar perfil</button></li>
+        <li class="step"><span class="no">2</span><h3>Vota quando vais</h3><p>No Plano, marca as noites em que estás. Responde primeiro ao jantar de sexta.</p><button class="btn small ghost" data-nav="plano">Ver o plano</button></li>
+        <li class="step"><span class="no">3</span><h3>Joga</h3><p>BoozeFeed abre na quinta às 19:00. Check in, challenges e pontos para a tua equipa.</p></li>
       </ol>
-      <div class="band"><p>A Fran e a Vera não jogam. São as referees: validam, dão pontos e mandam no jogo.</p></div>
+      <div class="band"><p>A Fran e a Vera jogam no BoozeFeed, mas não nos challenges. São as referees.</p></div>
     </section>
   </section>
 
@@ -405,13 +409,11 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     {id:'e1', day:'qui', start:'19:00', end:'23:30', title:'THE GRAND OPENING', place:'Corner', note:'Início oficial da festa, apresentação do conceito, equipas e jogo.', official:true, sort:1},
     {id:'e2', day:'sex', start:'00:00', end:'00:30', title:'23.', note:'Meia-noite da Fran. A Fran faz 23 anos.', official:true, sort:2},
     {id:'e3', day:'sex', start:'00:30', end:'02:00', title:'PRAIA NO PARQUE', official:true, sort:3},
-    {id:'e4', day:'sex', start:'02:00', end:'18:00', title:'WORK DAY', note:'Dia normal de trabalho. Não é programação oficial da festa.', official:false, sort:4},
     {id:'e12', day:'sex', start:'19:00', end:'23:00', title:'JANTAR', place:'Local a definir', note:'O sítio depende de quantas pessoas alinharem. Diz já se vais, para a organização reservar mesa.', official:true, sort:5},
     {id:'e6', day:'sex', start:'23:00', end:'02:00', title:'BAIRRO ALTO + ZÉ DOS BOIS', place:'Bairro Alto', official:true, sort:6},
-    {id:'e7', day:'sab', allDay:true, title:'RECOVERY DAY', official:true, sort:7},
     {id:'e5', day:'sab', start:'20:00', end:'00:00', title:'RALLY TASCAS & CROQUETTE', place:'Rota a definir', note:'Um rally pelas tascas, com diferentes challenges e pontos ao longo do percurso.', official:true, sort:8},
     {id:'e10', day:'dom', start:'00:00', end:'00:30', title:'24.', note:'Meia-noite da Vera. A Vera faz 24 anos.', official:true, sort:9},
-    {id:'e11', day:'dom', start:'00:30', end:'06:00', title:'THE FINALE', place:'Discoteca', official:true, sort:10}
+    {id:'e11', day:'dom', start:'00:30', end:'06:00', title:'DISCOTECA', official:true, sort:10}
   ];
   var DRINKS_SEED = [
     {id:'d_na', label:'Sem álcool', hint:'água, sumo, 0%', points:-1, kind:'drink', sort:1},
@@ -834,7 +836,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       },
       deletePost: function(id){ ps = ps.filter(function(p){ return p.id !== id; }); return Promise.resolve(); },
       leaderboard: function(){
-        var rows = users.filter(function(u){ return u.role === 'player'; }).map(function(u){
+        var rows = users.map(function(u){
           return {name:u.name, avatar:u.avatar, region:u.region, team:u.team || null, points:pointsOf(u.id),
             posts:ps.filter(function(p){ return p.user_id === u.id; }).length, challenges:asg.filter(function(x){ return x.user_id === u.id && x.status === 'approved'; }).length};
         });
@@ -1066,7 +1068,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 
   /* ---------- rendering ---------- */
   function renderLinks(){
-    var items = [['inicio','Início'],['plano','Plano'],['rally','Rally'],['feed','BoozeFeed'],['rankings','Rankings'],['challenges','Challenges']];
+    var items = [['inicio','Início'],['plano','Plano'],['feed','BoozeFeed'],['rankings','Rankings'],['challenges','Challenges']];
     if (isRef()) items.push(['referee','Referee']);
     var h = items.map(function(it){ return '<button class="lk" data-nav="'+it[0]+'"'+(view===it[0]?' aria-current="page"':'')+'>'+it[1]+'</button>'; }).join('');
     h += user ? '<button class="lk" data-nav="perfil"'+(view==='perfil'?' aria-current="page"':'')+'>'+av(user.avatar,user.name,'')+esc(user.name)+'</button><button class="lk" data-act="logout">Sair</button>'
@@ -1077,39 +1079,43 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   var BDAY = {'23.':{who:'Fran'}, '24.':{who:'Vera'}};
   BDAY['23.'].when = 'Quinta para sexta'; BDAY['24.'].when = 'Sábado para domingo';
   var PRIORITY = {e12:true}; // momentos que precisam de resposta cedo, para a organização
+  function nightOf(e){ // depois da meia-noite conta como a noite anterior (00:30 de sexta é noite de quinta)
+    var order = ['qui','sex','sab','dom'], i = order.indexOf(e.day);
+    return (!e.allDay && e.start && mins(e.start) < 360 && i > 0) ? order[i-1] : e.day;
+  }
   function renderPlano(){
-    var official = events.filter(function(e){ return e.official; });
+    var shown = events.filter(function(e){ return e.official && !e.allDay; });
     var total = events.reduce(function(a,e){ return a + dur(e); }, 0);
     var mine = {}; rsvps.forEach(function(r){ if (user && r.user_id === user.id) mine[r.event_id] = true; });
-    var n = official.filter(function(e){ return mine[e.id]; }).length;
+    var n = shown.filter(function(e){ return mine[e.id]; }).length;
     var cnt = {}; rsvps.forEach(function(r){ cnt[r.event_id] = (cnt[r.event_id]||0) + 1; });
     var myCk = {}; checkins.forEach(function(c){ if (user && c.user_id === user.id) myCk[c.event_id] = true; });
-    $('sumbar').innerHTML = '<div><b>'+fmtH(total)+'</b><span style="font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">de programa oficial · '+official.length+' momentos</span></div>' +
-      (isRef() ? '<span style="font-weight:800">Vês o plano como referee</span>' : (user ? '<div style="font-weight:800">'+(user.team ? '<span class="chip red">'+teamLabel(user.team)+'</span> ' : '')+'Vais estar em '+n+' de '+official.length+'</div>' : '<div class="row"><span style="font-weight:800">Entra para escolher as tuas noites</span><button class="btn small" data-nav="login">Entrar</button></div>'));
+    $('sumbar').innerHTML = '<div><b>'+fmtH(total)+'</b><span style="font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">de festa · '+shown.length+' momentos</span></div>' +
+      (isRef() ? '<span style="font-weight:800">Vês o plano como referee</span>' : (user ? '<div style="font-weight:800">'+(user.team ? '<span class="chip red">'+teamLabel(user.team)+'</span> ' : '')+'Vais estar em '+n+' de '+shown.length+'</div>' : '<div class="row"><span style="font-weight:800">Entra para votar quando vais</span><button class="btn small" data-nav="login">Entrar</button></div>'));
     var h = '';
-    events.filter(function(e){ return PRIORITY[e.id] && e.official && !mine[e.id] && !isRef(); }).forEach(function(e){
-      h += '<div class="band light" style="margin:0 0 22px"><p><b>'+esc(e.title)+' de sexta:</b> o sítio ainda está por definir e depende de quantas pessoas alinharem. Diz já se vais.</p><button class="btn small red" data-act="rsvp" data-id="'+esc(e.id)+'">Vou ao jantar</button></div>';
+    shown.filter(function(e){ return PRIORITY[e.id] && !mine[e.id] && !isRef(); }).forEach(function(e){
+      h += '<div class="band light" style="margin:0 0 22px"><p><b>Jantar de sexta:</b> o sítio depende de quantas pessoas alinharem. Diz já se vais.</p><button class="btn small red" data-act="rsvp" data-id="'+esc(e.id)+'">Vou ao jantar</button></div>';
     });
     DAYS.forEach(function(d){
+      var list = shown.filter(function(e){ return nightOf(e) === d.id; });
+      if (!list.length) return;
       h += '<div class="day"><div class="dayh"><h3>'+d.label+'</h3><span>'+d.date+'</span></div>';
-      events.filter(function(e){ return e.day === d.id; }).forEach(function(e){
-        var time = e.allDay ? 'DURANTE O DIA' : esc(e.start)+' — '+esc(e.end);
+      list.forEach(function(e){
         var sel = !!mine[e.id], c = cnt[e.id] || 0;
-        var cbtn = (user && !isRef() && e.official) ? (myCk[e.id] ? '<span class="chip">Check in feito</span>' : (checkinOpen(e, Date.now()) ? '<button class="btn small red" data-act="checkin" data-id="'+esc(e.id)+'">Check in</button>' : '')) : '';
-        var btn = e.official ? (isRef() ? '' : '<button class="btn small '+(sel?'red':'ghost')+'" data-act="rsvp" data-id="'+esc(e.id)+'" aria-pressed="'+sel+'">'+(sel?'Vou estar':'Vou')+'</button>') + (isRef() ? '<span class="cnt">'+c+' '+(c===1?'vai':'vão')+'</span>' : '')
-                              : '<span class="chip">Fora da festa</span>';
-        btn = cbtn + btn;
-        var soon = /a definir/i.test((e.place||'')+' '+(e.note||'')) ? '<span class="chip ex">Coming soon</span>' : '';
+        var cbtn = (user && !isRef()) ? (myCk[e.id] ? '<span class="chip">Check in feito</span>' : (checkinOpen(e, Date.now()) ? '<button class="btn small red" data-act="checkin" data-id="'+esc(e.id)+'">Check in</button>' : '')) : '';
+        var btn = cbtn + (isRef() ? '' : '<button class="btn small '+(sel?'red':'ghost')+'" data-act="rsvp" data-id="'+esc(e.id)+'" aria-pressed="'+sel+'">'+(sel?'Vou estar':'Vou')+'</button>') +
+          (isRef() ? '<span class="cnt">'+c+' '+(c===1?'vai':'vão')+'</span>' : '');
         if (BDAY[e.title]){
           var b = BDAY[e.title];
-          h += '<div class="bday"><div class="n" aria-hidden="true">'+esc(e.title.replace('.',''))+'</div><div><div class="k">'+b.when+' · '+d.date+' · '+esc(e.start)+' — '+esc(e.end)+'</div>' +
-            '<h4>Meia-noite da '+b.who+'</h4><p>A '+b.who+' faz '+esc(e.title.replace('.',''))+' anos. Estejam todos juntos à meia-noite.</p></div><div class="act">'+btn+'</div></div>';
+          h += '<div class="bday"><div class="n" aria-hidden="true">'+esc(e.title.replace('.',''))+'</div><div><div class="k">'+b.when+' · '+esc(e.start)+'</div>' +
+            '<h4>Meia-noite da '+b.who+'</h4></div><div class="act">'+btn+'</div></div>';
           return;
         }
-        var prio = PRIORITY[e.id] ? ' prio' : '';
-        h += '<div class="ev'+(e.official?'':' off')+prio+'"><div class="t">'+time+'</div><div><h4>'+esc(e.title)+(PRIORITY[e.id]?' <span class="chip">Responde primeiro</span>':'')+'</h4>' +
-          (e.place ? '<div class="pl">'+esc(e.place)+'</div>' : '') + (e.note ? '<p>'+esc(e.note)+'</p>' : '') +
-          (e.rule ? '<span class="rule">'+esc(e.rule)+'</span>' : '') + (soon ? '<div style="margin-top:6px">'+soon+'</div>' : '') + '</div><div class="act">' + btn + '</div></div>';
+        var tbd = /a definir/i.test((e.place||'')+' '+(e.note||''));
+        var place = e.place && !/a definir/i.test(e.place) && e.title.toLowerCase().indexOf(e.place.toLowerCase()) < 0 ? e.place : '';
+        h += '<div class="ev'+(PRIORITY[e.id] ? ' prio' : '')+'"><div class="t">'+esc(e.start)+'</div><div><h4>'+esc(e.title)+'</h4>' +
+          (place ? '<div class="pl">'+esc(place)+'</div>' : '') + (tbd ? '<div style="margin-top:6px"><span class="chip ex">Coming soon</span></div>' : '') +
+          '</div><div class="act">' + btn + '</div></div>';
       });
       h += '</div>';
     });
@@ -1136,8 +1142,6 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     var c = $('composer');
     if (!user){
       c.innerHTML = '<div class="band light"><p>Entra para postares a tua selfie e ganhares pontos.</p><button class="btn small" data-nav="login">Entrar</button></div>';
-    } else if (isRef()){
-      c.innerHTML = '<div class="band light"><p>As referees não jogam, mas podem apagar posts e mudar os pontos no painel.</p></div>';
     } else {
       var ds = drinks.map(function(d){
         return '<button type="button" class="dk" data-act="drink" data-id="'+esc(d.id)+'" aria-pressed="'+(pick.drink===d.id)+'"><span class="p">'+pts(d.points)+'</span><b>'+esc(d.label)+'</b><span>'+esc(d.hint||'')+'</span></button>';

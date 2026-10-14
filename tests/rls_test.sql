@@ -20,7 +20,7 @@ select tt.cnt('trigger created 4 profiles','select 1 from profiles',4);
 
 -- ANON
 set role anon;
-select tt.cnt('anon reads events','select 1 from events',10);
+select tt.cnt('anon reads events','select 1 from events',8);
 select tt.cnt('anon reads drinks','select 1 from drinks',10);
 select tt.cnt('anon reads profiles','select 1 from profiles',4);
 select tt.cnt('anon CANNOT read member_keys','select 1 from member_keys',0);
@@ -69,7 +69,7 @@ select tt.cnt('drink points unchanged','select 1 from drinks where points=999',0
 select tt.chk('A1 post while locked fails',$$insert into posts(drink_id,photo_path) values('d_beer20','a1/1.jpg')$$,false);
 select set_config('request.jwt.claim.sub',:'V',false);
 select tt.chk('Vera opens feed',$$select set_feed_unlock(now() - interval '1 minute')$$,true);
-select tt.chk('Vera cannot post (referee)',$$insert into posts(drink_id,photo_path) values('d_beer20','b1/1.jpg')$$,false);
+select tt.chk('Vera (referee) can post to BoozeFeed',$$insert into posts(drink_id,photo_path) values('d_beer20','00000000-0000-0000-0000-0000000000b1/1.jpg')$$,true);
 select tt.chk('Vera update event ok',$$update events set note='x' where id='e3'$$,true);
 select tt.cnt('event updated','select 1 from events where note=''x''',1);
 select tt.cnt('Vera reads all member_keys','select 1 from member_keys',4);
@@ -99,7 +99,8 @@ reset role;
 
 -- LEADERBOARD
 set role anon;
-select tt.cnt('leaderboard shows 2 players, no referees','select 1 from leaderboard',2);
+select tt.cnt('leaderboard shows players and referees (2 + 2)','select 1 from leaderboard',4);
+select tt.cnt('Vera appears on the leaderboard with her beer','select 1 from leaderboard where name=''Vera'' and points=1',1);
 select tt.cnt('leaderboard Ana = 10+15 pts','select 1 from leaderboard where name=''Ana'' and points=25',1);
 reset role;
 

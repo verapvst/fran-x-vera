@@ -111,13 +111,11 @@ insert into events (id, day, start_time, end_time, all_day, title, place, note, 
  ('e1','qui','19:00','23:30',false,'THE GRAND OPENING','Corner','Início oficial da festa, apresentação do conceito, equipas e jogo.',null,true,1),
  ('e2','sex','00:00','00:30',false,'23.',null,'Meia-noite da Fran. A Fran faz 23 anos.',null,true,2),
  ('e3','sex','00:30','02:00',false,'PRAIA NO PARQUE',null,null,null,true,3),
- ('e4','sex','02:00','18:00',false,'WORK DAY',null,'Dia normal de trabalho. Não é programação oficial da festa.',null,false,4),
  ('e12','sex','19:00','23:00',false,'JANTAR','Local a definir','O sítio depende de quantas pessoas alinharem. Diz já se vais, para a organização reservar mesa.',null,true,5),
  ('e6','sex','23:00','02:00',false,'BAIRRO ALTO + ZÉ DOS BOIS','Bairro Alto',null,null,true,6),
- ('e7','sab',null,null,true,'RECOVERY DAY',null,null,null,true,7),
  ('e5','sab','20:00','00:00',false,'RALLY TASCAS & CROQUETTE','Rota a definir','Um rally pelas tascas, com diferentes challenges e pontos ao longo do percurso.',null,true,8),
  ('e10','dom','00:00','00:30',false,'24.',null,'Meia-noite da Vera. A Vera faz 24 anos.',null,true,9),
- ('e11','dom','00:30','06:00',false,'THE FINALE','Discoteca',null,null,true,10)
+ ('e11','dom','00:30','06:00',false,'DISCOTECA',null,null,null,true,10)
 on conflict (id) do nothing;
 
 -- 4. Quem vai a que momentos
@@ -175,7 +173,7 @@ alter table posts enable row level security;
 drop policy if exists "posts_read" on posts;
 create policy "posts_read" on posts for select to anon, authenticated using (true);
 drop policy if exists "posts_insert" on posts;
-create policy "posts_insert" on posts for insert to authenticated with check (user_id = auth.uid() and not is_ref());
+create policy "posts_insert" on posts for insert to authenticated with check (user_id = auth.uid());  -- as referees também jogam no BoozeFeed
 drop policy if exists "posts_delete" on posts;
 create policy "posts_delete" on posts for delete to authenticated using (user_id = auth.uid() or is_ref());
 
@@ -206,7 +204,7 @@ create trigger posts_bi before insert on posts for each row execute function pos
 create or replace view leaderboard with (security_invoker = true) as
   select p.name, coalesce(sum(po.points), 0)::int as points, count(po.id)::int as posts, p.avatar_path, p.region
   from profiles p left join posts po on po.user_id = p.id
-  where p.role = 'player'
+  where p.role in ('player', 'referee')
   group by p.id, p.name;
 
 -- 6. Ideias de challenges

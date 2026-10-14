@@ -45,7 +45,7 @@ O endereço é `https://verapvst.github.io/fran-x-vera/`. O Pages está configur
 * Os pontos vêm da tabela `drinks`. Ninguém consegue inventar pontos.
 * Fechado até quinta, 15 de outubro, às 19:00.
 * Máximo de 2 bebidas por hora por pessoa. "Cheguei a casa" vale 15, uma vez por noite.
-* As referees não aparecem no ranking.
+* As referees também jogam no BoozeFeed e aparecem no ranking individual (nos challenges não participam).
 
 ## Notas honestas
 
