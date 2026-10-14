@@ -28,7 +28,14 @@ psql -d fv_test -f supabase/fase3.sql
 sed "s/TOKEN_VERA/$TV/g; s/TOKEN_FRAN/$TF/g" tests/fase3_test.sql | psql -d fv_test -At | grep -E "^(PASS|FAIL)"
 ```
 
-Os testes de `fase2_test.sql` correm só com a fase 2 (sem a fase 3), porque a fase 3 muda as equipas e o check in.
+Fase 4 (equipa fixa, públicos, segredos, rally): corre `supabase/fase4.sql` e usa `tests/fase4_test.sql`:
+
+```
+psql -d fv_test -f supabase/fase4.sql
+sed "s/TOKEN_VERA/$TV/g; s/TOKEN_FRAN/$TF/g" tests/fase4_test.sql | psql -d fv_test -At | grep -E "^(PASS|FAIL)"
+```
+
+Os testes de `fase2_test.sql` correm só com a fase 2, e os de `fase3_test.sql` só com a fase 2 e 3 (sem a fase 4), porque cada fase seguinte muda as equipas e o check in.
 
 Tudo deve dizer PASS. Corre isto sempre que mudares `supabase/schema.sql`.
 Isto NAO substitui testar num projeto Supabase real e em telemoveis reais.

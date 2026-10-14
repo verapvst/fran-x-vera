@@ -11,6 +11,7 @@ function doPost(e) {
   try {
     var body = JSON.parse(e.postData.contents);
     var tok = String(body.token || '');
+    if (body.action === 'challenges') return avisarChallenges_(tok);
     if (tok.length < 20) return out_({ok: false, error: 'sem sessao'});
     var h = {apikey: SUPABASE_KEY, Authorization: 'Bearer ' + tok};
     var ru = UrlFetchApp.fetch(SUPABASE_URL + '/auth/v1/user', {headers: h, muteHttpExceptions: true});
@@ -58,3 +59,46 @@ function doPost(e) {
 function doGet() { return out_({ok: true, info: 'FRAN x VERA mailer'}); }
 function out_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 function esc_(s) { return String(s).replace(/[&<>"']/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]; }); }
+
+
+// Referees: avisa por email cada pessoa que recebeu challenges novos. O email nunca diz o que é o challenge (pode ser secreto),
+// só que há novidades, com o link pessoal. Só corre para sessões de referee, confirmadas no Supabase.
+function avisarChallenges_(tok) {
+  if (tok.length < 20) return out_({ok: false, error: 'sem sessao'});
+  var h = {apikey: SUPABASE_KEY, Authorization: 'Bearer ' + tok};
+  var ru = UrlFetchApp.fetch(SUPABASE_URL + '/auth/v1/user', {headers: h, muteHttpExceptions: true});
+  if (ru.getResponseCode() !== 200) return out_({ok: false, error: 'sessao invalida'});
+  var uid = JSON.parse(ru.getContentText()).id;
+  var rr = JSON.parse(UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/profiles?select=role&id=eq.' + encodeURIComponent(uid), {headers: h, muteHttpExceptions: true}).getContentText());
+  if (!rr || !rr.length || rr[0].role !== 'referee') return out_({ok: false, error: 'so referees'});
+
+  var as = JSON.parse(UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/assignments?select=id,user_id&notified=eq.false&status=eq.open&limit=500', {headers: h, muteHttpExceptions: true}).getContentText());
+  if (!as || !as.length) return out_({ok: true, sent: 0});
+  var porPessoa = {};
+  as.forEach(function (a) { (porPessoa[a.user_id] = porPessoa[a.user_id] || []).push(a.id); });
+  var ids = Object.keys(porPessoa);
+  var lista = '(' + ids.join(',') + ')';
+  var keys = JSON.parse(UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/member_keys?select=user_id,contact,link_key&user_id=in.' + lista, {headers: h, muteHttpExceptions: true}).getContentText());
+  var nomes = JSON.parse(UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/profiles?select=id,name&id=in.' + lista, {headers: h, muteHttpExceptions: true}).getContentText());
+  var nome = {}; nomes.forEach(function (p) { nome[p.id] = p.name; });
+  var enviados = 0, feitos = [];
+  keys.forEach(function (k) {
+    if (!k.contact) return;
+    var n = porPessoa[k.user_id].length, first = nome[k.user_id] ? String(nome[k.user_id]).split(' ')[0] : '';
+    var link = SITE + (k.link_key ? '#k=' + k.link_key : '');
+    var texto = 'Olá' + (first ? ' ' + first : '') + '!\n\nTens ' + (n === 1 ? 'um challenge novo' : n + ' challenges novos') + ' na festa FRAN × VERA. Abre o site, vai a Challenges, cumpre-o e envia a prova (foto ou vídeo) para ganhares pontos para a tua equipa.\n\n' + link + '\n\nFran e Vera';
+    var html = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:auto;padding:24px;background:#f4e2ea;color:#0d0a0b">' +
+      '<h2 style="margin:0 0 12px;font-size:22px">FRAN × VERA</h2><p>Olá' + (first ? ' ' + esc_(first) : '') + '!</p>' +
+      '<p>Tens <b>' + (n === 1 ? 'um challenge novo' : n + ' challenges novos') + '</b>. Cumpre-' + (n === 1 ? 'o' : 'os') + ' e envia a prova (foto ou vídeo) para ganhares pontos para a tua equipa.</p>' +
+      '<p style="margin:22px 0"><a href="' + link + '" style="background:#e8421f;color:#0d0a0b;text-decoration:none;font-weight:bold;padding:14px 22px;border-radius:999px;border:2px solid #0d0a0b">Ver os meus challenges</a></p>' +
+      '<p>Fran e Vera</p></div>';
+    try {
+      MailApp.sendEmail(k.contact, 'Tens um challenge novo | FRAN × VERA', texto, {htmlBody: html, name: 'FRAN × VERA'});
+      enviados++; feitos = feitos.concat(porPessoa[k.user_id]);
+    } catch (err) { /* limite do Gmail: fica por avisar e tenta-se outra vez */ }
+  });
+  if (feitos.length) {
+    UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/rpc/mark_notified', {method: 'post', contentType: 'application/json', headers: h, payload: JSON.stringify({p_ids: feitos}), muteHttpExceptions: true});
+  }
+  return out_({ok: true, sent: enviados});
+}

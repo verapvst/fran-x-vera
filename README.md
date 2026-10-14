@@ -7,7 +7,8 @@ Site do fim de semana de aniversário (15 a 18 de outubro, Lisboa): plano com pr
 * `site/` é o site (uma página `index.html`, sem build). O GitHub Pages publica só esta pasta.
 * `supabase/schema.sql` é a base de dados base, com as regras de segurança. Pode ser corrido mais do que uma vez.
 * `supabase/fase2.sql` acrescenta challenges com prova e a função da pontuação de equipa. Corre-o **depois** de `schema.sql`.
-* `supabase/fase3.sql` acrescenta as equipas automáticas por noite, a presença, as reações e o programa final. Corre-o **depois** de `fase2.sql`. Todos podem ser corridos mais do que uma vez. Sem a fase 3 o site funciona na mesma, só sem equipas e reações.
+* `supabase/fase3.sql` acrescenta a presença, as reações e o programa final. Corre-o **depois** de `fase2.sql`.
+* `supabase/fase4.sql` torna a equipa fixa, acrescenta os públicos e segredos dos challenges e o rally com notas. Corre-o **depois** de `fase3.sql`. Todos podem ser corridos mais do que uma vez. Sem a fase 4 o site funciona na mesma, mas as equipas continuam por noite (fase 3).
 * `tests/` tem os testes das regras de segurança.
 * Contas, dados e fotos ficam no Supabase. O site fala diretamente com ele e as regras da base de dados decidem quem pode ver e fazer o quê.
 
@@ -35,13 +36,14 @@ O endereço é `https://verapvst.github.io/fran-x-vera/`. O Pages está configur
 ## Como funciona o jogo (fase 3)
 
 * **Só se vota no jantar.** Ninguém se inscreve nos outros momentos. O Plano só tem o botão "Vou ao jantar".
-* **Equipas automáticas, todas as noites.** O primeiro post de uma pessoa numa noite mete-a na equipa mais pequena nessa noite (empate: Team Vera). A noite vai das 08:00 às 08:00, hora de Lisboa. As referees não têm equipa mas jogam no BoozeFeed.
+* **Equipa fixa, atribuída no primeiro post de sempre.** Quem chega vai para a equipa com menos gente que já postou nessa noite (empate: a com menos membros; empate: Team Vera). Mantém-se nas noites todas. A noite vai das 08:00 às 08:00, hora de Lisboa. As referees não têm equipa mas jogam no BoozeFeed.
 * **Pontos:** bebidas + horas na festa (5 pontos por hora entre o primeiro e o último post da noite, máximo 12 horas) + challenges aprovados. Para mudar o valor: `update app_settings set value = '8' where key = 'presence_points_per_hour';` (e `PRESENCE_RATE` em `site/index.html`, que só serve para o texto e o modo demonstração).
-* **Pontuação da equipa:** pontos totais ÷ pessoas da equipa nessa noite (`team_score` em `supabase/fase2.sql`). O ranking mostra cada noite e o total.
+* **Pontuação da equipa:** pontos totais ÷ pessoas da equipa **que postaram nessa noite** (`team_score` em `supabase/fase2.sql`). O ranking mostra cada noite e o total.
 * **Hora dos posts:** é sempre a do servidor, ninguém inventa horas.
 * **Reações:** cada pessoa reage a cada foto com uma reação (fogo, cerveja, riso, beijo), e carregar outra vez tira-a.
-* **Challenges:** as referees atribuem-nos a quem já postou nessa noite. A Vera valida a Team Fran e a Fran valida a Team Vera, a equipa da noite em que a prova foi enviada.
-* **Painel referee:** Jantar (quem vai), Hoje (equipas desta noite, com troca manual), Challenges, Validar, e Mais (Eventos, Pontos, Players).
+* **Challenges:** as referees criam e entregam a quem já postou nessa noite: todos, uma equipa, nacionais, internacionais ou pessoas específicas (lista só de quem já postou), secretos ou à vista de todos. "Sortear" dá a cada pessoa presente um da lista que ainda não tenha recebido. "Avisar por email" envia um email a quem tem challenges novos (precisa do `apps-script/Code.gs` atualizado). A Vera valida a Team Fran e a Fran valida a Team Vera.
+* **Rally:** as referees adicionam as paragens (Painel referee, Mais, Rally). Os players dão nota de 1 a 5 ao croquete e à tasca, e a página mostra o melhor croquete.
+* **Painel referee:** Jantar (quem vai), Hoje (quem já postou, com a equipa e troca manual), Challenges, Validar, e Mais (Eventos, Pontos, Players, Rally).
 * **Quem vê o quê:** só as referees veem quantas pessoas vão ao jantar. Provas por validar só aparecem ao próprio e às referees.
 * **Nota:** o bucket `proofs` é público como o das selfies: quem tiver o link direto de uma prova consegue vê-la.
 

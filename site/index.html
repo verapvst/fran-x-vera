@@ -322,15 +322,10 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         <span class="chip red">Trending</span>
       </div>
       <p class="note">O site número 1 do mundo em notícias que ninguém pediu. Posta uma selfie, escolhe a bebida e ganha pontos. Máximo de 2 bebidas por hora. Água custa-te um ponto.</p>
-      <div class="card howto" style="max-width:none;margin-bottom:18px">
-        <h3 style="margin:0 0 8px;font-family:var(--display);font-weight:900;font-size:1.9rem;line-height:1">Como funciona</h3>
-        <ol style="margin:0;padding-left:20px;display:grid;gap:6px">
-          <li><b>O teu primeiro post da noite mete-te numa equipa.</b> Team Vera ou Team Fran. As equipas mudam todas as noites.</li>
-          <li><b>Bebe e posta.</b> Cada bebida dá pontos à tua equipa. Máximo de 2 por hora.</li>
-          <li><b>Fica o mais tempo que conseguires.</b> Ganhas 5 pontos por hora entre o teu primeiro e o teu último post da noite. Quando saíres, faz o último post (por exemplo "Cheguei a casa").</li>
-          <li><b>No fim da noite</b> vê-se que equipa fez mais pontos por pessoa e quantas horas de festa juntou.</li>
-          <li><b>Reage às fotos</b> dos outros. Ninguém precisa de se inscrever em nada.</li>
-        </ol>
+      <div class="howto band light" style="display:block;margin:0 0 16px;padding:12px 16px">
+        <p style="margin:0 0 4px"><b>1.</b> O teu primeiro post mete-te numa equipa (Vera ou Fran) para as noites todas.</p>
+        <p style="margin:0 0 4px"><b>2.</b> Cada bebida dá pontos, e ganhas 5 por hora entre o primeiro e o último post da noite.</p>
+        <p style="margin:0"><b>3.</b> No fim da noite ganha a equipa com mais pontos por pessoa. Reage às fotos dos outros.</p>
       </div>
       <div id="feedLocked" hidden></div>
       <div id="feedLive">
@@ -348,7 +343,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       <div class="band light gate"><p>Entra para veres o ranking e jogares.</p><button class="btn small" data-nav="login">Entrar</button></div>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:6px"><em>Equipas</em></h2>
       <div id="rkTeams"></div>
-      <p class="note" style="margin-top:8px">Pontuação da equipa = pontos totais a dividir pelas pessoas da equipa nessa noite, para ninguém ganhar só por ter mais gente. As equipas mudam todas as noites.</p>
+      <p class="note" style="margin-top:8px">Pontuação da equipa = pontos totais a dividir pelas pessoas da equipa nessa noite, para ninguém ganhar só por ter mais gente. A equipa mantém-se, e a pontuação de cada noite divide-se pelas pessoas que postaram nessa noite.</p>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Pontos <em>individuais</em></h2>
       <div class="scroll"><table class="tbl" id="rkPoints"></table></div>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Nacional <em>vs</em> Internacional</h2>
@@ -360,14 +355,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   <section id="v-rally" data-view hidden>
     <div class="sec">
       <h2 class="h2">Rally</h2>
-      <p class="soon">ROTA EM BREVE</p>
-      <p class="sub" style="margin-left:0;margin-top:14px">A rota do rally de sábado, 17 de outubro, ainda está a ser definida e aparece aqui: um rally pelas tascas, com challenges e pontos ao longo do percurso.</p>
-      <ol class="steps" style="margin-top:22px">
-        <li class="step"><h3>Vês a rota</h3><p>Todas as paragens, por ordem, com a hora e a morada.</p></li>
-        <li class="step"><h3>Dás a tua nota</h3><p>Em cada paragem, avalias a tasca e o croquete.</p></li>
-        <li class="step"><h3>Sai o ranking</h3><p>No fim, sabemos quais foram as melhores paragens do rally.</p></li>
-      </ol>
-      <div class="band light" style="margin-top:22px"><p>Queres estar no rally? Marca a noite de sábado no Plano.</p><button class="btn small" data-nav="plano">Ver o plano</button></div>
+      <div id="rallyBody"></div>
     </div>
   </section>
 
@@ -384,6 +372,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       </ol>
       <h2 class="h2" style="margin-top:34px">Os meus <em>challenges</em></h2>
       <div id="myChal" style="max-width:640px"></div>
+      <h2 class="h2" style="margin-top:34px">À vista de <em>todos</em></h2>
+      <div id="chalOpen" style="max-width:640px"></div>
       <h2 class="h2" style="margin-top:34px">Provas da <em>festa</em></h2>
       <div id="chalFeed" style="max-width:640px"></div>
       <h2 class="h2" style="margin-top:34px">Tens uma <em>ideia</em>?</h2>
@@ -787,13 +777,13 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   var demo = (function(){
     var users = [], me = null;
     var ev = JSON.parse(JSON.stringify(EVENTS_SEED)), dr = JSON.parse(JSON.stringify(DRINKS_SEED));
-    var cks = [], chs = [], asg = [], rx = [], nts = {};
+    var cks = [], chs = [], asg = [], rx = [], nts = {}, stops = [], rates = [];
     var rs = [], ps = [], ideas = [], seq = 1, unlockAt = new Date('2026-10-15T19:00:00+01:00').getTime();
     var sample = document.querySelector('.art .hands').src;
     users.push({id:'x1', name:'Convidado exemplo', role:'player', region:'national', avatar:sample, key:'x1.demo', contact:'a@exemplo.pt'}, {id:'x2', name:'Outro exemplo', role:'player', region:'international', avatar:sample, key:'x2.demo', contact:'ex@exemplo.pt'});
     ps.push({id:'p1', user_id:'x1', name:'Convidado exemplo', avatar:sample, drink:'Cocktail', kind:'drink', points:8, photo:sample, caption:'Exemplo de post.', created_at:new Date(Date.now()-14*60000).toISOString()});
     ps.push({id:'p2', user_id:'x2', name:'Outro exemplo', avatar:sample, drink:'Sem álcool', kind:'drink', points:3, photo:sample, caption:'', created_at:new Date(Date.now()-52*60000).toISOString()});
-    function pub(u){ return {id:u.id, name:u.name, role:u.role, region:u.region, avatar:u.avatar, team:nts[nightKey() + '|' + u.id] || null}; }
+    function pub(u){ return {id:u.id, name:u.name, role:u.role, region:u.region, avatar:u.avatar, team:nts[u.id] || null}; }
     function pointsOf(uid){
       var t = 0;
       ps.forEach(function(p){ if (p.user_id === uid) t += p.points; });
@@ -841,17 +831,17 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         if (d.kind === 'care' && n >= 1) return Promise.reject(new Error('Limite: o check de chegada a casa conta uma vez por noite.'));
         if (d.kind !== 'care' && n >= 2) return Promise.reject(new Error('Limite: no máximo 2 bebidas por hora. Bebe água e volta já.'));
         ps.push({id:'p'+(++seq), user_id:me.id, name:me.name, avatar:me.avatar, drink:d.label, kind:d.kind, points:d.points, photo:URL.createObjectURL(o.blob), caption:o.caption, created_at:new Date().toISOString()});
-        var nk = nightKey();
-        if (me.role === 'player' && !nts[nk + '|' + me.id]){
-          var v = 0, f = 0; Object.keys(nts).forEach(function(k){ if (k.split('|')[0] === nk){ if (nts[k] === 'vera') v++; else f++; } });
-          nts[nk + '|' + me.id] = v <= f ? 'vera' : 'fran';
+        if (me.role === 'player' && !nts[me.id]){
+          var nk = nightKey(), pr0 = presenceOf(ps), vt = 0, ft = 0, vm = 0, fm = 0;
+          Object.keys(nts).forEach(function(u){ if (nts[u] === 'vera') vm++; else fm++; if (pr0[u + '|' + nk]){ if (nts[u] === 'vera') vt++; else ft++; } });
+          nts[me.id] = vt < ft ? 'vera' : ft < vt ? 'fran' : (vm <= fm ? 'vera' : 'fran');
         }
         return Promise.resolve();
       },
       deletePost: function(id){ ps = ps.filter(function(p){ return p.id !== id; }); return Promise.resolve(); },
       leaderboard: function(){
         var rows = users.map(function(u){
-          return {name:u.name, avatar:u.avatar, region:u.region, team:Object.keys(nts).filter(function(k){ return k.split('|')[1] === u.id; }).sort().map(function(k){ return nts[k]; }).pop() || null, points:pointsOf(u.id),
+          return {name:u.name, avatar:u.avatar, region:u.region, team:nts[u.id] || null, points:pointsOf(u.id),
             hours:(function(){ var h = 0, pr = presenceOf(ps); Object.keys(pr).forEach(function(k){ if (pr[k].user === u.id) h += pr[k].hours; }); return Math.round(h*10)/10; })(), posts:ps.filter(function(p){ return p.user_id === u.id; }).length, challenges:asg.filter(function(x){ return x.user_id === u.id && x.status === 'approved'; }).length};
         });
         return Promise.resolve(rows.sort(function(x,y){ return y.points - x.points; }));
@@ -878,26 +868,28 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       },
       listChallenges: function(){ return Promise.resolve(chs.slice()); },
       saveChallenge: function(c){
-        if (c.id){ chs.forEach(function(x){ if (x.id === c.id){ x.text = c.text; x.points = c.points; } }); }
-        else chs.push({id:'c'+(++seq), text:c.text, points:c.points});
-        return Promise.resolve();
+        if (c.id){ chs.forEach(function(x){ if (x.id === c.id){ x.text = c.text; x.points = c.points; } }); return Promise.resolve(c.id); }
+        var id = 'c'+(++seq); chs.push({id:id, text:c.text, points:c.points}); return Promise.resolve(id);
       },
       deleteChallenge: function(id){ chs = chs.filter(function(c){ return c.id !== id; }); return Promise.resolve(); },
-      assignChallenge: function(cid){
-        var c = chs.filter(function(x){ return x.id === cid; })[0], n = 0, nk = nightKey();
-        var here = users.filter(function(u){ return nts[nk + '|' + u.id]; });
-        here.forEach(function(u){
+      assignChallenge: function(cid, aud, picked, secret){
+        var c = chs.filter(function(x){ return x.id === cid; })[0], n = 0, nk = nightKey(), pr = presenceOf(ps);
+        var here = users.filter(function(u){ return nts[u.id] && pr[u.id + '|' + nk]; });
+        var pool = here.filter(function(u){
+          return aud === 'tonight' || aud === nts[u.id] || aud === u.region || (aud === 'users' && picked && picked.indexOf(u.id) > -1);
+        });
+        pool.forEach(function(u){
           if (asg.some(function(a){ return a.challenge_id === cid && a.user_id === u.id; })) return;
           var others = here.filter(function(o){ return o.id !== u.id; });
-          var tg = others.filter(function(o){ return nts[nk + '|' + o.id] !== nts[nk + '|' + u.id]; }); tg = tg.length ? tg : others;
+          var tg = others.filter(function(o){ return nts[o.id] !== nts[u.id]; }); tg = tg.length ? tg : others;
           var t = tg.length ? tg[Math.floor(Math.random()*tg.length)].name : 'alguém';
-          asg.push({id:'a'+(++seq), challenge_id:cid, user_id:u.id, name:u.name, avatar:u.avatar, team:nts[nk + '|' + u.id], text:c.text.replace(/\[B\]/g, t), points:c.points, status:'open', media:'', media_type:null, awarded:0, created_at:new Date().toISOString()});
+          asg.push({id:'a'+(++seq), challenge_id:cid, user_id:u.id, name:u.name, avatar:u.avatar, team:nts[u.id], text:c.text.replace(/\[B\]/g, t), points:c.points, status:'open', secret:!!secret, notified:false, media:'', media_type:null, awarded:0, created_at:new Date().toISOString()});
           n++;
         });
         return Promise.resolve(n);
       },
       listAssignments: function(){
-        return Promise.resolve(asg.filter(function(a){ return a.status === 'approved' || (me && (a.user_id === me.id || me.role === 'referee')); }).map(function(a){ return Object.assign({}, a); }));
+        return Promise.resolve(asg.filter(function(a){ return a.status === 'approved' || !a.secret || (me && (a.user_id === me.id || me.role === 'referee')); }).map(function(a){ return Object.assign({}, a); }));
       },
       submitProof: function(id, blob, type){
         var a = asg.filter(function(x){ return x.id === id && me && x.user_id === me.id; })[0];
@@ -917,17 +909,21 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       },
       myNight: function(){
         var pr = presenceOf(ps)[me.id + '|' + nightKey()];
-        return Promise.resolve({team:nts[nightKey() + '|' + me.id] || null, hours:pr ? pr.hours : 0, first_at:pr ? new Date(pr.first).toISOString() : null});
+        return Promise.resolve({team:nts[me.id] || null, hours:pr ? pr.hours : 0, first_at:pr ? new Date(pr.first).toISOString() : null});
       },
       teamNightBoard: function(){
         var pr = presenceOf(ps), t = {};
-        Object.keys(nts).forEach(function(k){
-          var night = k.split('|')[0], uid = k.split('|')[1], team = nts[k], key = night + '|' + team;
-          var x = t[key] = t[key] || {night:night, team:team, people:0, points:0, hours:0, score:0}, p = pr[uid + '|' + night];
-          x.people++; x.hours += p ? p.hours : 0;
-          x.points += ps.filter(function(q){ return q.user_id === uid && nightKey(new Date(q.created_at).getTime()) === night; }).reduce(function(a,q){ return a + q.points; }, 0) + (p ? p.points : 0);
+        Object.keys(pr).forEach(function(k){
+          var x0 = pr[k], team = nts[x0.user]; if (!team) return;
+          var key = x0.night + '|' + team, x = t[key] = t[key] || {night:x0.night, team:team, people:0, points:0, hours:0, score:0};
+          x.people++; x.hours += x0.hours;
+          x.points += ps.filter(function(q){ return q.user_id === x0.user && nightKey(new Date(q.created_at).getTime()) === x0.night; }).reduce(function(a,q){ return a + q.points; }, 0) + x0.points;
         });
         return Promise.resolve(Object.keys(t).map(function(k){ var x = t[k]; x.hours = Math.round(x.hours*10)/10; x.score = teamScore(x.points, x.people); return x; }));
+      },
+      teamTotals: function(){
+        var t = {}; Object.keys(nts).forEach(function(u){ t[nts[u]] = (t[nts[u]] || 0) + 1; });
+        return Promise.resolve(Object.keys(t).map(function(k){ return {team:k, members:t[k]}; }));
       },
       listReactions: function(){ return Promise.resolve(rx.slice()); },
       react: function(postId, kind){
@@ -937,12 +933,47 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       },
       listTonight: function(){
         var k = nightKey(), pr = presenceOf(ps);
-        return Promise.resolve(Object.keys(nts).filter(function(x){ return x.split('|')[0] === k; }).map(function(x){
-          var u = users.filter(function(y){ return y.id === x.split('|')[1]; })[0], p = pr[u.id + '|' + k];
-          return {user_id:u.id, name:u.name, avatar:u.avatar, team:nts[x], hours:p ? p.hours : 0};
+        return Promise.resolve(users.filter(function(u){ return nts[u.id] && pr[u.id + '|' + k]; }).map(function(u){
+          return {user_id:u.id, name:u.name, avatar:u.avatar, team:nts[u.id], region:u.region, hours:pr[u.id + '|' + k].hours};
         }));
       },
-      setNightTeam: function(uid, team){ nts[nightKey() + '|' + uid] = team; return Promise.resolve(); },
+      setTeam: function(uid, team){ nts[uid] = team; return Promise.resolve(); },
+      drawChallenges: function(secret){
+        var k = nightKey(), pr = presenceOf(ps), n = 0;
+        var here = users.filter(function(u){ return nts[u.id] && pr[u.id + '|' + k]; });
+        here.forEach(function(u){
+          var left = chs.filter(function(c){ return !asg.some(function(a){ return a.challenge_id === c.id && a.user_id === u.id; }); });
+          if (!left.length) return;
+          var c = left[Math.floor(Math.random()*left.length)], others = here.filter(function(o){ return o.id !== u.id; });
+          var tg = others.filter(function(o){ return nts[o.id] !== nts[u.id]; }); tg = tg.length ? tg : others;
+          var t = tg.length ? tg[Math.floor(Math.random()*tg.length)].name : 'alguém';
+          asg.push({id:'a'+(++seq), challenge_id:c.id, user_id:u.id, name:u.name, avatar:u.avatar, team:nts[u.id], text:c.text.replace(/\[B\]/g, t), points:c.points, status:'open', secret:!!secret, notified:false, media:'', media_type:null, awarded:0, created_at:new Date().toISOString()});
+          n++;
+        });
+        return Promise.resolve(n);
+      },
+      markNotified: function(ids){ asg.forEach(function(a){ if (ids.indexOf(a.id) > -1) a.notified = true; }); return Promise.resolve(ids.length); },
+      notifyChallenges: function(){ asg.forEach(function(a){ a.notified = true; }); return Promise.resolve(true); },
+      listStops: function(){ return Promise.resolve(stops.slice().sort(function(a,b){ return a.position - b.position; })); },
+      saveStop: function(s){
+        if (s.id){ stops.forEach(function(x){ if (x.id === s.id){ x.name = s.name; x.note = s.note; x.position = s.position; } }); }
+        else stops.push({id:'s'+(++seq), name:s.name, note:s.note, position:s.position});
+        return Promise.resolve();
+      },
+      deleteStop: function(id){ stops = stops.filter(function(s){ return s.id !== id; }); rates = rates.filter(function(r){ return r.stop_id !== id; }); return Promise.resolve(); },
+      listRatings: function(){
+        var mine = {}; rates.forEach(function(r){ if (me && r.user_id === me.id) mine[r.stop_id] = {croquete:r.croquete, tasca:r.tasca}; });
+        var board = stops.map(function(s){
+          var rr = rates.filter(function(r){ return r.stop_id === s.id; }), n = rr.length;
+          return {stop_id:s.id, name:s.name, position:s.position, croquete:n ? Math.round(rr.reduce(function(a,r){ return a + r.croquete; }, 0) / n * 100) / 100 : null, tasca:n ? Math.round(rr.reduce(function(a,r){ return a + r.tasca; }, 0) / n * 100) / 100 : null, votes:n};
+        });
+        return Promise.resolve({board:board, mine:mine});
+      },
+      rate: function(stopId, c, t){
+        rates = rates.filter(function(r){ return !(r.stop_id === stopId && r.user_id === me.id); });
+        rates.push({stop_id:stopId, user_id:me.id, croquete:c, tasca:t});
+        return Promise.resolve();
+      },
       listIdeas: function(){ return Promise.resolve(ideas.slice().reverse()); },
       addIdea: function(text){ ideas.push({id:'i'+(++seq), user_id:me.id, name:me.name, text:text}); return Promise.resolve(); },
       deleteIdea: function(id){ ideas = ideas.filter(function(i){ return i.id !== id; }); return Promise.resolve(); },
@@ -963,7 +994,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       return sb.from('profiles').select('id,name,role,region,avatar_path').eq('id', id).single().then(fail).then(function(p){
         var u = {id:p.id, name:p.name, role:p.role, region:p.region, avatar:pubUrl(p.avatar_path), team:null};
         // a equipa muda todas as noites. Sem a fase 3 na base de dados, fica sem equipa e o site continua a funcionar.
-        return sb.from('night_teams').select('team').eq('user_id', id).eq('night', nightKey()).limit(1).then(function(r){
+        return sb.from('team_members').select('team').eq('user_id', id).limit(1).then(function(r){
           u.team = (r.data && r.data[0] && r.data[0].team) || null; return u;
         }, function(){ return u; });
       });
@@ -1059,18 +1090,23 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       setTeams: function(map){ return sb.rpc('set_teams', {p_teams:map}).then(fail); },
       teamBoard: function(){ return sb.from('team_board').select('team,people,points,present,score').then(fail); },
       listChallenges: function(){ return sb.from('challenges').select('id,text,points').order('created_at').then(fail); },
-      saveChallenge: function(c){ return (c.id ? sb.from('challenges').update({text:c.text, points:c.points}).eq('id', c.id) : sb.from('challenges').insert({text:c.text, points:c.points})).then(fail); },
+      saveChallenge: function(c){
+        var q = c.id ? sb.from('challenges').update({text:c.text, points:c.points}).eq('id', c.id).select('id').single() : sb.from('challenges').insert({text:c.text, points:c.points}).select('id').single();
+        return q.then(fail).then(function(r){ return r.id; });
+      },
       deleteChallenge: function(id){ return sb.from('challenges').delete().eq('id', id).then(fail); },
-      assignChallenge: function(cid){ return sb.rpc('assign_challenge', {p_challenge:cid}).then(fail); },
+      assignChallenge: function(cid, aud, picked, secret){ return sb.rpc('assign_challenge', {p_challenge:cid, p_audience:aud || 'tonight', p_users:picked && picked.length ? picked : null, p_secret:!!secret}).then(fail); },
       listAssignments: function(){
+        function q(cols){ return sb.from('assignments').select(cols).order('created_at', {ascending:false}).limit(300); }
         return Promise.all([
-          sb.from('assignments').select('id,user_id,text,points,status,media_path,media_type,points_awarded,created_at').order('created_at', {ascending:false}).limit(300).then(fail),
-          sb.from('profiles').select('id,name,avatar_path,team').then(fail)
+          q('id,user_id,text,points,status,media_path,media_type,points_awarded,created_at,secret,notified').then(function(r){ return r.error ? q('id,user_id,text,points,status,media_path,media_type,points_awarded,created_at') : r; }).then(fail),
+          sb.from('profiles').select('id,name,avatar_path').then(fail),
+          sb.from('team_members').select('user_id,team').then(function(r){ return r.error ? {data:[]} : r; })
         ]).then(function(r){
-          var by = {}; r[1].forEach(function(p){ by[p.id] = p; });
+          var by = {}, tm = {}; r[1].forEach(function(p){ by[p.id] = p; }); (r[2].data || []).forEach(function(t){ tm[t.user_id] = t.team; });
           return r[0].map(function(a){
             var p = by[a.user_id] || {};
-            return {id:a.id, user_id:a.user_id, name:p.name || '', avatar:pubUrl(p.avatar_path), team:p.team || null, text:a.text, points:a.points, status:a.status,
+            return {id:a.id, user_id:a.user_id, name:p.name || '', avatar:pubUrl(p.avatar_path), team:tm[a.user_id] || null, text:a.text, points:a.points, status:a.status, secret:!!a.secret, notified:!!a.notified,
               media:a.media_path ? sb.storage.from('proofs').getPublicUrl(a.media_path).data.publicUrl : '', media_type:a.media_type, awarded:a.points_awarded, created_at:a.created_at};
           });
         });
@@ -1093,7 +1129,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         return sb.auth.getUser().then(function(u){
           var uid = u.data.user.id, k = nightKey();
           return Promise.all([
-            sb.from('night_teams').select('team').eq('user_id', uid).eq('night', k).limit(1),
+            sb.from('team_members').select('team').eq('user_id', uid).limit(1),
             sb.from('night_presence').select('hours,first_at,last_at').eq('user_id', uid).eq('night', k).limit(1)
           ]).then(function(r){
             var t = r[0].data && r[0].data[0], p = r[1].data && r[1].data[0];
@@ -1111,19 +1147,41 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
           });
         });
       },
+      teamTotals: function(){ return sb.from('team_totals').select('team,members').then(fail); },
       listTonight: function(){
         var k = nightKey();
         return Promise.all([
-          sb.from('night_teams').select('user_id,team').eq('night', k).then(fail),
           sb.from('night_presence').select('user_id,hours').eq('night', k).then(fail),
-          sb.from('profiles').select('id,name,avatar_path').then(fail)
+          sb.from('team_members').select('user_id,team').then(fail),
+          sb.from('profiles').select('id,name,avatar_path,region').then(fail)
         ]).then(function(r){
-          var by = {}; r[2].forEach(function(p){ by[p.id] = p; });
-          var hrs = {}; r[1].forEach(function(p){ hrs[p.user_id] = Number(p.hours); });
-          return r[0].map(function(t){ var p = by[t.user_id] || {}; return {user_id:t.user_id, name:p.name || '', avatar:pubUrl(p.avatar_path), team:t.team, hours:hrs[t.user_id] || 0}; });
+          var by = {}, tm = {}; r[2].forEach(function(p){ by[p.id] = p; }); r[1].forEach(function(t){ tm[t.user_id] = t.team; });
+          return r[0].filter(function(x){ return tm[x.user_id]; }).map(function(x){ var p = by[x.user_id] || {}; return {user_id:x.user_id, name:p.name || '', avatar:pubUrl(p.avatar_path), team:tm[x.user_id], region:p.region, hours:Number(x.hours)}; });
         });
       },
-      setNightTeam: function(uid, team){ return sb.rpc('set_night_team', {p_user:uid, p_night:nightKey(), p_team:team}).then(fail); },
+      setTeam: function(uid, team){ return sb.rpc('set_team', {p_user:uid, p_team:team}).then(fail); },
+      drawChallenges: function(secret){ return sb.rpc('draw_challenges', {p_secret:!!secret}).then(fail); },
+      markNotified: function(ids){ return sb.rpc('mark_notified', {p_ids:ids}).then(fail); },
+      notifyChallenges: function(){
+        if (!CFG.MAIL_URL) return Promise.resolve(false);
+        return sb.auth.getSession().then(function(s){
+          var tok = s.data && s.data.session && s.data.session.access_token; if (!tok) return false;
+          return fetch(CFG.MAIL_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({token:tok, action:'challenges'})}).then(function(){ return true; }, function(){ return false; });
+        }).catch(function(){ return false; });
+      },
+      listStops: function(){ return sb.from('rally_stops').select('id,position,name,note').order('position').then(fail); },
+      saveStop: function(s){ var row = {name:s.name, note:s.note || null, position:s.position}; return (s.id ? sb.from('rally_stops').update(row).eq('id', s.id) : sb.from('rally_stops').insert(row)).then(fail); },
+      deleteStop: function(id){ return sb.from('rally_stops').delete().eq('id', id).then(fail); },
+      listRatings: function(){
+        return Promise.all([
+          sb.from('rally_board').select('stop_id,name,position,croquete,tasca,votes').then(fail),
+          sb.auth.getSession().then(function(s){ var ss = s.data && s.data.session; return ss ? sb.from('rally_ratings').select('stop_id,croquete,tasca').eq('user_id', ss.user.id).then(fail) : []; })
+        ]).then(function(r){
+          var mine = {}; r[1].forEach(function(x){ mine[x.stop_id] = {croquete:x.croquete, tasca:x.tasca}; });
+          return {board:r[0].map(function(b){ return {stop_id:b.stop_id, name:b.name, position:b.position, croquete:b.croquete == null ? null : Number(b.croquete), tasca:b.tasca == null ? null : Number(b.tasca), votes:b.votes}; }), mine:mine};
+        });
+      },
+      rate: function(stopId, c, t){ return sb.auth.getUser().then(function(u){ return sb.from('rally_ratings').upsert({stop_id:stopId, user_id:u.data.user.id, croquete:c, tasca:t}, {onConflict:'stop_id,user_id'}).then(fail); }); },
       listIdeas: function(){ return sb.from('challenge_ideas').select('id,user_id,text,profiles(name)').order('created_at', {ascending:false}).then(fail).then(function(a){ return a.map(function(i){ return {id:i.id, user_id:i.user_id, name:(i.profiles && i.profiles.name) || '', text:i.text}; }); }); },
       addIdea: function(text){ return sb.from('challenge_ideas').insert({text:text}).then(fail); },
       deleteIdea: function(id){ return sb.from('challenge_ideas').delete().eq('id', id).then(fail); },
@@ -1144,7 +1202,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   var adminToken = (String(location.hash).match(/a=([a-z0-9-]+)/) || [])[1] || null;
   var unlockMs = 0, UNLOCK_DEFAULT = '2026-10-15T19:00:00+01:00';
   function regLabel(r){ return r === 'international' ? 'Internacional' : r === 'national' ? 'Nacional' : ''; }
-  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [], checkins = [], chals = [], asg = [], tboard = [], reactions = [], nightInfo = null, tonight = [];
+  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [], checkins = [], chals = [], asg = [], tboard = [], reactions = [], nightInfo = null, tonight = [], stops = [], rbd = {board:[], mine:{}}, rdraft = {}, ttot = [], cs = {text:'', points:20, aud:'tonight', picked:{}, secret:false};
   var pick = {drink:null, blob:null, preview:null, caption:''}, signup = {blob:null};
   var busy = false;
   function isRef(){ return !!(user && user.role === 'referee'); }
@@ -1152,7 +1210,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 
   /* ---------- rendering ---------- */
   function renderLinks(){
-    var items = [['inicio','Início'],['plano','Plano'],['feed','BoozeFeed'],['rankings','Rankings'],['challenges','Challenges']];
+    var items = [['inicio','Início'],['plano','Plano'],['rally','Rally'],['feed','BoozeFeed'],['rankings','Rankings'],['challenges','Challenges']];
     if (isRef()) items.push(['referee','Referee']);
     var h = items.map(function(it){ return '<button class="lk" data-nav="'+it[0]+'"'+(view===it[0]?' aria-current="page"':'')+'>'+it[1]+'</button>'; }).join('');
     h += user ? '<button class="lk" data-nav="perfil"'+(view==='perfil'?' aria-current="page"':'')+'>'+av(user.avatar,user.name,'')+esc(user.name)+'</button><button class="lk" data-act="logout">Sair</button>'
@@ -1173,7 +1231,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     var mine = {}; rsvps.forEach(function(r){ if (user && r.user_id === user.id) mine[r.event_id] = true; });
     var cnt = {}; rsvps.forEach(function(r){ cnt[r.event_id] = (cnt[r.event_id]||0) + 1; });
     $('sumbar').innerHTML = '<div><b>'+fmtH(total)+'</b><span style="font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">de festa · '+shown.length+' momentos</span></div>' +
-      (isRef() ? '<span style="font-weight:800">Vês o plano como referee</span>' : (user ? (user.team ? '<div style="font-weight:800">Esta noite: <span class="chip red">'+teamLabel(user.team)+'</span></div>' : '') : '<div class="row"><span style="font-weight:800">Entra para votar no jantar</span><button class="btn small" data-nav="login">Entrar</button></div>'));
+      (isRef() ? '<span style="font-weight:800">Vês o plano como referee</span>' : (user ? (user.team ? '<div style="font-weight:800">A tua equipa: <span class="chip red">'+teamLabel(user.team)+'</span></div>' : '') : '<div class="row"><span style="font-weight:800">Entra para votar no jantar</span><button class="btn small" data-nav="login">Entrar</button></div>'));
     var h = '';
     shown.filter(function(e){ return PRIORITY[e.id] && !mine[e.id] && !isRef(); }).forEach(function(e){
       h += '<div class="band light" style="margin:0 0 22px"><p><b>Jantar de sexta:</b> é a única coisa em que precisas de votar. O sítio depende de quantas pessoas alinharem.</p><button class="btn small red" data-act="rsvp" data-id="'+esc(e.id)+'">Vou ao jantar</button></div>';
@@ -1227,7 +1285,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       var ds = drinks.map(function(d){
         return '<button type="button" class="dk" data-act="drink" data-id="'+esc(d.id)+'" aria-pressed="'+(pick.drink===d.id)+'"><span class="p">'+pts(d.points)+'</span><b>'+esc(d.label)+'</b><span>'+esc(d.hint||'')+'</span></button>';
       }).join('');
-      var tn = nightInfo ? (isRef() ? '<div class="band light" style="margin-bottom:14px"><p>Como referee jogas a título individual: não tens equipa.</p></div>' : (nightInfo.team ? '<div class="band light" style="margin-bottom:14px"><p><b>Esta noite:</b> '+teamLabel(nightInfo.team)+' · '+nightInfo.hours+' h na festa</p></div>' : '<div class="band light" style="margin-bottom:14px"><p>Ainda não tens equipa esta noite. O teu primeiro post mete-te numa.</p></div>')) : '';
+      var tn = nightInfo ? (isRef() ? '<div class="band light" style="margin-bottom:14px"><p>Como referee jogas a título individual: não tens equipa.</p></div>' : (nightInfo.team ? '<div class="band light" style="margin-bottom:14px"><p><b>'+teamLabel(nightInfo.team)+'</b> · '+nightInfo.hours+' h na festa esta noite</p></div>' : '<div class="band light" style="margin-bottom:14px"><p>Ainda não tens equipa. O teu primeiro post mete-te numa.</p></div>')) : '';
       c.innerHTML = tn + '<div class="card stack"><div class="pick"><label class="selfie" for="selfie">' +
         (pick.preview ? '<img src="'+pick.preview+'" alt="A tua selfie">' : 'Tira uma selfie') +
         '</label><div class="stack"><input id="selfie" type="file" accept="image/*" capture="user" hidden>' +
@@ -1266,7 +1324,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     box.innerHTML = (user.team ? '<p class="note" style="margin:0 0 12px"><span class="chip red">'+teamLabel(user.team)+'</span> As tuas provas são validadas pela '+validatorFor(user.team)+'.</p>' : '') +
       (mine.length ? mine.map(function(a){
         var can = a.status === 'open' || a.status === 'rejected';
-        return '<div class="card" style="margin-bottom:12px;max-width:none"><div class="row" style="justify-content:space-between"><span class="chip">'+STATUS_LABEL[a.status]+'</span><span class="pts">'+(a.status === 'approved' ? pts(a.awarded) : pts(a.points))+'</span></div>' +
+        return '<div class="card" style="margin-bottom:12px;max-width:none"><div class="row" style="justify-content:space-between"><span><span class="chip">'+STATUS_LABEL[a.status]+'</span>'+(a.secret ? ' <span class="chip ex">secreto</span>' : '')+'</span><span class="pts">'+(a.status === 'approved' ? pts(a.awarded) : pts(a.points))+'</span></div>' +
           '<p style="margin:10px 0 0;font-weight:600">'+esc(a.text)+'</p>' + mediaHtml(a) +
           (can ? '<div class="row" style="margin-top:12px"><label class="btn small red" style="cursor:pointer">Enviar foto ou vídeo<input type="file" accept="image/*,video/*" data-proof="'+esc(a.id)+'" hidden></label></div>' : '') + '</div>';
       }).join('') : '<div class="card"><p style="margin:0;font-weight:600">Ainda não tens challenges. Aparecem aqui quando a Fran e a Vera os atribuírem a quem está presente.</p></div>');
@@ -1278,10 +1336,16 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         '<p style="margin:10px 0 0;font-weight:600">'+esc(a.text)+'</p>' + mediaHtml(a) + '<div style="font-size:.8rem;margin-top:6px">'+ago(a.created_at)+'</div></article>';
     }).join('') : '<p class="note">Ainda não há provas aprovadas.</p>';
   }
+  function renderChalOpen(){
+    var open = asg.filter(function(a){ return !a.secret && (a.status === 'open' || a.status === 'pending') && (!user || a.user_id !== user.id); }).slice(0, 15);
+    $('chalOpen').innerHTML = open.length ? open.map(function(a){
+      return '<div class="listrow"><span class="who2">'+av(a.avatar,a.name,'')+'<span><b>'+esc(a.name)+'</b> '+(a.team ? '<span class="chip">'+teamLabel(a.team)+'</span> ' : '')+esc(a.text)+'</span></span><span class="chip">'+a.points+' pts</span></div>';
+    }).join('') : '<p class="note">Ainda não há challenges à vista.</p>';
+  }
   function loadChallenges(){
     return guard(Promise.all([api.listIdeas(), api.listAssignments(), user ? api.me() : Promise.resolve(null)]).then(function(r){
       ideas = r[0]; asg = r[1]; if (r[2] && user) user.team = r[2].team || null;
-      renderIdeas(); renderChalFeed();
+      renderIdeas(); renderChalFeed(); renderChalOpen();
     }));
   }
 
@@ -1298,14 +1362,71 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   }
   /* referee: challenges */
   function refChal(){
-    var h = '<p class="note">Escreve um challenge. Usa [B] para meter o nome de outra pessoa presente (de preferência da outra equipa). Entrega-o a todos os que já postaram esta noite.</p>' +
-      '<form class="card stack" id="chalForm" style="max-width:640px;margin-bottom:16px" novalidate><div><label class="f" for="chalText">Challenge</label><textarea class="in" id="chalText" rows="2" maxlength="240" placeholder="Ex.: convence a [B] a fazer uma pose de capa de revista"></textarea></div>' +
-      '<div class="row"><div><label class="f" for="chalPts">Pontos</label><input class="in" id="chalPts" type="number" min="0" max="500" value="20" style="width:110px"></div><button class="btn" type="submit" style="align-self:end">Criar</button></div></form>';
+    var pr = tonight.slice().sort(function(a,b){ return String(a.name).localeCompare(String(b.name)); });
+    var AUD = [['tonight','Todos os que já postaram esta noite'],['vera','Team Vera (esta noite)'],['fran','Team Fran (esta noite)'],['national','Nacionais (esta noite)'],['international','Internacionais (esta noite)'],['users','Pessoas específicas']];
+    var unnotified = asg.filter(function(a){ return !a.notified && a.status === 'open'; }).length;
+    var h = '<p class="note">Só recebe quem já postou esta noite. Usa [B] no texto para meter o nome de outra pessoa presente (de preferência da outra equipa).</p>' +
+      '<div class="card stack" id="chalBox" style="max-width:640px;margin-bottom:16px">' +
+      '<div><label class="f" for="chalText">Challenge</label><textarea class="in" id="chalText" rows="2" maxlength="240" placeholder="Ex.: convence a [B] a fazer uma pose de capa de revista">'+esc(cs.text)+'</textarea></div>' +
+      '<div class="row"><div><label class="f" for="chalPts">Pontos</label><input class="in" id="chalPts" type="number" min="0" max="500" value="'+esc(cs.points)+'" style="width:110px"></div>' +
+      '<div style="flex:1;min-width:220px"><label class="f" for="chalAud">Para quem</label><select class="in" id="chalAud" data-cs="aud">' + AUD.map(function(a){ return '<option value="'+a[0]+'"'+(cs.aud === a[0] ? ' selected' : '')+'>'+a[1]+'</option>'; }).join('') + '</select></div></div>';
+    if (cs.aud === 'users'){
+      h += '<div><label class="f">Escolhe quem (só aparece quem já postou esta noite)</label>' + (pr.length ? pr.map(function(t){
+        return '<label class="listrow" style="cursor:pointer"><span class="who2">'+av(t.avatar,t.name,'')+esc(t.name)+' <span class="chip">'+teamLabel(t.team)+'</span></span><input type="checkbox" data-cs="pick" data-id="'+esc(t.user_id)+'"'+(cs.picked[t.user_id] ? ' checked' : '')+'></label>';
+      }).join('') : '<p class="note">Ainda ninguém postou esta noite.</p>') + '</div>';
+    }
+    h += '<label class="chip" style="align-self:start;cursor:pointer"><input type="checkbox" data-cs="secret"'+(cs.secret ? ' checked' : '')+'> secreto (só a pessoa vê)</label>' +
+      '<div class="row"><button class="btn red" data-act="chsend">Criar e entregar</button><button class="btn ghost" data-act="chsave">Só guardar na lista</button></div></div>';
+    h += '<div class="card stack" style="max-width:640px;margin-bottom:16px"><b>Automático</b><p class="note" style="margin:0">Cada pessoa que já postou esta noite recebe um challenge da lista que ainda não tenha recebido (secreto se estiver marcado acima). Dá pouco trabalho: escreve uma lista grande de manhã e carrega aqui à noite.</p>' +
+      '<div class="row"><button class="btn" data-act="chdraw">Sortear para quem já postou</button>' +
+      '<button class="btn ghost" data-act="notifymail"'+(unnotified ? '' : ' disabled')+'>Avisar por email ('+unnotified+')</button></div></div>';
+    h += '<h3 style="margin:0 0 8px">Lista ('+chals.length+')</h3>';
     h += chals.length ? chals.map(function(c){
       var n = asg.filter(function(a){ return a.challenge_id === c.id; }).length;
-      return '<div class="listrow"><div><b>'+esc(c.text)+'</b> <span class="chip">'+c.points+' pts</span> <span class="chip">'+n+' atribuídos</span></div><span class="row"><button class="btn small" data-act="chassign" data-id="'+esc(c.id)+'">Atribuir a quem já postou</button><button class="btn small ghost" data-act="chdel" data-id="'+esc(c.id)+'">Apagar</button></span></div>';
+      return '<div class="listrow"><div><b>'+esc(c.text)+'</b> <span class="chip">'+c.points+' pts</span> <span class="chip">'+n+' atribuídos</span></div><span class="row"><button class="btn small" data-act="chassign" data-id="'+esc(c.id)+'">Entregar</button><button class="btn small ghost" data-act="chdel" data-id="'+esc(c.id)+'">Apagar</button></span></div>';
     }).join('') : '<p class="note">Ainda não criaste challenges.</p>';
     return h;
+  }
+  function saveChalForm(){ var t = $('chalText'), p = $('chalPts'); if (t) cs.text = t.value; if (p) cs.points = p.value; }
+  function pickedIds(){ return Object.keys(cs.picked).filter(function(k){ return cs.picked[k]; }); }
+  /* referee: rally */
+  function refRally(){
+    var h = '<p class="note">As paragens do rally por ordem. Quando a rota estiver definida, adiciona-as aqui e as pessoas passam a dar nota (tasca e croquete) na página Rally.</p>' +
+      '<div class="card stack" style="max-width:640px;margin-bottom:16px"><div class="row"><input class="in" id="stName" placeholder="Nome da paragem" style="flex:1;min-width:180px" maxlength="80"><input class="in" id="stNote" placeholder="Nota (opcional): morada, hora" style="flex:1;min-width:180px" maxlength="160"><button class="btn small" data-act="stopadd">Adicionar</button></div></div>';
+    h += stops.length ? stops.map(function(s){
+      return '<div class="edrow" style="grid-template-columns:70px minmax(0,1fr) minmax(0,1fr) auto"><input class="in" type="number" id="st-p-'+esc(s.id)+'" value="'+esc(s.position)+'" aria-label="Ordem"><input class="in" id="st-n-'+esc(s.id)+'" value="'+esc(s.name)+'" aria-label="Nome" maxlength="80"><input class="in" id="st-t-'+esc(s.id)+'" value="'+esc(s.note || '')+'" aria-label="Nota" maxlength="160">' +
+        '<span class="row"><button class="btn small" data-act="stopsave" data-id="'+esc(s.id)+'">Guardar</button><button class="btn small ghost" data-act="stopdel" data-id="'+esc(s.id)+'">Apagar</button></span></div>';
+    }).join('') : '<div class="empty">Ainda sem paragens. A página Rally mostra "rota em breve".</div>';
+    return h;
+  }
+
+  /* rally: página pública */
+  function stars(sid, field, cur){
+    var h = ''; for (var v = 1; v <= 5; v++) h += '<button type="button" class="rxb" data-act="rate" data-stop="'+esc(sid)+'" data-field="'+field+'" data-v="'+v+'" aria-pressed="'+(cur === v)+'">'+v+'</button>';
+    return h;
+  }
+  function renderRally(){
+    var b = rbd.board.slice().sort(function(x,y){ return x.position - y.position; });
+    if (!b.length){
+      $('rallyBody').innerHTML = '<p class="soon">ROTA EM BREVE</p><p class="sub" style="margin-left:0;margin-top:14px">A rota do rally de sábado, 17 de outubro, ainda está a ser definida e aparece aqui: um rally pelas tascas, com challenges e pontos ao longo do percurso.</p>' +
+        '<ol class="steps" style="margin-top:22px"><li class="step"><h3>Vês a rota</h3><p>Todas as paragens, por ordem.</p></li><li class="step"><h3>Dás a tua nota</h3><p>Em cada paragem, avalias a tasca e o croquete de 1 a 5.</p></li><li class="step"><h3>Sai o ranking</h3><p>No fim, sabemos qual foi o melhor croquete.</p></li></ol>';
+      return;
+    }
+    var best = b.filter(function(x){ return x.votes > 0 && x.croquete != null; }).sort(function(x,y){ return y.croquete - x.croquete || y.votes - x.votes; }).slice(0, 5);
+    var h = '<h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem)">Melhor <em>croquete</em></h2>' +
+      (best.length ? '<div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>Paragem</th><th>Notas</th><th>Croquete</th></tr></thead><tbody>' + best.map(function(x,i){ return '<tr><td>'+(i+1)+'</td><td>'+esc(x.name)+'</td><td>'+x.votes+'</td><td><b>'+x.croquete+'</b></td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="note">Ainda sem notas. Dá a primeira abaixo.</p>');
+    h += '<h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:26px">Paragens</h2>';
+    if (!user) h += '<div class="band light" style="margin-bottom:12px"><p>Entra para dares nota ao croquete e à tasca.</p><button class="btn small" data-nav="login">Entrar</button></div>';
+    h += b.map(function(x, i){
+      var d = Object.assign({}, rbd.mine[x.stop_id] || {}, rdraft[x.stop_id] || {}), st = stops.filter(function(s){ return s.id === x.stop_id; })[0] || {};
+      return '<div class="card" style="margin-bottom:12px;max-width:none"><div class="row" style="justify-content:space-between"><b style="font-size:1.1rem">'+(i+1)+'. '+esc(x.name)+'</b><span class="chip">'+(x.votes ? 'croquete '+x.croquete+' · tasca '+x.tasca+' · '+x.votes+' notas' : 'sem notas')+'</span></div>' +
+        (st.note ? '<p class="note" style="margin:6px 0 0">'+esc(st.note)+'</p>' : '') +
+        (user ? '<div style="margin-top:10px"><div class="f" style="margin-bottom:4px">Croquete</div><div class="rx">'+stars(x.stop_id,'croquete',d.croquete)+'</div><div class="f" style="margin:8px 0 4px">Tasca</div><div class="rx">'+stars(x.stop_id,'tasca',d.tasca)+'</div></div>' : '') + '</div>';
+    }).join('');
+    $('rallyBody').innerHTML = h;
+  }
+  function loadRally(){
+    return guard(Promise.all([api.listStops().catch(function(){ return []; }), api.listRatings().catch(function(){ return {board:[], mine:{}}; })]).then(function(r){ stops = r[0]; rbd = r[1]; renderRally(); }));
   }
   /* referee: validar */
   function refReview(){
@@ -1338,7 +1459,9 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       var tr = Object.keys(tot).map(function(k){ tot[k].score = Math.round(tot[k].score*10)/10; return tot[k]; }).sort(function(x,y){ return y.score - x.score; });
       out += '<h3 style="margin:14px 0 4px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">Total das noites (soma das pontuações)</h3><div class="scroll"><table class="tbl">'+th+'<tbody>'+tr.map(trow).join('')+'</tbody></table></div>';
     }
-    $('rkTeams').innerHTML = out || '<p class="note">As equipas são criadas quando as pessoas começarem a postar, na quinta.</p>';
+    if (!out) out = '<div class="scroll"><table class="tbl"><thead><tr><th>Equipa</th><th>Estado</th></tr></thead><tbody><tr><td>Team Vera</td><td>Ainda não alocado: o jogo começa quinta às 19:00.</td></tr><tr><td>Team Fran</td><td>Ainda não alocado: o jogo começa quinta às 19:00.</td></tr></tbody></table></div>';
+    if (ttot.length) out += '<p class="note" style="margin-top:8px">' + ['vera','fran'].map(function(t){ var x = ttot.filter(function(y){ return y.team === t; })[0]; return teamLabel(t)+': '+(x ? x.members : 0)+' pessoas'; }).join(' · ') + '. A equipa mantém-se nas noites todas.</p>';
+    $('rkTeams').innerHTML = out;
     var groups = [['national','Nacional'],['international','Internacional']].map(function(g){
       var m = b.filter(function(r){ return r.region === g[0]; }), tot = m.reduce(function(a,r){ return a + r.points; }, 0);
       return {label:g[1], n:m.length, tot:tot, avg:m.length ? tot / m.length : 0};
@@ -1346,7 +1469,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     $('rkRegion').innerHTML = '<thead><tr><th>Grupo</th><th>Pessoas</th><th>Pontos</th><th>Média</th></tr></thead><tbody>' +
       groups.map(function(g){ return '<tr><td>'+g.label+'</td><td>'+g.n+'</td><td>'+g.tot+'</td><td>'+(Math.round(g.avg*10)/10)+'</td></tr>'; }).join('') + '</tbody>';
   }
-  function loadRankings(){ return guard(Promise.all([api.leaderboard(), api.teamNightBoard().catch(function(){ return []; })]).then(function(r){ board = r[0]; tboard = r[1]; renderRankings(); })); }
+  function loadRankings(){ return guard(Promise.all([api.leaderboard(), api.teamNightBoard().catch(function(){ return []; }), api.teamTotals().catch(function(){ return []; })]).then(function(r){ board = r[0]; tboard = r[1]; ttot = r[2]; renderRankings(); })); }
   function renderIdeas(){
     renderMyChal();
     $('ideas').innerHTML = ideas.length ? ideas.map(function(i){
@@ -1358,10 +1481,10 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function renderRef(){
     var b = $('refBody');
     if (!isRef()){ b.innerHTML = '<p class="note">Esta área é só para a Fran e a Vera.</p>'; return; }
-    var MORE = ['events','drinks','players'], inMore = MORE.indexOf(rtab) > -1;
+    var MORE = ['events','drinks','players','rally'], inMore = MORE.indexOf(rtab) > -1;
     var tabs = [['going','Jantar'],['today','Hoje'],['chal','Challenges'],['review','Validar'],['events','Mais']];
     var h = '<div class="tabs">' + tabs.map(function(t){ var on = t[0] === 'events' ? inMore : rtab === t[0]; return '<button class="lk" data-act="rtab" data-tab="'+t[0]+'"'+(on?' aria-current="page"':'')+'>'+t[1]+'</button>'; }).join('') + '</div>';
-    if (inMore) h += '<div class="tabs" style="margin-top:-8px">' + [['events','Eventos'],['drinks','Pontos'],['players','Players']].map(function(t){ return '<button class="lk" data-act="rtab" data-tab="'+t[0]+'"'+(rtab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>'; }).join('') + '</div>';
+    if (inMore) h += '<div class="tabs" style="margin-top:-8px">' + [['events','Eventos'],['drinks','Pontos'],['players','Players'],['rally','Rally']].map(function(t){ return '<button class="lk" data-act="rtab" data-tab="'+t[0]+'"'+(rtab===t[0]?' aria-current="page"':'')+'>'+t[1]+'</button>'; }).join('') + '</div>';
     if (rtab === 'going'){
       var din = events.filter(function(e){ return PRIORITY[e.id]; });
       h += '<p class="note">É a única coisa em que as pessoas votam. As equipas e a presença vêm dos posts no BoozeFeed.</p>';
@@ -1372,6 +1495,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     } else if (rtab === 'today'){ h += refToday();
     } else if (rtab === 'chal'){ h += refChal();
     } else if (rtab === 'review'){ h += refReview();
+    } else if (rtab === 'rally'){ h += refRally();
     } else if (rtab === 'events'){
       h += '<p class="note">Edita e sai do campo para guardar. As alterações aparecem logo no Plano.</p>';
       events.forEach(function(e){
@@ -1405,7 +1529,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function loadIdeas(){ return guard(api.listIdeas().then(function(r){ ideas = r; renderIdeas(); })); }
   function loadRef(){
     if (!isRef()) return renderRef();
-    return guard(Promise.all([api.listEvents(), api.listRsvps(), api.listDrinks(), api.listPlayers(), api.listTonight().catch(function(){ return []; }), api.listChallenges().catch(function(){ return []; }), api.listAssignments().catch(function(){ return []; })]).then(function(r){ events = r[0]; rsvps = r[1]; drinks = r[2]; players = r[3]; tonight = r[4]; chals = r[5]; asg = r[6]; renderRef(); }));
+    return guard(Promise.all([api.listEvents(), api.listRsvps(), api.listDrinks(), api.listPlayers(), api.listTonight().catch(function(){ return []; }), api.listChallenges().catch(function(){ return []; }), api.listAssignments().catch(function(){ return []; }), api.listStops().catch(function(){ return []; })]).then(function(r){ events = r[0]; rsvps = r[1]; drinks = r[2]; players = r[3]; tonight = r[4]; chals = r[5]; asg = r[6]; stops = r[7]; renderRef(); }));
   }
 
   function loadPerfil(){
@@ -1441,6 +1565,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       }));
     }
     ['rankings','challenges'].forEach(function(id){ var el = $('v-'+id); if (el) el.classList.toggle('gated', !user); });
+    if (v === 'rally') loadRally();
     if (v === 'plano') loadPlano();
     if (v === 'feed') loadFeed();
     if (v === 'rankings') loadRankings();
@@ -1523,7 +1648,49 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     else if (act === 'delpost'){ guard(api.deletePost(id).then(loadFeed)); }
     else if (act === 'delidea'){ guard(api.deleteIdea(id).then(loadIdeas)); }
     else if (act === 'chassign'){
-      guard(api.assignChallenge(id).then(function(n){ toast(n ? 'Entregue a '+n+' pessoa(s).' : 'Ninguém novo para receber, ainda.'); return loadRef(); }));
+      guard(api.assignChallenge(id, cs.aud, pickedIds(), cs.secret).then(function(n){ toast(n ? 'Entregue a '+n+' pessoa(s).' : 'Ninguém novo para receber, ainda.'); return loadRef(); }));
+    }
+    else if (act === 'chsave' || act === 'chsend'){
+      saveChalForm();
+      var ctx = String(cs.text).trim(), cpt = parseInt(cs.points, 10);
+      if (!ctx){ toast('Escreve o challenge.'); return; }
+      if (isNaN(cpt) || cpt < 0 || cpt > 500){ toast('Pontos entre 0 e 500.'); return; }
+      if (act === 'chsend' && cs.aud === 'users' && !pickedIds().length){ toast('Escolhe pelo menos uma pessoa.'); return; }
+      guard(api.saveChallenge({text:ctx, points:cpt}).then(function(cid){
+        cs.text = '';
+        if (act === 'chsave'){ toast('Guardado na lista.'); return loadRef(); }
+        return api.assignChallenge(cid, cs.aud, pickedIds(), cs.secret).then(function(n){ toast(n ? 'Entregue a '+n+' pessoa(s).' : 'Guardado. Ninguém recebeu: ainda não há quem tenha postado esta noite.'); return loadRef(); });
+      }));
+    }
+    else if (act === 'chdraw'){
+      guard(api.drawChallenges(cs.secret).then(function(n){ toast(n ? 'Sorteados para '+n+' pessoa(s).' : 'Ninguém novo para receber, ainda.'); return loadRef(); }));
+    }
+    else if (act === 'notifymail'){
+      var before = asg.filter(function(a){ return !a.notified && a.status === 'open'; }).length;
+      if (!before){ toast('Ninguém por avisar.'); return; }
+      toast('A enviar os emails...');
+      guard(api.notifyChallenges().then(function(ok){
+        if (!ok){ toast('O envio de emails não está configurado.'); return; }
+        return new Promise(function(res){ setTimeout(res, 4500); }).then(loadRef).then(function(){
+          var after = asg.filter(function(a){ return !a.notified && a.status === 'open'; }).length;
+          toast(after < before ? 'Avisadas '+(before-after)+' challenge(s) por email.' : 'Pedido enviado, mas nada mudou. O script de email precisa de ser atualizado.');
+        });
+      }));
+    }
+    else if (act === 'stopadd'){
+      var sn = $('stName').value.trim(); if (!sn){ toast('Escreve o nome da paragem.'); return; }
+      guard(api.saveStop({name:sn, note:$('stNote').value.trim(), position:stops.length + 1}).then(function(){ toast('Paragem adicionada.'); return loadRef(); }));
+    }
+    else if (act === 'stopsave'){
+      guard(api.saveStop({id:id, name:$('st-n-'+id).value.trim(), note:$('st-t-'+id).value.trim(), position:parseInt($('st-p-'+id).value, 10) || 0}).then(function(){ toast('Guardado.'); return loadRef(); }));
+    }
+    else if (act === 'stopdel'){ if (confirm('Apagar esta paragem e as notas dela?')) guard(api.deleteStop(id).then(loadRef)); }
+    else if (act === 'rate'){
+      if (!need('Entra para dares nota.')) return;
+      var sid = b.getAttribute('data-stop'), fld = b.getAttribute('data-field'), val = parseInt(b.getAttribute('data-v'), 10);
+      var dr = rdraft[sid] = Object.assign({}, rbd.mine[sid] || {}, rdraft[sid] || {}); dr[fld] = val;
+      if (dr.croquete && dr.tasca){ guard(api.rate(sid, dr.croquete, dr.tasca).then(function(){ delete rdraft[sid]; toast('Nota guardada.'); return loadRally(); })); }
+      else { renderRally(); toast('Falta dar a outra nota.'); }
     }
     else if (act === 'chdel'){ if (confirm('Apagar este challenge?')) guard(api.deleteChallenge(id).then(loadRef)); }
     else if (act === 'approve' || act === 'reject'){
@@ -1540,7 +1707,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         renderFeed();
       }));
     }
-    else if (act === 'swapteam'){ guard(api.setNightTeam(id, b.getAttribute('data-team') === 'vera' ? 'fran' : 'vera').then(loadRef)); }
+    else if (act === 'swapteam'){ guard(api.setTeam(id, b.getAttribute('data-team') === 'vera' ? 'fran' : 'vera').then(loadRef)); }
     else if (act === 'rtab'){ rtab = b.getAttribute('data-tab'); renderRef(); }
     else if (act === 'evadd'){
       var nid = 'e' + Date.now().toString(36);
@@ -1573,6 +1740,12 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         .catch(function(e){ toast(e.message || 'Não consegui enviar a prova.'); });
       return;
     }
+    var csk = t.getAttribute && t.getAttribute('data-cs');
+    if (csk){
+      saveChalForm();
+      if (csk === 'aud') cs.aud = t.value; else if (csk === 'secret') cs.secret = t.checked; else if (csk === 'pick') cs.picked[t.getAttribute('data-id')] = t.checked;
+      renderRef(); return;
+    }
     var kind = t.getAttribute && t.getAttribute('data-edit'); if (!kind) return;
     var id = t.getAttribute('data-id'), f2 = t.getAttribute('data-f');
     var o = find(kind === 'ev' ? events : drinks, id); if (!o) return;
@@ -1603,15 +1776,6 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     api.signInKey(key).then(function(u){ user = u; toast('Bem-vinda(o), '+u.name+'.'); show(u.role === 'referee' ? 'referee' : 'plano'); })
       .catch(function(e){ toast(e.message || 'Link inválido.'); })
       .then(function(){ $('linkBtn').disabled = false; });
-  });
-
-  document.addEventListener('submit', function(ev){
-    if (ev.target.id !== 'chalForm') return;
-    ev.preventDefault();
-    var tx = $('chalText').value.trim(), pt = parseInt($('chalPts').value, 10);
-    if (!tx){ toast('Escreve o challenge.'); return; }
-    if (isNaN(pt) || pt < 0 || pt > 500){ toast('Pontos entre 0 e 500.'); return; }
-    guard(api.saveChallenge({text:tx, points:pt}).then(function(){ toast('Challenge criado.'); return loadRef(); }));
   });
 
   $('ideaForm').addEventListener('submit', function(ev){
