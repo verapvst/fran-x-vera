@@ -12,6 +12,7 @@ function doPost(e) {
     var body = JSON.parse(e.postData.contents);
     var tok = String(body.token || '');
     if (body.action === 'challenges') return avisarChallenges_(tok);
+    if (body.action === 'broadcast') return avisarTodos_(tok, String(body.kind || ''));
     if (tok.length < 20) return out_({ok: false, error: 'sem sessao'});
     var h = {apikey: SUPABASE_KEY, Authorization: 'Bearer ' + tok};
     var ru = UrlFetchApp.fetch(SUPABASE_URL + '/auth/v1/user', {headers: h, muteHttpExceptions: true});
@@ -101,4 +102,52 @@ function avisarChallenges_(tok) {
     UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/rpc/mark_notified', {method: 'post', contentType: 'application/json', headers: h, payload: JSON.stringify({p_ids: feitos}), muteHttpExceptions: true});
   }
   return out_({ok: true, sent: enviados});
+}
+
+// Referees: envia um aviso por email a toda a gente que criou conta (e tem email). Cada pessoa recebe cada aviso uma só vez
+// (se carregares duas vezes, ou se o limite diário do Gmail cortar a meio, só se envia a quem falta).
+var AVISOS = {
+  'boozefeed': {
+    assunto: 'O BoozeFeed já está a funcionar | FRAN × VERA',
+    linhas: ['O BoozeFeed já está funcional!',
+             'Abre o site, vai ao BoozeFeed e faz o teu primeiro post (selfie e bebida). Ficas logo numa equipa para as noites todas e ganhas pontos por cada bebida e por cada hora que ficares na festa.'],
+    botao: 'Abrir o BoozeFeed'
+  }
+};
+
+function avisarTodos_(tok, kind) {
+  var aviso = AVISOS[kind];
+  if (!aviso) return out_({ok: false, error: 'aviso desconhecido'});
+  if (tok.length < 20) return out_({ok: false, error: 'sem sessao'});
+  var h = {apikey: SUPABASE_KEY, Authorization: 'Bearer ' + tok};
+  var ru = UrlFetchApp.fetch(SUPABASE_URL + '/auth/v1/user', {headers: h, muteHttpExceptions: true});
+  if (ru.getResponseCode() !== 200) return out_({ok: false, error: 'sessao invalida'});
+  var uid = JSON.parse(ru.getContentText()).id;
+  var rr = JSON.parse(UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/profiles?select=role&id=eq.' + encodeURIComponent(uid), {headers: h, muteHttpExceptions: true}).getContentText());
+  if (!rr || !rr.length || rr[0].role !== 'referee') return out_({ok: false, error: 'so referees'});
+
+  var keys = JSON.parse(UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/member_keys?select=user_id,contact,link_key&limit=1000', {headers: h, muteHttpExceptions: true}).getContentText());
+  var nomes = JSON.parse(UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/profiles?select=id,name&limit=1000', {headers: h, muteHttpExceptions: true}).getContentText());
+  var nome = {}; nomes.forEach(function (p) { nome[p.id] = p.name; });
+  var props = PropertiesService.getScriptProperties();
+  var enviados = 0, jaTinham = 0, semEmail = 0, cortou = false;
+  keys.forEach(function (k) {
+    if (!k.contact) { semEmail++; return; }
+    var chave = 'bc_' + kind + '_' + k.user_id;
+    if (props.getProperty(chave)) { jaTinham++; return; }
+    if (MailApp.getRemainingDailyQuota() < 1) { cortou = true; return; }
+    var first = nome[k.user_id] ? String(nome[k.user_id]).split(' ')[0] : '';
+    var link = SITE + (k.link_key ? '#k=' + k.link_key : '');
+    var texto = 'Olá' + (first ? ' ' + first : '') + '!\n\n' + aviso.linhas.join('\n\n') + '\n\n' + link + '\n\nFran e Vera';
+    var html = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:auto;padding:24px;background:#f4e2ea;color:#0d0a0b">' +
+      '<h2 style="margin:0 0 12px;font-size:22px">FRAN × VERA</h2><p>Olá' + (first ? ' ' + esc_(first) : '') + '!</p>' +
+      aviso.linhas.map(function (l) { return '<p>' + esc_(l) + '</p>'; }).join('') +
+      '<p style="margin:22px 0"><a href="' + link + '" style="background:#e8421f;color:#0d0a0b;text-decoration:none;font-weight:bold;padding:14px 22px;border-radius:999px;border:2px solid #0d0a0b">' + esc_(aviso.botao) + '</a></p>' +
+      '<p>Fran e Vera</p></div>';
+    try {
+      MailApp.sendEmail(k.contact, aviso.assunto, texto, {htmlBody: html, name: 'FRAN × VERA'});
+      props.setProperty(chave, '1'); enviados++;
+    } catch (err) { cortou = true; }
+  });
+  return out_({ok: true, sent: enviados, already: jaTinham, noEmail: semEmail, quotaHit: cortou});
 }
