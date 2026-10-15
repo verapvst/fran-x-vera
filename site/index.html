@@ -1057,7 +1057,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       listDrinks: function(){ return sb.from('drinks').select('*').order('sort').then(fail); },
       saveDrink: function(d){ return sb.from('drinks').update({label:d.label, hint:d.hint, points:d.points}).eq('id', d.id).then(fail); },
       listPosts: function(){
-        return sb.from('posts').select('id,user_id,points,caption,photo_path,created_at,profiles(name,avatar_path),drinks(label,kind)').order('created_at', {ascending:false}).limit(60).then(fail).then(function(a){
+        return sb.from('posts').select('id,user_id,points,caption,photo_path,created_at,profiles!posts_user_id_fkey(name,avatar_path),drinks(label,kind)').order('created_at', {ascending:false}).limit(60).then(fail).then(function(a){
           return a.map(function(p){
             return {id:p.id, user_id:p.user_id, name:(p.profiles && p.profiles.name) || '', avatar:pubUrl(p.profiles && p.profiles.avatar_path), drink:(p.drinks && p.drinks.label) || '', kind:(p.drinks && p.drinks.kind) || 'drink', points:p.points, caption:p.caption || '',
               photo:pubUrl(p.photo_path), created_at:p.created_at};
