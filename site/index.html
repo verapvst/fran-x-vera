@@ -419,7 +419,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     {id:'e1', day:'qui', start:'19:00', end:'23:30', title:'THE GRAND OPENING', place:'Corner', note:'Início oficial da festa, apresentação do conceito, equipas e jogo.', official:true, sort:1},
     {id:'e2', day:'sex', start:'00:00', end:'00:30', title:'23.', note:'Meia-noite da Fran. A Fran faz 23 anos.', official:true, sort:2},
     {id:'e3', day:'sex', start:'00:30', end:'02:00', title:'PRAIA NO PARQUE', official:true, sort:3},
-    {id:'e12', day:'sex', start:'19:00', end:'23:00', title:'JANTAR', place:'Local a definir', note:'O sítio depende de quantas pessoas alinharem. Diz já se vais, para a organização reservar mesa.', official:true, sort:5},
+    {id:'e12', day:'sex', start:'21:00', end:'23:00', title:'JANTAR', place:'Tasca do Careca', official:true, sort:5},
     {id:'e6', day:'sex', start:'23:00', end:'02:00', title:'BAIRRO ALTO + ZÉ DOS BOIS', place:'Bairro Alto', official:true, sort:6},
     {id:'e5', day:'sab', start:'20:00', end:'00:00', title:'RALLY TASCAS & CROQUETTE', place:'Rota a definir', note:'Um rally pelas tascas, com diferentes challenges e pontos ao longo do percurso.', official:true, sort:8},
     {id:'e10', day:'dom', start:'00:00', end:'00:30', title:'24.', note:'Meia-noite da Vera. A Vera faz 24 anos.', official:true, sort:9},
@@ -1234,7 +1234,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       (isRef() ? '<span style="font-weight:800">Vês o plano como referee</span>' : (user ? (user.team ? '<div style="font-weight:800">A tua equipa: <span class="chip red">'+teamLabel(user.team)+'</span></div>' : '') : '<div class="row"><span style="font-weight:800">Entra para votar no jantar</span><button class="btn small" data-nav="login">Entrar</button></div>'));
     var h = '';
     shown.filter(function(e){ return PRIORITY[e.id] && !mine[e.id] && !isRef(); }).forEach(function(e){
-      h += '<div class="band light" style="margin:0 0 22px"><p><b>Jantar de sexta:</b> é a única coisa em que precisas de votar. O sítio depende de quantas pessoas alinharem.</p><button class="btn small red" data-act="rsvp" data-id="'+esc(e.id)+'">Vou ao jantar</button></div>';
+      h += '<div class="band light" style="margin:0 0 22px"><p><b>Jantar de sexta, '+esc(e.start)+(/a definir/i.test(e.place||'') || !e.place ? '' : ' na '+esc(e.place))+':</b> é a única coisa em que precisas de votar, para marcarmos mesa.</p><button class="btn small red" data-act="rsvp" data-id="'+esc(e.id)+'">Vou ao jantar</button></div>';
     });
     DAYS.forEach(function(d){
       var list = shown.filter(function(e){ return nightOf(e) === d.id; });
