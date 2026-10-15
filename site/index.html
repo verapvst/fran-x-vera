@@ -1145,7 +1145,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         return sb.auth.getUser().then(function(u){
           var uid = u.data.user.id;
           return sb.from('reactions').delete().eq('post_id', postId).eq('user_id', uid).then(fail).then(function(){
-            return kind ? sb.from('reactions').insert({post_id:postId, kind:kind}).then(fail) : null;
+            return kind ? sb.from('reactions').insert({post_id:postId, kind:kind}).then(function(r){ if (r.error && r.error.code !== '23505') throw new Error(r.error.message || 'Erro.'); }) : null;
           });
         });
       },
@@ -1215,7 +1215,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   var adminToken = (String(location.hash).match(/a=([a-z0-9-]+)/) || [])[1] || null;
   var unlockMs = 0, UNLOCK_DEFAULT = '2026-10-15T19:00:00+01:00';
   function regLabel(r){ return r === 'international' ? 'Internacional' : r === 'national' ? 'Nacional' : ''; }
-  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [], checkins = [], chals = [], asg = [], tboard = [], reactions = [], nightInfo = null, tonight = [], composerOpen = false, stops = [], rbd = {board:[], mine:{}}, rdraft = {}, ttot = [], cs = {text:'', points:20, aud:'tonight', picked:{}, secret:false};
+  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [], checkins = [], chals = [], asg = [], tboard = [], reactions = [], nightInfo = null, tonight = [], composerOpen = false, reacting = false, stops = [], rbd = {board:[], mine:{}}, rdraft = {}, ttot = [], cs = {text:'', points:20, aud:'tonight', picked:{}, secret:false};
   var pick = {drink:null, blob:null, preview:null, caption:''}, signup = {blob:null};
   var busy = false;
   function isRef(){ return !!(user && user.role === 'referee'); }
@@ -1726,13 +1726,14 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     }
     else if (act === 'react'){
       if (!need('Entra para reagires.')) return;
+      if (reacting) return; reacting = true;
       var rk = b.getAttribute('data-kind'), curR = reactions.filter(function(x){ return x.post_id === id && x.user_id === user.id; })[0], nextR = curR && curR.kind === rk ? null : rk;
       var capR = $('caption'); if (capR) pick.caption = capR.value;
       guard(api.react(id, nextR).then(function(){
         reactions = reactions.filter(function(x){ return !(x.post_id === id && x.user_id === user.id); });
         if (nextR) reactions.push({post_id:id, user_id:user.id, kind:nextR});
         renderFeed();
-      }));
+      })).then(function(){ reacting = false; if (view === 'feed') loadFeed(); });
     }
     else if (act === 'swapteam'){ guard(api.setTeam(id, b.getAttribute('data-team') === 'vera' ? 'fran' : 'vera').then(loadRef)); }
     else if (act === 'rtab'){ rtab = b.getAttribute('data-tab'); renderRef(); }
