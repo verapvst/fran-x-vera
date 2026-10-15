@@ -272,8 +272,9 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         <div class="pick">
           <label class="selfie" for="avatarFile" id="avPrev">Selfie de perfil</label>
           <div class="stack">
-            <input id="avatarFile" type="file" accept="image/*" capture="user" hidden>
+            <input id="avatarFile" type="file" accept="image/jpeg,image/png,image/webp" hidden><input id="avatarGal" type="file" accept="image/jpeg,image/png,image/webp" hidden>
             <div><label class="f" for="loginName">O teu nome</label><input class="in" id="loginName" autocomplete="off" placeholder="Nome"></div>
+            <div><label class="btn small ghost" for="avatarGal" style="cursor:pointer">Escolher da galeria</label></div>
           </div>
         </div>
         <div id="emailBlock">
@@ -596,7 +597,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         '<div class="top"><button type="button" class="ib" data-c="x" aria-label="Fechar câmara">'+IC.x+'</button>' +
         '<button type="button" class="ib" data-c="t" aria-label="Temporizador de 3 segundos" aria-pressed="false">3s</button>' +
         '<button type="button" class="ib" data-c="f" aria-label="Virar câmara">'+IC.flip+'</button></div>' +
-        '<div class="stage"><video autoplay playsinline muted></video><img class="pic" alt="" hidden><canvas class="live" hidden></canvas><img class="still" alt="" hidden><div class="vig" hidden></div><div class="stk"></div><div class="count" hidden></div><div class="nocam" hidden>Câmara indisponível. Escolhe uma foto da galeria.</div><div class="hint" hidden>Arrasta para mover. Toca para mudar o tamanho.</div></div><input type="file" class="gal" accept="image/*" hidden>' +
+        '<div class="stage"><video autoplay playsinline muted></video><img class="pic" alt="" hidden><canvas class="live" hidden></canvas><img class="still" alt="" hidden><div class="vig" hidden></div><div class="stk"></div><div class="count" hidden></div><div class="nocam" hidden>Câmara indisponível. Escolhe uma foto da galeria.</div><div class="hint" hidden>Arrasta para mover. Toca para mudar o tamanho.</div></div><input type="file" class="gal" accept="image/jpeg,image/png,image/webp" hidden>' +
         '<div class="tray" role="group" aria-label="Autocolantes" hidden>'+tray+'</div>' +
         '<div class="flt" role="group" aria-label="Filtros">'+chips+'</div>' +
         '<div class="bar"><span class="l"><button type="button" class="ib" data-c="g" aria-label="Escolher da galeria">'+IC.gal+'</button></span>' +
@@ -724,7 +725,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
         c.toBlob(function(b){ URL.revokeObjectURL(url); b ? res(b) : rej(new Error('Imagem inválida.')); }, 'image/jpeg', .72);
       };
-      img.onerror = function(){ rej(new Error('Não consegui ler a imagem.')); };
+      img.onerror = function(){ rej(new Error('Não consegui ler a foto. Tenta outra, em JPEG ou PNG.')); };
       img.src = url;
     });
   }
@@ -1288,8 +1289,9 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       var tn = nightInfo ? (isRef() ? '<div class="band light" style="margin-bottom:14px"><p>Como referee jogas a título individual: não tens equipa.</p></div>' : (nightInfo.team ? '<div class="band light" style="margin-bottom:14px"><p><b>'+teamLabel(nightInfo.team)+'</b> · '+nightInfo.hours+' h na festa esta noite</p></div>' : '<div class="band light" style="margin-bottom:14px"><p>Ainda não tens equipa. O teu primeiro post mete-te numa.</p></div>')) : '';
       c.innerHTML = tn + '<div class="card stack"><div class="pick"><label class="selfie" for="selfie">' +
         (pick.preview ? '<img src="'+pick.preview+'" alt="A tua selfie">' : 'Tira uma selfie') +
-        '</label><div class="stack"><input id="selfie" type="file" accept="image/*" capture="user" hidden>' +
-        '<div><label class="f" for="caption">Legenda (opcional)</label><input class="in" id="caption" maxlength="120" value="'+esc(pick.caption)+'" placeholder="O que se passa?"></div></div></div>' +
+        '</label><div class="stack"><input id="selfie" type="file" accept="image/jpeg,image/png,image/webp" hidden><input id="selfieGal" type="file" accept="image/jpeg,image/png,image/webp" hidden>' +
+        '<div><label class="f" for="caption">Legenda (opcional)</label><input class="in" id="caption" maxlength="120" value="'+esc(pick.caption)+'" placeholder="O que se passa?"></div>' +
+        '<div><label class="btn small ghost" for="selfieGal" style="cursor:pointer">Escolher da galeria</label></div></div></div>' +
         '<div><label class="f">O que estás a beber?</label><div class="drinks">'+ds+'</div></div>' +
         '<div class="row"><button class="btn" data-act="post" id="postBtn"'+(busy?' disabled':'')+'>Publicar</button></div></div>';
     }
@@ -1718,13 +1720,13 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 
   document.addEventListener('change', function(ev){
     var t = ev.target;
-    if (t.id === 'selfie'){
+    if (t.id === 'selfie' || t.id === 'selfieGal'){
       var f = t.files && t.files[0]; if (!f) return;
       var cap = $('caption'); if (cap) pick.caption = cap.value;
       shrink(f, 900).then(function(b){ pick.blob = b; pick.preview = URL.createObjectURL(b); renderFeed(); }).catch(function(e){ toast(e.message); });
       return;
     }
-    if (t.id === 'avatarFile'){
+    if (t.id === 'avatarFile' || t.id === 'avatarGal'){
       var f0 = t.files && t.files[0]; if (!f0) return;
       shrink(f0, 480).then(function(b){ signup.blob = b; var pv = $('avPrev'); pv.classList.add('round'); pv.innerHTML = '<img src="'+URL.createObjectURL(b)+'" alt="A tua selfie de perfil">'; }).catch(function(e){ toast(e.message); });
       return;
