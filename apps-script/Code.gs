@@ -11,7 +11,7 @@ function doPost(e) {
   try {
     var body = JSON.parse(e.postData.contents);
     var tok = String(body.token || '');
-    if (body.action === 'challenges') return avisarChallenges_(tok);
+    if (body.action === 'challenges') return avisarChallenges_(tok, body.ids);
     if (body.action === 'broadcast') return avisarTodos_(tok, String(body.kind || ''), String(body.target || ''));
     if (tok.length < 20) return out_({ok: false, error: 'sem sessao'});
     var h = {apikey: SUPABASE_KEY, Authorization: 'Bearer ' + tok};
@@ -67,7 +67,8 @@ function esc_(s) { return String(s).replace(/[&<>"']/g, function (c) { return {'
 
 // Referees: avisa por email cada pessoa que recebeu challenges novos. O email nunca diz o que é o challenge (pode ser secreto),
 // só que há novidades, com o link pessoal. Só corre para sessões de referee, confirmadas no Supabase.
-function avisarChallenges_(tok) {
+// ids (opcional): só avisa estes challenges. Sem ids, avisa todos os que ainda não foram avisados (botão "Avisar por email").
+function avisarChallenges_(tok, ids) {
   if (tok.length < 20) return out_({ok: false, error: 'sem sessao'});
   var h = {apikey: SUPABASE_KEY, Authorization: 'Bearer ' + tok};
   var ru = UrlFetchApp.fetch(SUPABASE_URL + '/auth/v1/user', {headers: h, muteHttpExceptions: true});
@@ -76,7 +77,13 @@ function avisarChallenges_(tok) {
   var rr = JSON.parse(UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/profiles?select=role&id=eq.' + encodeURIComponent(uid), {headers: h, muteHttpExceptions: true}).getContentText());
   if (!rr || !rr.length || rr[0].role !== 'referee') return out_({ok: false, error: 'so referees'});
 
-  var as = JSON.parse(UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/assignments?select=id,user_id&notified=eq.false&status=eq.open&limit=500', {headers: h, muteHttpExceptions: true}).getContentText());
+ var soIds = '';
+  if (ids && ids.length) {
+    var bons = ids.filter(function (x) { return /^[0-9a-f-]{36}$/i.test(String(x)); });
+    if (!bons.length) return out_({ok: true, sent: 0});
+    soIds = '&id=in.(' + bons.join(',') + ')';
+  }
+  var as = JSON.parse(UrlFetchApp.fetch(SUPABASE_URL + '/rest/v1/assignments?select=id,user_id&notified=eq.false&status=eq.open&limit=500' + soIds, {headers: h, muteHttpExceptions: true}).getContentText());
   if (!as || !as.length) return out_({ok: true, sent: 0});
   var porPessoa = {};
   as.forEach(function (a) { (porPessoa[a.user_id] = porPessoa[a.user_id] || []).push(a.id); });
