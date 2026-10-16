@@ -473,7 +473,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     var c = 'av' + (cls ? ' ' + cls : '');
     return src ? '<img class="'+c+'" src="'+esc(src)+'" alt="">' : '<span class="'+c+'">'+esc(String(name||'?').charAt(0).toUpperCase())+'</span>';
   }
-  function linkOf(k){ return String(location.href).split('#')[0] + '#k=' + k; }
+  function siteBase(){ return location.origin + location.pathname; }
+  function linkOf(k){ return siteBase() + '?k=' + k; }  // a chave vai no endereço (?k=), que sobrevive melhor que o # em apps de email e mensagens
   function copyText(s){
     var ta = document.createElement('textarea'); ta.value = s; ta.setAttribute('readonly',''); ta.style.position = 'fixed'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.select();
@@ -1077,8 +1078,12 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       label: 'Online.',
       init: function(){
         if (adminToken) return Promise.resolve(null);
-        var m = String(location.hash).match(/k=([a-z0-9.]+)/);
-        if (m){ try { history.replaceState(null, '', location.pathname + location.search); } catch(e){} return loginKey(m[1]); }
+        var m = (String(location.search) + String(location.hash)).match(/[?&#]k=([a-z0-9.]+)/);
+        if (m){
+          try { history.replaceState(null, '', location.pathname); } catch(e){}
+          // se a chave não servir, sai de qualquer sessão antiga (para ninguém ficar dentro da conta de outra pessoa)
+          return loginKey(m[1]).catch(function(){ keyFailed = true; return sb.auth.signOut().then(function(){ return null; }, function(){ return null; }); });
+        }
         return sb.auth.getSession().then(function(r){ var s = r.data && r.data.session; return s ? profile(s.user.id) : null; }).catch(function(){ return null; });
       },
       signUp: function(o){
@@ -1285,6 +1290,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   if (LIVE){ try { api = makeLive(); } catch(e){ api = demo; } }
 
   /* ---------- state ---------- */
+  var keyFailed = false;
   var user = null, view = 'inicio', rtab = 'going', region = null;
   var adminToken = (String(location.hash).match(/a=([a-z0-9-]+)/) || [])[1] || null;
   var unlockMs = 0, UNLOCK_DEFAULT = '2026-10-15T19:00:00+01:00';
@@ -1654,7 +1660,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       });
     } else {
       h += '<div class="card stack" style="max-width:640px;margin-bottom:16px"><b>Avisar toda a gente por email</b><p class="note" style="margin:0">Envia a todos os que criaram conta (e deixaram email) o aviso de que o BoozeFeed já está funcional, com o link pessoal de cada um. Cada pessoa recebe-o uma só vez, mesmo que carregues outra vez.</p><div class="row"><button class="btn" data-act="broadcast">Enviar: BoozeFeed já funciona</button></div></div>';
-      h += '<p class="note">Se alguém perder o link, copia o dele aqui e envia-lho.</p>' + (players.map(function(p){ return '<div class="listrow"><span class="who2">'+av(p.avatar,p.name,'')+esc(p.name)+(p.contact?' <span class="chip">'+esc(p.contact)+'</span>':'')+'</span><span class="row"><span class="chip">'+esc(p.role === 'referee' ? 'referee' : (regLabel(p.region) || 'player'))+'</span>'+(p.key?'<button class="btn small ghost" data-act="copykey" data-key="'+esc(p.key)+'">Copiar link</button>':'')+'</span></div>'; }).join('') || '<p class="note">Sem players ainda.</p>');
+      h += '<p class="note">Se alguém perder o link, copia o dele aqui e envia-lho.</p>' + (players.map(function(p){ return '<div class="listrow"><span class="who2">'+av(p.avatar,p.name,'')+esc(p.name)+(p.contact?' <span class="chip">'+esc(p.contact)+'</span>':'')+'</span><span class="row"><span class="chip">'+esc(p.role === 'referee' ? 'referee' : (regLabel(p.region) || 'player'))+'</span>'+(p.key?'<button class="btn small ghost" data-act="copykey" data-key="'+esc(p.key)+'">Copiar link</button><button class="btn small ghost" data-act="copycode" data-key="'+esc(p.key)+'">Copiar código</button>':'')+'</span></div>'; }).join('') || '<p class="note">Sem players ainda.</p>');
     }
     b.innerHTML = h;
   }
@@ -1758,6 +1764,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     }
     else if (act === 'copylink'){ copyText($('myLink').value); }
     else if (act === 'copykey'){ copyText(linkOf(b.getAttribute('data-key'))); }
+    else if (act === 'copycode'){ copyText(b.getAttribute('data-key')); }
     else if (act === 'mailme'){ toast('A enviar o link para o teu email. Vê também o spam.'); api.emailLink(); }
     else if (act === 'whatsapp'){
       var uw = $('myLink').value; if (!uw) return;
@@ -1948,7 +1955,18 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 
   $('modeNote').textContent = api.label;
   $('demoAdminBtn').hidden = LIVE;
-  api.init().then(function(u){ user = u; if (u){ toast('Olá, '+u.name+'.'); show('plano'); } else if (adminToken) show('login'); else show('inicio'); })
+  api.init().then(function(u){
+    user = u;
+    if (u){ toast('Olá, '+u.name+'.'); show('plano'); }
+    else if (adminToken) show('login');
+    else if (keyFailed){
+      show('login');
+      var rn = $('refNote'); rn.hidden = false; rn.querySelector('p').textContent = 'Não consegui entrar com este link. Pede um novo à Fran ou à Vera, ou cola o teu código no separador "Já tenho o meu link".';
+      $('loginTitle').textContent = 'Link não reconhecido';
+      var lt = $('ltabLink'); if (lt) lt.click();
+    }
+    else show('inicio');
+  })
     .catch(function(e){ toast(e.message || 'Não consegui entrar.'); show('inicio'); });
 })();
 </script>

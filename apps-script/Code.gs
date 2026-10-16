@@ -36,11 +36,13 @@ function doPost(e) {
       props.setProperty(key, String(n + 1));
     } finally { lock.releaseLock(); }
 
-    var link = SITE + '#k=' + rows[0].link_key;
+    var link = SITE + '?k=' + rows[0].link_key;
+    var codigo = rows[0].link_key;
     var first = name ? name.split(' ')[0] : '';
     var texto = 'Olá' + (first ? ' ' + first : '') + '!\n\n' +
       'Este é o teu link pessoal para a festa FRAN × VERA (15 a 18 de outubro, Lisboa):\n\n' + link + '\n\n' +
       'Abre-o em qualquer telemóvel e entras logo como tu, sem password. Guarda este email. Só tu deves ter este link: quem o tiver entra como tu.\n\n' +
+      'Se o link não te levar ao teu perfil, abre o site, vai a Entrar, escolhe "Já tenho o meu link" e cola este código: ' + codigo + '\n\n' +
       'Até já,\nFran e Vera';
     var html = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:auto;padding:24px;background:#f4e2ea;color:#0d0a0b">' +
       '<h2 style="margin:0 0 12px;font-size:22px">FRAN × VERA · 23H30 DE FESTA</h2>' +
@@ -48,6 +50,7 @@ function doPost(e) {
       '<p>Este é o teu link pessoal para a festa (15 a 18 de outubro, Lisboa). Abre-o em qualquer telemóvel e entras logo como tu, sem password.</p>' +
       '<p style="margin:22px 0"><a href="' + link + '" style="background:#e8421f;color:#0d0a0b;text-decoration:none;font-weight:bold;padding:14px 22px;border-radius:999px;border:2px solid #0d0a0b">Abrir o meu link</a></p>' +
       '<p style="font-size:13px;word-break:break-all">Se o botão não abrir, copia este endereço:<br>' + esc_(link) + '</p>' +
+      '<p style="font-size:13px">Se o link não te levar ao teu perfil: no site, Entrar, "Já tenho o meu link", e cola este código:<br><b>' + esc_(codigo) + '</b></p>' +
       '<p style="font-size:13px">Guarda este email. Só tu deves ter este link: quem o tiver entra como tu.</p>' +
       '<p>Até já,<br>Fran e Vera</p></div>';
     MailApp.sendEmail(rows[0].contact, 'O teu link para a festa FRAN × VERA', texto, {htmlBody: html, name: 'FRAN × VERA'});
@@ -86,13 +89,14 @@ function avisarChallenges_(tok) {
   keys.forEach(function (k) {
     if (!k.contact) return;
     var n = porPessoa[k.user_id].length, first = nome[k.user_id] ? String(nome[k.user_id]).split(' ')[0] : '';
-    var link = SITE + (k.link_key ? '#k=' + k.link_key : '');
+    var link = SITE + (k.link_key ? '?k=' + k.link_key : '');
+    var codigo = k.link_key || '';
     var texto = 'Olá' + (first ? ' ' + first : '') + '!\n\nTens ' + (n === 1 ? 'um challenge novo' : n + ' challenges novos') + ' na festa FRAN × VERA. Abre o site, vai a Challenges, cumpre-o e envia a prova (foto ou vídeo) para ganhares pontos para a tua equipa.\n\n' + link + '\n\nFran e Vera';
     var html = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:auto;padding:24px;background:#f4e2ea;color:#0d0a0b">' +
       '<h2 style="margin:0 0 12px;font-size:22px">FRAN × VERA</h2><p>Olá' + (first ? ' ' + esc_(first) : '') + '!</p>' +
       '<p>Tens <b>' + (n === 1 ? 'um challenge novo' : n + ' challenges novos') + '</b>. Cumpre-' + (n === 1 ? 'o' : 'os') + ' e envia a prova (foto ou vídeo) para ganhares pontos para a tua equipa.</p>' +
       '<p style="margin:22px 0"><a href="' + link + '" style="background:#e8421f;color:#0d0a0b;text-decoration:none;font-weight:bold;padding:14px 22px;border-radius:999px;border:2px solid #0d0a0b">Ver os meus challenges</a></p>' +
-      '<p>Fran e Vera</p></div>';
+      '<p style="font-size:13px">Se o link não te levar ao teu perfil: no site, Entrar, "Já tenho o meu link", e cola este código:<br><b>' + esc_(codigo) + '</b></p><p>Fran e Vera</p></div>';
     try {
       MailApp.sendEmail(k.contact, 'Tens um challenge novo | FRAN × VERA', texto, {htmlBody: html, name: 'FRAN × VERA'});
       enviados++; feitos = feitos.concat(porPessoa[k.user_id]);
@@ -137,13 +141,14 @@ function avisarTodos_(tok, kind) {
     if (props.getProperty(chave)) { jaTinham++; return; }
     if (MailApp.getRemainingDailyQuota() < 1) { cortou = true; return; }
     var first = nome[k.user_id] ? String(nome[k.user_id]).split(' ')[0] : '';
-    var link = SITE + (k.link_key ? '#k=' + k.link_key : '');
-    var texto = 'Olá' + (first ? ' ' + first : '') + '!\n\n' + aviso.linhas.join('\n\n') + '\n\n' + link + '\n\nFran e Vera';
+    var link = SITE + (k.link_key ? '?k=' + k.link_key : '');
+    var codigo = k.link_key || '';
+    var texto = 'Olá' + (first ? ' ' + first : '') + '!\n\n' + aviso.linhas.join('\n\n') + '\n\n' + link + '\n\nSe o link não te levar ao teu perfil, abre o site, Entrar, "Já tenho o meu link", e cola este código: ' + codigo + '\n\nFran e Vera';
     var html = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:auto;padding:24px;background:#f4e2ea;color:#0d0a0b">' +
       '<h2 style="margin:0 0 12px;font-size:22px">FRAN × VERA</h2><p>Olá' + (first ? ' ' + esc_(first) : '') + '!</p>' +
       aviso.linhas.map(function (l) { return '<p>' + esc_(l) + '</p>'; }).join('') +
       '<p style="margin:22px 0"><a href="' + link + '" style="background:#e8421f;color:#0d0a0b;text-decoration:none;font-weight:bold;padding:14px 22px;border-radius:999px;border:2px solid #0d0a0b">' + esc_(aviso.botao) + '</a></p>' +
-      '<p>Fran e Vera</p></div>';
+      '<p style="font-size:13px">Se o link não te levar ao teu perfil: no site, Entrar, "Já tenho o meu link", e cola este código:<br><b>' + esc_(codigo) + '</b></p><p>Fran e Vera</p></div>';
     try {
       MailApp.sendEmail(k.contact, aviso.assunto, texto, {htmlBody: html, name: 'FRAN × VERA'});
       props.setProperty(chave, '1'); enviados++;
