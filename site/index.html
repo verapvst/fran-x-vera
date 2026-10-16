@@ -80,6 +80,23 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ev .pl{font-weight:600;font-size:.88rem}
 .ev.off{opacity:.62}
 .ev .act{display:grid;justify-items:end;gap:4px}
+.post{content-visibility:auto;contain-intrinsic-size:auto 560px}
+.rk-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.rk-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rk-team{border:2px solid var(--ink);background:var(--card);padding:12px;min-width:0}
+.rk-team.lead{background:var(--red)}
+.rk-team .tn{font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.78rem}
+.rk-team .sc{color:var(--ink);font-family:var(--display);font-weight:900;font-size:3.4rem;line-height:.9;margin:6px 0 2px}
+.rk-team .lbl{font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.rk-team .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:10px;font-size:.72rem;font-weight:600}
+.rk-team .g3 b{display:block;font-size:1.05rem}
+.rk-team .soon2{font-size:.82rem;font-weight:600;margin-top:8px}
+.rk-row{display:grid;grid-template-columns:24px 30px minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--ink)}
+.rk-row .pos{font-weight:800;font-variant-numeric:tabular-nums}
+.rk-row .who{min-width:0}
+.rk-row .who b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk-row .sub{display:block;font-size:.74rem;font-weight:600}
+.rk-row .tot{font-family:var(--display);font-weight:900;font-size:1.8rem;line-height:1;font-variant-numeric:tabular-nums}
 .rx{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .rxb{border:2px solid var(--ink);background:var(--bg);border-radius:999px;padding:4px 12px;font-weight:800;font-size:.9rem;cursor:pointer}
 .rxb[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
@@ -344,11 +361,11 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       <div class="band light gate"><p>Entra para veres o ranking e jogares.</p><button class="btn small" data-nav="login">Entrar</button></div>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:6px"><em>Equipas</em></h2>
       <div id="rkTeams"></div>
-      <p class="note" style="margin-top:8px">Pontuação da equipa = pontos totais a dividir pelas pessoas da equipa nessa noite, para ninguém ganhar só por ter mais gente. A equipa mantém-se, e a pontuação de cada noite divide-se pelas pessoas que postaram nessa noite.</p>
+      <p class="note" style="margin-top:8px">Pontuação = pontos da equipa ÷ pessoas que postaram nessa noite, para ninguém ganhar só por ser mais.</p>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Pontos <em>individuais</em></h2>
-      <div class="scroll"><table class="tbl" id="rkPoints"></table></div>
+      <div id="rkPoints"></div>
       <h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:30px">Nacional <em>vs</em> Internacional</h2>
-      <div class="scroll"><table class="tbl" id="rkRegion"></table></div>
+      <div id="rkRegion"></div>
       <p class="note" style="margin-top:8px">A média por pessoa é os pontos do grupo a dividir pelo número de pessoas, para ninguém ganhar só por ser mais.</p>
     </div>
   </section>
@@ -729,18 +746,46 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       img.src = url;
     });
   }
+  // Manchetes do BoozeFeed: escolhidas pelo id do post (a mesma de sempre para o mesmo post).
+  // Há manchetes inteiras por bebida e um gerador (abertura + facto + remate), por isso quase nunca se repetem.
+  var HL_OPEN = ['Cientistas descobrem que','Especialistas confirmam:','Última hora:','Investigação revela que','Estudo que ninguém pediu prova que','Fontes próximas garantem que','Exclusivo:','Alerta vermelho:','Em direto do balcão:','Segundo apurámos,','Rumores confirmam que','Testemunhas juram que','Atenção, malta:','Peritos estão divididos:','Numa sondagem feita ao balcão, 9 em 10 pessoas dizem que','Fonte anónima (o próprio) revela que','Relatório confidencial indica que','Chocante:','Pela primeira vez na história,','Os astrólogos já tinham avisado:','Segundo o horóscopo de hoje,','Um estudo da Universidade da Noite diz que','Fotografia faz soar alarmes:','Confirmado por três pessoas e um seguranças:','Nem a Fran nem a Vera esperavam, mas'];
+  var HL_END = ['Ninguém estava preparado.','A internet nunca mais foi a mesma.','O resto vai surpreender-te.','A Fran e a Vera aprovam.','A equipa não ficou surpreendida.','Não há volta a dar.','O grupo está dividido.','Os médicos odeiam este truque.','Foi lindo de ver.','Ainda só vai a meio da noite.','A pista de dança sentiu.','Isto é só o começo.','Há quem diga que foi de propósito.','','','','','','',''];
+  var HL_ACT = {
+    beer: ['abriu a noite com {d}','jura que {d} foi só uma','resolveu a vida com {d}','encontrou a felicidade em {d}','está a dar uma lição de hidratação com {d}','pediu {d} e fez o bar parar','mostrou ao mundo como se bebe {d}','trocou o juízo por {d}','fez de {d} o plano A, o plano B e o plano C','levantou {d} como quem levanta um troféu','nunca duvidou: {d} era a escolha certa','e {d} têm um caso sério','está em modo cerveja e não aceita reclamações','achou que {d} merecia uma fotografia','provou que a noite começa com {d}'],
+    wine: ['elevou a noite com {d}','está em modo sommelier com {d}','jura que percebe de vinhos, mas só pediu {d}','trouxe classe ao balcão com {d}','pediu {d} e já fala de “notas de frutos vermelhos”','fez de {d} o ponto alto da noite','está a saborear {d} como se fosse uma obra de arte','rodou o copo, cheirou e disse “é bom”: {d}','escolheu {d} e ficou com ar de quem sabe','brindou com {d} e a noite mudou'],
+    cock: ['pediu {d} e o barman ficou orgulhoso','está a viver a vida a cores com {d}','tem um {d} na mão e o mundo aos pés','escolheu {d} e o guarda-chuvinha também veio','fez de {d} uma obra de arte','chegou, viu e pediu {d}','mostrou que a noite pede {d}','e {d}: a parceria que ninguém previu','esperou 10 minutos por {d} e disse que valeu a pena','não bebe só {d}: faz um espetáculo'],
+    shot: ['despachou {d} sem pestanejar','arrisca tudo num {d}','fez {d} e a mesa aplaudiu','foi de {d} e não olhou para trás','pediu {d} para ganhar coragem','provou que {d} é um desporto de equipa','tomou {d} e jurou que foi o último (não foi)','levantou {d} ao ar e o bar respondeu','mandou {d} abaixo com a postura de campeão','precisou de {d} para a próxima decisão importante'],
+    hard: ['pediu {d} e o bar respeitou','está a ir a sério com {d}','provou que {d} é para quem sabe','escolheu {d} e fez o gelo tremer','levou {d} ao limite (do copo)','pediu {d} e disse “sem pressas”','tem a coragem de {d} e a calma de um monge','foi de {d} e a equipa pediu calma','achou que {d} era uma boa ideia (e talvez seja)','segura {d} como quem segura um segredo'],
+    sidra: ['abriu {d} e o champanhe ficou com ciúmes','fez uma festa só com {d}','mostrou como se serve {d}','trouxe a alegria de {d}','estourou {d} e o ambiente subiu','provou que {d} também é luxo','escolheu {d} e fez escola'],
+    water: ['escolheu água e mostrou que também sabe jogar','está a hidratar-se como um profissional','bebeu água e é a pessoa mais responsável da noite','fez uma pausa com {d} (menos um ponto, mais dez de juízo)','provou que a festa dura mais com água pelo meio','tomou {d} e voltou à pista com energia nova','tem a estratégia mais inteligente da noite: {d}','escolheu {d} e o fígado agradece','é o MVP da noite e bebeu só água','precisa de {d} e de mais um bocado de dança'],
+    any: ['bebeu {d} e o que aconteceu a seguir vai surpreender-te','escolheu {d} e fez história','pediu {d} e a noite ficou mais interessante','jurou que foi só {d}','levantou {d} e fez um brinde ao desconhecido','está a divertir-se com {d}','não resiste a {d}','fez de {d} o momento da noite','trouxe {d} para a fotografia','chegou com {d} e toda a gente reparou','mostrou o melhor ângulo de {d}','sorriu para a câmara com {d} na mão','teve uma ideia brilhante envolvendo {d}','fez um brinde a {d} e ao grupo','tornou {d} a estrela da festa']
+  };
+  var HL_FULL = {
+    beer: ['{n} jura que foi só uma cerveja. As fotos dizem outra coisa.','A escolha de {n} está a dividir a internet: {d}.','{n} e a cerveja: uma história de amor que ninguém pediu.','Cientistas confirmam que {n} aguenta mais uma ronda. Último registo: {d}.','{n} bebeu {d} e o resto da equipa já está a torcer por ela.','Atenção: {n} avistado(a) com {d}. Mantenham a calma.'],
+    wine: ['{n} pediu {d} e agora fala como um crítico de vinhos.','{n} diz que o vinho “respira”. Nós só vimos {d}.','Elegante e sem pressa: {n} com {d}.'],
+    cock: ['{n} pediu {d} e a decoração é mais cara que o copo.','O bar não estava preparado para {n} e {d}.','{n} e {d}: uma combinação digna de capa de revista.'],
+    shot: ['{n} fez {d} e não houve volta a dar.','Um(a) {n} corajoso(a), um {d}: o resto é história.','Três, dois, um: {n} e {d}.'],
+    hard: ['{n} foi a sério: {d}.','{n} pediu {d} e a noite ficou séria.','Respeitem {n}: {d} na mão e zero medo.'],
+    sidra: ['{n} abriu {d} e o ambiente subiu logo.','{n} e {d}: pequenas coisas, grandes festas.'],
+    water: ['{n} bebeu água e ganhou o nosso respeito.','Hidratação em dia: {n} sabe o que faz.','O ponto negativo mais inteligente da noite: {n} com {d}.'],
+    any: ['{n} escolheu {d} e ninguém estava preparado.','A escolha de {n} ({d}) está a dividir a internet.','10 sinais de que {n} está a divertir-se (o nº 7 é {d}).']
+  };
+  var HL_CARE = ['{n} chegou a casa em segurança. Eis porque devias fazer o mesmo.','{n} está em casa, de chinelos e com missão cumprida. Boa noite!','Confirmado: {n} chegou a casa. A equipa agradece e dorme descansada.','{n} fez o check de chegada. Mais um herói da noite.','Missão cumprida: {n} em casa, sã(o) e salvo(a).','{n} está em casa. O sofá e a cama já sabiam.','Notícia boa: {n} chegou a casa. O resto do grupo, atenção ao relógio.','{n} despediu-se da festa e voltou para casa em segurança. Exemplo a seguir.'];
+  function drinkCat(label){
+    var l = String(label || '').toLowerCase();
+    return /sem álcool/.test(l) ? 'water' : /cerveja/.test(l) ? 'beer' : /sidra/.test(l) ? 'sidra' : /vinho/.test(l) ? 'wine' : /cocktail/.test(l) ? 'cock' : /shot/.test(l) ? 'shot' : /forte/.test(l) ? 'hard' : 'any';
+  }
+  var DRINK_PHRASE = {water:'água', beer:'uma cerveja', sidra:'uma sidra', wine:'um copo de vinho', cock:'um cocktail', shot:'um shot', hard:'uma bebida forte', any:'uma bebida'};
+  function pickAt(arr, h, salt){ return arr[Math.abs(Math.imul(h ^ Math.imul(salt + 1, 0x9e3779b1), 0x85ebca6b)) % arr.length]; }
   function headline(post){
-    var n = post.name || 'Alguém', d = (post.drink || '').toLowerCase();
-    if (post.kind === 'care') return n + ' chegou a casa em segurança. Eis porque devias fazer o mesmo.';
-    var t = [
-      n+' bebeu '+d+' e o que aconteceu a seguir vai surpreender-te',
-      'A escolha de '+n+' ('+d+') está a dividir a internet',
-      n+' jura que foi só '+d+'. As fotos dizem outra coisa.',
-      'Cientistas confirmam que '+n+' aguenta mais uma ronda. Último registo: '+d+'.',
-      n+' escolheu '+d+' e ninguém estava preparado',
-      '10 sinais de que '+n+' está a divertir-se (o nº 7 é '+d+')'
-    ];
-    return t[hash(post.id) % t.length];
+    var n = post.name || 'Alguém', h = hash(String(post.id));
+    if (post.kind === 'care') return pickAt(HL_CARE, h, 1).replace(/\{n\}/g, n);
+    var cat = drinkCat(post.drink), d = DRINK_PHRASE[cat] || 'uma bebida';
+    // 1 em 3: manchete inteira da bebida. Resto: abertura + facto da bebida (ou geral) + remate.
+    if (h % 3 === 0) return pickAt(HL_FULL[cat].concat(HL_FULL.any), h, 2).replace(/\{n\}/g, n).replace(/\{d\}/g, d);
+    var act = pickAt(HL_ACT[cat].concat(HL_ACT.any), h, 3).replace(/\{d\}/g, d);
+    var end = pickAt(HL_END, h, 5);
+    return pickAt(HL_OPEN, h, 4) + ' ' + n + ' ' + act + '.' + (end ? ' ' + end : '');
   }
 
   /* ---------- fase 2: equipas, check in, challenges ---------- */
@@ -799,7 +844,9 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         var isRef = !!o.token;
         var id = 'u' + (++seq);
         var u = {id:id, name:o.name, role:isRef ? 'referee' : 'player', region:o.region, avatar:URL.createObjectURL(o.blob), contact:o.contact || '', key:id + '.' + Math.random().toString(36).slice(2,12)};
-        users.push(u); me = u; return Promise.resolve({user:pub(u), key:u.key});
+        users.push(u); me = u;
+        if (isRef && ['vera','fran'].indexOf(String(o.name).toLowerCase()) > -1) nts[u.id] = String(o.name).toLowerCase();
+        return Promise.resolve({user:pub(u), key:u.key});
       },
       signInKey: function(k){
         var u = users.filter(function(x){ return x.key === k; })[0];
@@ -842,7 +889,9 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       deletePost: function(id){ ps = ps.filter(function(p){ return p.id !== id; }); return Promise.resolve(); },
       leaderboard: function(){
         var rows = users.map(function(u){
-          return {name:u.name, avatar:u.avatar, region:u.region, team:nts[u.id] || null, points:pointsOf(u.id),
+          var pr1 = presenceOf(ps), pp = 0; Object.keys(pr1).forEach(function(k){ if (pr1[k].user === u.id) pp += pr1[k].points; });
+          var dp = ps.filter(function(q){ return q.user_id === u.id; }).reduce(function(a,q){ return a + q.points; }, 0), cp = asg.filter(function(a){ return a.user_id === u.id && a.status === 'approved'; }).reduce(function(a,x){ return a + x.awarded; }, 0);
+          return {name:u.name, avatar:u.avatar, region:u.region, team:nts[u.id] || null, drink_points:dp, presence_points:pp, challenge_points:cp, points:pointsOf(u.id),
             hours:(function(){ var h = 0, pr = presenceOf(ps); Object.keys(pr).forEach(function(k){ if (pr[k].user === u.id) h += pr[k].hours; }); return Math.round(h*10)/10; })(), posts:ps.filter(function(p){ return p.user_id === u.id; }).length, challenges:asg.filter(function(x){ return x.user_id === u.id && x.status === 'approved'; }).length};
         });
         return Promise.resolve(rows.sort(function(x,y){ return y.points - x.points; }));
@@ -935,7 +984,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       listTonight: function(){
         var k = nightKey(), pr = presenceOf(ps);
         return Promise.resolve(users.filter(function(u){ return nts[u.id] && pr[u.id + '|' + k]; }).map(function(u){
-          return {user_id:u.id, name:u.name, avatar:u.avatar, team:nts[u.id], region:u.region, hours:pr[u.id + '|' + k].hours};
+          return {user_id:u.id, name:u.name, avatar:u.avatar, team:nts[u.id], region:u.region, role:u.role, hours:pr[u.id + '|' + k].hours};
         }));
       },
       setTeam: function(uid, team){ nts[uid] = team; return Promise.resolve(); },
@@ -989,6 +1038,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     function fail(r){ if (r.error) throw new Error(r.error.message || 'Erro.'); return r.data; }
     function rid(n){ var a = new Uint8Array(n), s = '', c = 'abcdefghijklmnopqrstuvwxyz0123456789'; (window.crypto || window.msCrypto).getRandomValues(a); for (var i=0;i<n;i++) s += c[a[i] % 36]; return s; }
     function emailFor(id){ return String(CFG.AUTH_EMAIL_TEMPLATE || 'fv.{id}@gmail.com').replace('{id}', id); }
+    // a sessão já está no telemóvel: não vale a pena ir perguntar ao servidor de cada vez
+    function getUserFast(){ return sb.auth.getSession().then(function(r){ var se = r.data && r.data.session; return {data:{user:se ? se.user : null}}; }); }
     function pubUrl(p){ return p ? sb.storage.from('selfies').getPublicUrl(p).data.publicUrl : ''; }
     function evFrom(r){ return {id:r.id, day:r.day, start:r.start_time||'', end:r.end_time||'', allDay:!!r.all_day, title:r.title, place:r.place||'', note:r.note||'', rule:r.rule_text||'', official:!!r.official, sort:r.sort||0}; }
     function evTo(e){ return {id:e.id, day:e.day, start_time:e.start||null, end_time:e.end||null, all_day:!!e.allDay, title:e.title, place:e.place||null, note:e.note||null, rule_text:e.rule||null, official:!!e.official, sort:e.sort||0}; }
@@ -1043,7 +1094,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         }).catch(function(){ return false; });
       },
       getKey: function(){
-        return sb.auth.getUser().then(function(u){ return sb.from('member_keys').select('link_key').eq('user_id', u.data.user.id).single(); }).then(fail).then(function(r){ return r.link_key; });
+        return getUserFast().then(function(u){ return sb.from('member_keys').select('link_key').eq('user_id', u.data.user.id).single(); }).then(fail).then(function(r){ return r.link_key; });
       },
       signOut: function(){ return sb.auth.signOut(); },
       listEvents: function(){ return sb.from('events').select('*').order('sort').then(fail).then(function(a){ return a.map(evFrom); }); },
@@ -1051,15 +1102,15 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       deleteEvent: function(id){ return sb.from('events').delete().eq('id', id).then(fail); },
       listRsvps: function(){ return sb.from('rsvps').select('event_id,user_id,profiles(name)').then(fail).then(function(a){ return a.map(function(r){ return {event_id:r.event_id, user_id:r.user_id, name:(r.profiles && r.profiles.name) || ''}; }); }); },
       setRsvp: function(id, going){
-        return sb.auth.getUser().then(function(u){
+        return getUserFast().then(function(u){
           var uid = u.data.user.id;
           return going ? sb.from('rsvps').upsert({event_id:id, user_id:uid}, {onConflict:'event_id,user_id', ignoreDuplicates:true}).then(fail) : sb.from('rsvps').delete().eq('event_id', id).eq('user_id', uid).then(fail);
         });
       },
       listDrinks: function(){ return sb.from('drinks').select('*').order('sort').then(fail); },
       saveDrink: function(d){ return sb.from('drinks').update({label:d.label, hint:d.hint, points:d.points}).eq('id', d.id).then(fail); },
-      listPosts: function(){
-        return sb.from('posts').select('id,user_id,points,caption,photo_path,created_at,profiles!posts_user_id_fkey(name,avatar_path),drinks(label,kind)').order('created_at', {ascending:false}).limit(60).then(fail).then(function(a){
+      listPosts: function(lim){
+        return sb.from('posts').select('id,user_id,points,caption,photo_path,created_at,profiles!posts_user_id_fkey(name,avatar_path),drinks(label,kind)').order('created_at', {ascending:false}).limit(lim || 30).then(fail).then(function(a){
           return a.map(function(p){
             return {id:p.id, user_id:p.user_id, name:(p.profiles && p.profiles.name) || '', avatar:pubUrl(p.profiles && p.profiles.avatar_path), drink:(p.drinks && p.drinks.label) || '', kind:(p.drinks && p.drinks.kind) || 'drink', points:p.points, caption:p.caption || '',
               photo:pubUrl(p.photo_path), created_at:p.created_at};
@@ -1067,7 +1118,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         });
       },
       createPost: function(o){
-        return sb.auth.getUser().then(function(u){
+        return getUserFast().then(function(u){
           var uid = u.data.user.id, path = uid + '/' + Date.now() + '.jpg';
           return sb.storage.from('selfies').upload(path, o.blob, {contentType:'image/jpeg'}).then(function(r){
             if (r.error) throw new Error('Não consegui enviar a selfie.');
@@ -1080,10 +1131,11 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       deletePost: function(id){ return sb.from('posts').delete().eq('id', id).then(fail); },
       leaderboard: function(){
         function q(cols){ return sb.from('leaderboard').select(cols).order('points', {ascending:false}).limit(300); }
-        return q('name,points,posts,avatar_path,region,team,challenges,hours')
+        return q('name,points,posts,avatar_path,region,team,challenges,hours,drink_points,presence_points,challenge_points')
+          .then(function(r){ return r.error ? q('name,points,posts,avatar_path,region,team,challenges,hours') : r; })
           .then(function(r){ return r.error ? q('name,points,posts,avatar_path,region,team,challenges') : r; })
           .then(function(r){ return r.error ? q('name,points,posts,avatar_path,region') : r; })
-          .then(fail).then(function(a){ return a.map(function(b){ return {name:b.name, points:b.points, posts:b.posts, region:b.region, team:b.team || null, challenges:b.challenges || 0, hours:Number(b.hours) || 0, avatar:pubUrl(b.avatar_path)}; }); });
+          .then(fail).then(function(a){ return a.map(function(b){ return {name:b.name, points:b.points, posts:b.posts, region:b.region, team:b.team || null, challenges:b.challenges || 0, hours:Number(b.hours) || 0, drink_points:b.drink_points == null ? null : b.drink_points, presence_points:b.presence_points == null ? null : b.presence_points, challenge_points:b.challenge_points || 0, avatar:pubUrl(b.avatar_path)}; }); });
       },
       me: function(){ return sb.auth.getSession().then(function(r){ var s = r.data && r.data.session; return s ? profile(s.user.id) : null; }); },
       listCheckins: function(){ return sb.from('checkins').select('event_id,user_id,profiles(name)').then(fail).then(function(a){ return a.map(function(r){ return {event_id:r.event_id, user_id:r.user_id, name:(r.profiles && r.profiles.name) || ''}; }); }); },
@@ -1114,7 +1166,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         });
       },
       submitProof: function(id, blob, type){
-        return sb.auth.getUser().then(function(u){
+        return getUserFast().then(function(u){
           var uid = u.data.user.id, mime = type === 'video' ? (blob.type || 'video/mp4') : 'image/jpeg';
           var ext = type === 'image' ? 'jpg' : mime === 'video/quicktime' ? 'mov' : mime === 'video/webm' ? 'webm' : 'mp4';
           var path = uid + '/' + Date.now() + '.' + ext;
@@ -1128,7 +1180,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       },
       reviewAssignment: function(id, ok, pts){ return sb.rpc('review_assignment', {p_id:id, p_approve:ok, p_points:pts}).then(fail); },
       myNight: function(){
-        return sb.auth.getUser().then(function(u){
+        return getUserFast().then(function(u){
           var uid = u.data.user.id, k = nightKey();
           return Promise.all([
             sb.from('team_members').select('team').eq('user_id', uid).limit(1),
@@ -1142,7 +1194,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       teamNightBoard: function(){ return sb.from('team_night_board').select('night,team,people,points,hours,score').order('night').then(fail).then(function(a){ return a.map(function(x){ return {night:x.night, team:x.team, people:x.people, points:x.points, hours:Number(x.hours), score:Number(x.score)}; }); }); },
       listReactions: function(){ return sb.from('reactions').select('post_id,user_id,kind').limit(3000).then(fail); },
       react: function(postId, kind){
-        return sb.auth.getUser().then(function(u){
+        return getUserFast().then(function(u){
           var uid = u.data.user.id;
           return sb.from('reactions').delete().eq('post_id', postId).eq('user_id', uid).then(fail).then(function(){
             return kind ? sb.from('reactions').insert({post_id:postId, kind:kind}).then(function(r){ if (r.error && r.error.code !== '23505') throw new Error(r.error.message || 'Erro.'); }) : null;
@@ -1155,10 +1207,10 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         return Promise.all([
           sb.from('night_presence').select('user_id,hours').eq('night', k).then(fail),
           sb.from('team_members').select('user_id,team').then(fail),
-          sb.from('profiles').select('id,name,avatar_path,region').then(fail)
+          sb.from('profiles').select('id,name,avatar_path,region,role').then(fail)
         ]).then(function(r){
           var by = {}, tm = {}; r[2].forEach(function(p){ by[p.id] = p; }); r[1].forEach(function(t){ tm[t.user_id] = t.team; });
-          return r[0].filter(function(x){ return tm[x.user_id]; }).map(function(x){ var p = by[x.user_id] || {}; return {user_id:x.user_id, name:p.name || '', avatar:pubUrl(p.avatar_path), team:tm[x.user_id], region:p.region, hours:Number(x.hours)}; });
+          return r[0].filter(function(x){ return tm[x.user_id]; }).map(function(x){ var p = by[x.user_id] || {}; return {user_id:x.user_id, name:p.name || '', avatar:pubUrl(p.avatar_path), team:tm[x.user_id], region:p.region, role:p.role, hours:Number(x.hours)}; });
         });
       },
       setTeam: function(uid, team){ return sb.rpc('set_team', {p_user:uid, p_team:team}).then(fail); },
@@ -1194,7 +1246,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
           return {board:r[0].map(function(b){ return {stop_id:b.stop_id, name:b.name, position:b.position, croquete:b.croquete == null ? null : Number(b.croquete), tasca:b.tasca == null ? null : Number(b.tasca), votes:b.votes}; }), mine:mine};
         });
       },
-      rate: function(stopId, c, t){ return sb.auth.getUser().then(function(u){ return sb.from('rally_ratings').upsert({stop_id:stopId, user_id:u.data.user.id, croquete:c, tasca:t}, {onConflict:'stop_id,user_id'}).then(fail); }); },
+      rate: function(stopId, c, t){ return getUserFast().then(function(u){ return sb.from('rally_ratings').upsert({stop_id:stopId, user_id:u.data.user.id, croquete:c, tasca:t}, {onConflict:'stop_id,user_id'}).then(fail); }); },
       listIdeas: function(){ return sb.from('challenge_ideas').select('id,user_id,text,profiles(name)').order('created_at', {ascending:false}).then(fail).then(function(a){ return a.map(function(i){ return {id:i.id, user_id:i.user_id, name:(i.profiles && i.profiles.name) || '', text:i.text}; }); }); },
       addIdea: function(text){ return sb.from('challenge_ideas').insert({text:text}).then(fail); },
       deleteIdea: function(id){ return sb.from('challenge_ideas').delete().eq('id', id).then(fail); },
@@ -1215,7 +1267,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   var adminToken = (String(location.hash).match(/a=([a-z0-9-]+)/) || [])[1] || null;
   var unlockMs = 0, UNLOCK_DEFAULT = '2026-10-15T19:00:00+01:00';
   function regLabel(r){ return r === 'international' ? 'Internacional' : r === 'national' ? 'Nacional' : ''; }
-  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [], checkins = [], chals = [], asg = [], tboard = [], reactions = [], nightInfo = null, tonight = [], composerOpen = false, reacting = false, stops = [], rbd = {board:[], mine:{}}, rdraft = {}, ttot = [], cs = {text:'', points:20, aud:'tonight', picked:{}, secret:false};
+  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [], checkins = [], chals = [], asg = [], tboard = [], reactions = [], nightInfo = null, tonight = [], composerOpen = false, stops = [], rbd = {board:[], mine:{}}, rdraft = {}, ttot = [], cs = {text:'', points:20, aud:'tonight', picked:{}, secret:false};
   var pick = {drink:null, blob:null, preview:null, caption:''}, signup = {blob:null};
   var busy = false;
   function isRef(){ return !!(user && user.role === 'referee'); }
@@ -1298,7 +1350,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       var ds = drinks.map(function(d){
         return '<button type="button" class="dk" data-act="drink" data-id="'+esc(d.id)+'" aria-pressed="'+(pick.drink===d.id)+'"><span class="p">'+pts(d.points)+'</span><b>'+esc(d.label)+'</b><span>'+esc(d.hint||'')+'</span></button>';
       }).join('');
-      var tn = nightInfo ? (isRef() ? '<div class="band light" style="margin-bottom:14px"><p>Como referee jogas a título individual: não tens equipa.</p></div>' : (nightInfo.team ? '<div class="band light" style="margin-bottom:14px"><p><b>'+teamLabel(nightInfo.team)+'</b> · '+nightInfo.hours+' h na festa esta noite</p></div>' : '<div class="band light" style="margin-bottom:14px"><p>Ainda não tens equipa. O teu primeiro post mete-te numa.</p></div>')) : '';
+      var tn = nightInfo ? ((nightInfo.team ? '<div class="band light" style="margin-bottom:14px"><p><b>'+teamLabel(nightInfo.team)+'</b> · '+nightInfo.hours+' h na festa esta noite</p></div>' : '<div class="band light" style="margin-bottom:14px"><p>Ainda não tens equipa. O teu primeiro post mete-te numa.</p></div>')) : '';
       var form = '<div class="card stack"><div class="pick"><label class="selfie" for="selfie">' +
         (pick.preview ? '<img src="'+pick.preview+'" alt="A tua selfie">' : 'Tira uma selfie') +
         '</label><div class="stack"><input id="selfie" type="file" accept="image/jpeg,image/png,image/webp" hidden><input id="selfieGal" type="file" accept="image/jpeg,image/png,image/webp" hidden>' +
@@ -1308,17 +1360,26 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         '<div class="row"><button class="btn" data-act="post" id="postBtn"'+(busy?' disabled':'')+'>Publicar</button><button class="btn ghost" data-act="cancelcompose" type="button">Cancelar</button></div></div>';
       c.innerHTML = tn + (composerOpen ? form : '<button class="btn red" data-act="compose" style="width:100%;font-size:1rem;padding:16px">Publicar no BoozeFeed</button>');
     }
-    $('feed').innerHTML = posts.length ? posts.map(function(p){
-      return '<article class="post"><img src="'+esc(p.photo)+'" alt="Selfie de '+esc(p.name)+'" loading="lazy"><div class="pb">' +
+    renderPosts();
+  }
+  function rxButtons(pid){
+    return REACTIONS.map(function(r){
+      var n = reactions.filter(function(x){ return x.post_id === pid && x.kind === r[0]; }).length, on = !!(user && reactions.some(function(x){ return x.post_id === pid && x.kind === r[0] && x.user_id === user.id; }));
+      return '<button type="button" class="rxb" data-act="react" data-id="'+esc(pid)+'" data-kind="'+r[0]+'" aria-pressed="'+on+'" aria-label="Reagir">'+r[1]+(n ? ' <span>'+n+'</span>' : '')+'</button>';
+    }).join('');
+  }
+  function patchRx(pid){ var el = document.querySelector('.rx[data-post="'+pid+'"]'); if (el) el.innerHTML = rxButtons(pid); }
+  var postLimit = 30, feedSig = '', reactBusy = {};
+  function sigOf(ps, rs){ return ps.map(function(p){ return p.id+':'+p.points; }).join(',') + '|' + rs.map(function(r){ return r.post_id+r.user_id+r.kind; }).join(''); }
+  function renderPosts(){
+    $('feed').innerHTML = (posts.length ? posts.map(function(p){
+      return '<article class="post"><img src="'+esc(p.photo)+'" alt="Selfie de '+esc(p.name)+'" loading="lazy" decoding="async"><div class="pb">' +
         '<div class="meta"><span class="chip red">'+pts(p.points)+' pts</span><span>'+esc(p.drink)+'</span></div>' +
         '<h3>'+esc(headline(p))+'</h3><div class="meta">'+av(p.avatar,p.name,'')+'<span>'+esc(p.name)+' · '+ago(p.created_at)+'</span>' +
         ((isRef() || (user && p.user_id === user.id)) ? '<button class="btn small ghost" data-act="delpost" data-id="'+esc(p.id)+'">Apagar</button>' : '') + '</div>' +
         (p.caption ? '<p class="cap">'+esc(p.caption)+'</p>' : '') +
-        '<div class="rx">' + REACTIONS.map(function(r){
-          var n = reactions.filter(function(x){ return x.post_id === p.id && x.kind === r[0]; }).length, on = !!(user && reactions.some(function(x){ return x.post_id === p.id && x.kind === r[0] && x.user_id === user.id; }));
-          return '<button type="button" class="rxb" data-act="react" data-id="'+esc(p.id)+'" data-kind="'+r[0]+'" aria-pressed="'+on+'" aria-label="Reagir">'+r[1]+(n ? ' <span>'+n+'</span>' : '')+'</button>';
-        }).join('') + '</div></div></article>';
-    }).join('') : '<p class="note">Ainda não há notícias. A primeira selfie fica com a manchete.</p>';
+        '<div class="rx" data-post="'+esc(p.id)+'">' + rxButtons(p.id) + '</div></div></article>';
+    }).join('') : '<p class="note">Ainda não há notícias. A primeira selfie fica com a manchete.</p>') + (posts.length >= postLimit ? '<div class="row" style="justify-content:center;margin-top:6px"><button class="btn ghost" data-act="moreposts">Ver mais</button></div>' : '');
   }
 
   /* ---------- fase 2: ecrãs ---------- */
@@ -1371,7 +1432,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       '<p style="font-weight:800;margin:0 0 10px">Team Vera '+nv+' · Team Fran '+nf+'</p>';
     h += tonight.length ? tonight.slice().sort(function(a,b){ return String(a.name).localeCompare(String(b.name)); }).map(function(t){
       return '<div class="listrow"><span class="who2">'+av(t.avatar,t.name,'')+esc(t.name)+' <span class="chip">'+teamLabel(t.team)+'</span> <span class="chip">'+t.hours+' h</span></span>' +
-        '<button class="btn small ghost" data-act="swapteam" data-id="'+esc(t.user_id)+'" data-team="'+esc(t.team)+'">Passar para a '+teamLabel(t.team === 'vera' ? 'fran' : 'vera')+'</button></div>';
+        (t.role === 'referee' ? '' : '<button class="btn small ghost" data-act="swapteam" data-id="'+esc(t.user_id)+'" data-team="'+esc(t.team)+'">Passar para a '+teamLabel(t.team === 'vera' ? 'fran' : 'vera')+'</button>')+'</div>';
     }).join('') : '<div class="empty">Ainda ninguém postou esta noite.</div>';
     return h;
   }
@@ -1456,33 +1517,51 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     }).join('') : '<div class="empty">Nada para validar.</div>';
     return h;
   }
+  var rkNight = null;
   function renderRankings(){
     var b = board.slice();
-    var byPts = b.slice().sort(function(x,y){ return y.points - x.points || y.posts - x.posts || String(x.name).localeCompare(y.name); });
-    $('rkPoints').innerHTML = '<thead><tr><th>#</th><th>Player</th><th>Horas</th><th>Pontos</th></tr></thead><tbody>' +
-      (byPts.length ? byPts.map(function(r,i){ return '<tr><td>'+(i+1)+'</td><td><span class="who2">'+av(r.avatar,r.name,'')+esc(r.name)+(r.team ? ' <span class="chip">'+teamLabel(r.team)+'</span>' : '')+'</span></td><td>'+(r.hours || 0)+' h</td><td>'+r.points+'</td></tr>'; }).join('') : '<tr><td colspan="4">Ainda não há players.</td></tr>') + '</tbody>';
     var NIGHTS = {'2026-10-15':'Quinta', '2026-10-16':'Sexta', '2026-10-17':'Sábado'};
-    var nights = tboard.map(function(x){ return x.night; }).filter(function(n,i,a){ return a.indexOf(n) === i; }).sort().reverse();
-    function trow(x){ return '<tr><td>'+teamLabel(x.team)+'</td><td>'+x.people+'</td><td>'+(Math.round(x.hours*10)/10)+' h</td><td>'+x.points+'</td><td><b>'+x.score+'</b></td></tr>'; }
-    var th = '<thead><tr><th>Equipa</th><th>Pessoas</th><th>Horas</th><th>Pontos</th><th>Pontuação</th></tr></thead>';
-    var out = nights.map(function(n){
-      var rows = tboard.filter(function(x){ return x.night === n; }).sort(function(x,y){ return y.score - x.score; });
-      return '<h3 style="margin:14px 0 4px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">'+(NIGHTS[n] || n)+'</h3><div class="scroll"><table class="tbl">'+th+'<tbody>'+rows.map(trow).join('')+'</tbody></table></div>';
-    }).join('');
-    if (nights.length > 1){
-      var tot = {}; tboard.forEach(function(x){ var t = tot[x.team] = tot[x.team] || {team:x.team, people:0, hours:0, points:0, score:0}; t.people += x.people; t.hours += x.hours; t.points += x.points; t.score += x.score; });
-      var tr = Object.keys(tot).map(function(k){ tot[k].score = Math.round(tot[k].score*10)/10; return tot[k]; }).sort(function(x,y){ return y.score - x.score; });
-      out += '<h3 style="margin:14px 0 4px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">Total das noites (soma das pontuações)</h3><div class="scroll"><table class="tbl">'+th+'<tbody>'+tr.map(trow).join('')+'</tbody></table></div>';
+    // equipas: uma noite de cada vez (ou o total), sempre numa só linha de ecrã
+    var nights = tboard.map(function(x){ return x.night; }).filter(function(n,i,a){ return a.indexOf(n) === i; }).sort();
+    if (rkNight !== 'total' && nights.indexOf(rkNight) < 0) rkNight = nights.length ? nights[nights.length - 1] : null;
+    var rows = {};
+    if (rkNight === 'total'){
+      tboard.forEach(function(x){ var t = rows[x.team] = rows[x.team] || {team:x.team, people:0, hours:0, points:0, score:0}; t.people += x.people; t.hours += x.hours; t.points += x.points; t.score += x.score; });
+    } else {
+      tboard.filter(function(x){ return x.night === rkNight; }).forEach(function(x){ rows[x.team] = x; });
     }
-    if (!out) out = '<div class="scroll"><table class="tbl"><thead><tr><th>Equipa</th><th>Estado</th></tr></thead><tbody><tr><td>Team Vera</td><td>Ainda não alocado: o jogo começa quinta às 19:00.</td></tr><tr><td>Team Fran</td><td>Ainda não alocado: o jogo começa quinta às 19:00.</td></tr></tbody></table></div>';
+    var sv = rows.vera ? rows.vera.score : 0, sf = rows.fran ? rows.fran.score : 0;
+    var tabs = nights.map(function(n){ return '<button class="lk" data-act="rknight" data-n="'+n+'"'+(rkNight === n ? ' aria-current="page"' : '')+'>'+(NIGHTS[n] || n.slice(5))+'</button>'; }).join('') +
+      (nights.length > 1 ? '<button class="lk" data-act="rknight" data-n="total"'+(rkNight === 'total' ? ' aria-current="page"' : '')+'>Total</button>' : '');
+    var out = (tabs ? '<div class="rk-tabs">'+tabs+'</div>' : '') + '<div class="rk-cards">' + ['vera','fran'].map(function(t){
+      var x = rows[t], lead = x && x.score > (t === 'vera' ? sf : sv);
+      if (!x) return '<div class="rk-team"><div class="tn">'+teamLabel(t)+'</div><div class="soon2">Ainda não alocado: o jogo começa quinta às 19:00.</div></div>';
+      return '<div class="rk-team'+(lead ? ' lead' : '')+'"><div class="tn">'+teamLabel(t)+'</div><div class="sc">'+(Math.round(x.score*10)/10)+'</div><div class="lbl">pontuação</div>' +
+        '<div class="g3"><div><b>'+x.people+'</b>pessoas</div><div><b>'+(Math.round(x.hours*10)/10)+' h</b>horas</div><div><b>'+x.points+'</b>pontos</div></div></div>';
+    }).join('') + '</div>';
     if (ttot.length) out += '<p class="note" style="margin-top:8px">' + ['vera','fran'].map(function(t){ var x = ttot.filter(function(y){ return y.team === t; })[0]; return teamLabel(t)+': '+(x ? x.members : 0)+' pessoas'; }).join(' · ') + '. A equipa mantém-se nas noites todas.</p>';
     $('rkTeams').innerHTML = out;
+
+    // individual: bebidas + horas na festa (+ challenges)
+    var byPts = b.slice().sort(function(x,y){ return y.points - x.points || y.posts - x.posts || String(x.name).localeCompare(y.name); });
+    $('rkPoints').innerHTML = byPts.length ? byPts.map(function(r,i){
+      var has = r.drink_points != null, parts = [];
+      if (has){
+        parts.push('Bebidas '+r.drink_points);
+        parts.push((r.hours || 0)+' h (+'+(r.presence_points || 0)+')');
+        if (r.challenge_points) parts.push('Challenges +'+r.challenge_points);
+      } else parts.push((r.hours || 0)+' h');
+      return '<div class="rk-row"><span class="pos">'+(i+1)+'</span>'+av(r.avatar,r.name,'')+'<div class="who"><b>'+esc(r.name)+'</b><span class="sub">'+(r.team ? teamLabel(r.team)+' · ' : '')+parts.join(' · ')+'</span></div><b class="tot">'+r.points+'</b></div>';
+    }).join('') : '<p class="note">Ainda não há players.</p>';
+
     var groups = [['national','Nacional'],['international','Internacional']].map(function(g){
       var m = b.filter(function(r){ return r.region === g[0]; }), tot = m.reduce(function(a,r){ return a + r.points; }, 0);
       return {label:g[1], n:m.length, tot:tot, avg:m.length ? tot / m.length : 0};
-    }).sort(function(x,y){ return y.avg - x.avg; });
-    $('rkRegion').innerHTML = '<thead><tr><th>Grupo</th><th>Pessoas</th><th>Pontos</th><th>Média</th></tr></thead><tbody>' +
-      groups.map(function(g){ return '<tr><td>'+g.label+'</td><td>'+g.n+'</td><td>'+g.tot+'</td><td>'+(Math.round(g.avg*10)/10)+'</td></tr>'; }).join('') + '</tbody>';
+    });
+    var top = Math.max(groups[0].avg, groups[1].avg);
+    $('rkRegion').innerHTML = '<div class="rk-cards">' + groups.map(function(g){
+      return '<div class="rk-team'+(g.avg === top && top > 0 ? ' lead' : '')+'"><div class="tn">'+g.label+'</div><div class="sc">'+(Math.round(g.avg*10)/10)+'</div><div class="lbl">média por pessoa</div><div class="g3" style="grid-template-columns:repeat(2,1fr)"><div><b>'+g.n+'</b>pessoas</div><div><b>'+g.tot+'</b>pontos</div></div></div>';
+    }).join('') + '</div>';
   }
   function loadRankings(){ return guard(Promise.all([api.leaderboard(), api.teamNightBoard().catch(function(){ return []; }), api.teamTotals().catch(function(){ return []; })]).then(function(r){ board = r[0]; tboard = r[1]; ttot = r[2]; renderRankings(); })); }
   function renderIdeas(){
@@ -1541,7 +1620,20 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   /* ---------- loading ---------- */
   function guard(p){ return p.catch(function(e){ toast(e.message || 'Algo falhou.'); }); }
   function loadPlano(){ return guard(Promise.all([api.listEvents(), api.listRsvps(), user ? api.me().catch(function(){ return null; }) : Promise.resolve(null)]).then(function(r){ events = r[0]; rsvps = r[1]; if (r[2] && user) user.team = r[2].team || null; renderPlano(); })); }
-  function loadFeed(){ return guard(Promise.all([api.listDrinks(), api.listPosts(), api.leaderboard(), api.getUnlock(), api.listReactions().catch(function(){ return []; }), user ? api.myNight().catch(function(){ return null; }) : Promise.resolve(null)]).then(function(r){ drinks = r[0]; posts = r[1]; board = r[2]; unlockMs = r[3]; reactions = r[4]; nightInfo = r[5]; if (nightInfo && user) user.team = nightInfo.team; if (!pick.drink && drinks[0]) pick.drink = null; if (view === 'feed') renderFeed(); })); }
+  function loadFeed(){
+    return guard(Promise.all([api.listDrinks(), api.listPosts(postLimit), api.getUnlock(), api.listReactions().catch(function(){ return []; }), user ? api.myNight().catch(function(){ return null; }) : Promise.resolve(null)]).then(function(r){
+      drinks = r[0]; posts = r[1]; unlockMs = r[2]; reactions = r[3]; nightInfo = r[4]; feedSig = sigOf(posts, reactions);
+      if (nightInfo && user) user.team = nightInfo.team;
+      if (view === 'feed') renderFeed();
+    }));
+  }
+  // a cada 30 s: só redesenha as notícias se houver novidades (nada de piscar nem de saltos ao fazer scroll)
+  function refreshFeed(){
+    return Promise.all([api.listPosts(postLimit), api.listReactions().catch(function(){ return reactions; })]).then(function(r){
+      var sig = sigOf(r[0], r[1]); if (sig === feedSig) return;
+      feedSig = sig; posts = r[0]; reactions = r[1]; if (view === 'feed' && Date.now() >= unlockMs) renderPosts();
+    }).catch(function(){});
+  }
   function loadIdeas(){ return guard(api.listIdeas().then(function(r){ ideas = r; renderIdeas(); })); }
   function loadRef(){
     if (!isRef()) return renderRef();
@@ -1726,16 +1818,17 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     }
     else if (act === 'react'){
       if (!need('Entra para reagires.')) return;
-      if (reacting) return; reacting = true;
+      if (reactBusy[id]) return;
       var rk = b.getAttribute('data-kind'), curR = reactions.filter(function(x){ return x.post_id === id && x.user_id === user.id; })[0], nextR = curR && curR.kind === rk ? null : rk;
-      var capR = $('caption'); if (capR) pick.caption = capR.value;
-      guard(api.react(id, nextR).then(function(){
-        reactions = reactions.filter(function(x){ return !(x.post_id === id && x.user_id === user.id); });
-        if (nextR) reactions.push({post_id:id, user_id:user.id, kind:nextR});
-        renderFeed();
-      })).then(function(){ reacting = false; if (view === 'feed') loadFeed(); });
+      var before = reactions.slice();
+      reactions = reactions.filter(function(x){ return !(x.post_id === id && x.user_id === user.id); });
+      if (nextR) reactions.push({post_id:id, user_id:user.id, kind:nextR});
+      patchRx(id); reactBusy[id] = true;
+      api.react(id, nextR).catch(function(e){ reactions = before; patchRx(id); toast(e.message || 'Não consegui reagir.'); }).then(function(){ delete reactBusy[id]; });
     }
+    else if (act === 'moreposts'){ postLimit += 30; loadFeed(); }
     else if (act === 'swapteam'){ guard(api.setTeam(id, b.getAttribute('data-team') === 'vera' ? 'fran' : 'vera').then(loadRef)); }
+    else if (act === 'rknight'){ rkNight = b.getAttribute('data-n'); renderRankings(); }
     else if (act === 'rtab'){ rtab = b.getAttribute('data-tab'); renderRef(); }
     else if (act === 'evadd'){
       var nid = 'e' + Date.now().toString(36);
@@ -1813,7 +1906,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     guard(api.addIdea(t).then(function(){ $('ideaText').value = ''; toast('Obrigada pela ideia.'); return loadIdeas(); }));
   });
 
-  setInterval(function(){ if (view === 'feed' && !busy && document.activeElement && document.activeElement.tagName !== 'INPUT') loadFeed(); }, 30000);
+  setInterval(function(){ if (view === 'feed' && !busy && !document.hidden) refreshFeed(); }, 30000);
 
   $('modeNote').textContent = api.label;
   $('demoAdminBtn').hidden = LIVE;

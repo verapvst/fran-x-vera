@@ -65,7 +65,10 @@ select tt.cnt('A1 CANNOT read others member_keys','select 1 from member_keys whe
 select tt.chk('A1 update drinks blocked',$$update drinks set points=999 where id='d_shot'$$,true);
 select tt.cnt('drink points unchanged','select 1 from drinks where points=999',0);
 
--- FEED LOCKED
+-- FEED LOCKED (o teste fixa a hora de abertura no futuro, para não depender do dia em que corre)
+reset role;
+update app_settings set value = '2099-01-01T00:00:00+00:00' where key = 'feed_unlock';
+set role authenticated; select set_config('request.jwt.claim.sub',:'A1',false);
 select tt.chk('A1 post while locked fails',$$insert into posts(drink_id,photo_path) values('d_beer20','a1/1.jpg')$$,false);
 select set_config('request.jwt.claim.sub',:'V',false);
 select tt.chk('Vera opens feed',$$select set_feed_unlock(now() - interval '1 minute')$$,true);

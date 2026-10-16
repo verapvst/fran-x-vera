@@ -8,7 +8,8 @@ Site do fim de semana de aniversário (15 a 18 de outubro, Lisboa): plano com pr
 * `supabase/schema.sql` é a base de dados base, com as regras de segurança. Pode ser corrido mais do que uma vez.
 * `supabase/fase2.sql` acrescenta challenges com prova e a função da pontuação de equipa. Corre-o **depois** de `schema.sql`.
 * `supabase/fase3.sql` acrescenta a presença, as reações e o programa final. Corre-o **depois** de `fase2.sql`.
-* `supabase/fase4.sql` torna a equipa fixa, acrescenta os públicos e segredos dos challenges e o rally com notas. Corre-o **depois** de `fase3.sql`. Todos podem ser corridos mais do que uma vez. Sem a fase 4 o site funciona na mesma, mas as equipas continuam por noite (fase 3).
+* `supabase/fase4.sql` torna a equipa fixa, acrescenta os públicos e segredos dos challenges e o rally com notas. Corre-o **depois** de `fase3.sql`.
+* `supabase/fase5.sql` mete a Vera na Team Vera e a Fran na Team Fran e acrescenta ao ranking o detalhe dos pontos (bebidas, horas na festa, challenges). Corre-o **depois** de `fase4.sql`. Todos podem ser corridos mais do que uma vez. Sem a fase 4 o site funciona na mesma, mas as equipas continuam por noite (fase 3).
 * `tests/` tem os testes das regras de segurança.
 * Contas, dados e fotos ficam no Supabase. O site fala diretamente com ele e as regras da base de dados decidem quem pode ver e fazer o quê.
 
@@ -36,7 +37,7 @@ O endereço é `https://verapvst.github.io/fran-x-vera/`. O Pages está configur
 ## Como funciona o jogo (fase 3)
 
 * **Só se vota no jantar.** Ninguém se inscreve nos outros momentos. O Plano só tem o botão "Vou ao jantar".
-* **Equipa fixa, atribuída no primeiro post de sempre.** Quem chega vai para a equipa com menos gente que já postou nessa noite (empate: a com menos membros; empate: Team Vera). Mantém-se nas noites todas. A noite vai das 08:00 às 08:00, hora de Lisboa. As referees não têm equipa mas jogam no BoozeFeed.
+* **Equipa fixa, atribuída no primeiro post de sempre.** Quem chega vai para a equipa com menos gente que já postou nessa noite (empate: a com menos membros; empate: Team Vera). Mantém-se nas noites todas. A noite vai das 08:00 às 08:00, hora de Lisboa. A Vera joga na Team Vera e a Fran na Team Fran (pelo nome).
 * **Pontos:** bebidas + horas na festa (5 pontos por hora entre o primeiro e o último post da noite, máximo 12 horas) + challenges aprovados. Para mudar o valor: `update app_settings set value = '8' where key = 'presence_points_per_hour';` (e `PRESENCE_RATE` em `site/index.html`, que só serve para o texto e o modo demonstração).
 * **Pontuação da equipa:** pontos totais ÷ pessoas da equipa **que postaram nessa noite** (`team_score` em `supabase/fase2.sql`). O ranking mostra cada noite e o total.
 * **Hora dos posts:** é sempre a do servidor, ninguém inventa horas.
