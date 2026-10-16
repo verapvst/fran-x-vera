@@ -23,7 +23,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .logo{font-family:var(--display);font-weight:900;font-size:1.9rem;letter-spacing:.02em;line-height:1;text-decoration:none;background:none;border:0;cursor:pointer;padding:0}
 .links{display:flex;gap:4px;align-items:center;overflow-x:auto;max-width:100%;scrollbar-width:none}
 .links::-webkit-scrollbar{display:none}
-.lk{font-weight:800;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;padding:8px 13px;border:2px solid transparent;border-radius:999px;background:none;cursor:pointer;white-space:nowrap}
+.lk{font-family:var(--display);font-weight:900;font-size:1.02rem;letter-spacing:.03em;text-transform:uppercase;padding:6px 12px;border:2px solid transparent;border-radius:999px;background:none;cursor:pointer;white-space:nowrap}
 .lk:hover,.lk[aria-current="page"]{border-color:var(--ink)}
 .lk.solid{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .who{font-size:.78rem;font-weight:600;padding-inline:4px;white-space:nowrap}
@@ -339,11 +339,11 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         <h2 class="bf-logo">Booze<i>Feed</i></h2>
         <span class="chip red">Trending</span>
       </div>
-      <p class="note">O site número 1 do mundo em notícias que ninguém pediu. Posta uma selfie, escolhe a bebida e ganha pontos. Máximo de 2 bebidas por hora. Água custa-te um ponto.</p>
-      <div class="howto band light" style="display:block;margin:0 0 16px;padding:12px 16px">
-        <p style="margin:0 0 4px"><b>1.</b> O teu primeiro post mete-te numa equipa (Vera ou Fran) para as noites todas.</p>
-        <p style="margin:0 0 4px"><b>2.</b> Cada bebida dá pontos, e ganhas 5 por hora entre o primeiro e o último post da noite.</p>
-        <p style="margin:0"><b>3.</b> No fim da noite ganha a equipa com mais pontos por pessoa. Reage às fotos dos outros.</p>
+      <p class="note">O site número 1 do mundo em notícias que ninguém pediu. Máximo de 2 bebidas por hora.</p>
+      <div class="howto band light" style="display:block;margin:0 0 16px;padding:10px 16px">
+        <p style="margin:0 0 3px"><b>1.</b> O primeiro post mete-te numa equipa, até ao fim.</p>
+        <p style="margin:0 0 3px"><b>2.</b> Cada bebida dá pontos, e cada hora na festa dá 5.</p>
+        <p style="margin:0"><b>3.</b> Ganha a equipa com mais pontos por pessoa.</p>
       </div>
       <div id="feedLocked" hidden></div>
       <div id="feedLive">
@@ -450,9 +450,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     {id:'d_beer50', label:'Cerveja 0,5 L', hint:'caneca', points:4, kind:'drink', sort:4},
     {id:'d_sidra', label:'Sidra garrafa', hint:'garrafa', points:3, kind:'drink', sort:5},
     {id:'d_wine', label:'Vinho', hint:'tinto, branco, sangria', points:5, kind:'drink', sort:6},
-    {id:'d_cock', label:'Cocktail', hint:'mojito, spritz, gin tónico', points:8, kind:'drink', sort:7},
+    {id:'d_cock', label:'Cocktail', hint:'mojito, spritz, gin tónico, whisky, vodka', points:8, kind:'drink', sort:7},
     {id:'d_shot', label:'Shot', hint:'jäger, tequila, ginja', points:10, kind:'drink', sort:8},
-    {id:'d_hard', label:'Bebida forte', hint:'gin, vodka, whisky', points:12, kind:'drink', sort:9},
     {id:'d_home', label:'Cheguei a casa', hint:'em segurança, 1 vez por noite', points:15, kind:'care', sort:10}
   ];
 
@@ -1275,7 +1274,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 
   /* ---------- rendering ---------- */
   function renderLinks(){
-    var items = [['inicio','Início'],['plano','Plano'],['rally','Rally'],['feed','BoozeFeed'],['rankings','Rankings'],['challenges','Challenges']];
+    var items = [['inicio','Início'],['feed','BoozeFeed'],['plano','Plano'],['rally','Rally'],['rankings','Rankings'],['challenges','Challenges']];
     if (isRef()) items.push(['referee','Referee']);
     var h = items.map(function(it){ return '<button class="lk" data-nav="'+it[0]+'"'+(view===it[0]?' aria-current="page"':'')+'>'+it[1]+'</button>'; }).join('');
     h += user ? '<button class="lk" data-nav="perfil"'+(view==='perfil'?' aria-current="page"':'')+'>'+av(user.avatar,user.name,'')+esc(user.name)+'</button><button class="lk" data-act="logout">Sair</button>'
@@ -1523,7 +1522,9 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     var NIGHTS = {'2026-10-15':'Quinta', '2026-10-16':'Sexta', '2026-10-17':'Sábado'};
     // equipas: uma noite de cada vez (ou o total), sempre numa só linha de ecrã
     var nights = tboard.map(function(x){ return x.night; }).filter(function(n,i,a){ return a.indexOf(n) === i; }).sort();
-    if (rkNight !== 'total' && nights.indexOf(rkNight) < 0) rkNight = nights.length ? nights[nights.length - 1] : null;
+    if (rkNight === null) rkNight = 'total';
+    if (nights.length < 2 && nights.length) rkNight = nights[0];  // com uma só noite não há "Total"
+    if (rkNight !== 'total' && nights.indexOf(rkNight) < 0) rkNight = 'total';
     var rows = {};
     if (rkNight === 'total'){
       tboard.forEach(function(x){ var t = rows[x.team] = rows[x.team] || {team:x.team, people:0, hours:0, points:0, score:0}; t.people += x.people; t.hours += x.hours; t.points += x.points; t.score += x.score; });
@@ -1545,13 +1546,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     // individual: bebidas + horas na festa (+ challenges)
     var byPts = b.slice().sort(function(x,y){ return y.points - x.points || y.posts - x.posts || String(x.name).localeCompare(y.name); });
     $('rkPoints').innerHTML = byPts.length ? byPts.map(function(r,i){
-      var has = r.drink_points != null, parts = [];
-      if (has){
-        parts.push('Bebidas '+r.drink_points);
-        parts.push((r.hours || 0)+' h (+'+(r.presence_points || 0)+')');
-        if (r.challenge_points) parts.push('Challenges +'+r.challenge_points);
-      } else parts.push((r.hours || 0)+' h');
-      return '<div class="rk-row"><span class="pos">'+(i+1)+'</span>'+av(r.avatar,r.name,'')+'<div class="who"><b>'+esc(r.name)+'</b><span class="sub">'+(r.team ? teamLabel(r.team)+' · ' : '')+parts.join(' · ')+'</span></div><b class="tot">'+r.points+'</b></div>';
+      return '<div class="rk-row"><span class="pos">'+(i+1)+'</span>'+av(r.avatar,r.name,'')+'<div class="who"><b>'+esc(r.name)+'</b>'+(r.team ? '<span class="sub">'+teamLabel(r.team)+'</span>' : '')+'</div><b class="tot">'+r.points+'</b></div>';
     }).join('') : '<p class="note">Ainda não há players.</p>';
 
     var groups = [['national','Nacional'],['international','Internacional']].map(function(g){

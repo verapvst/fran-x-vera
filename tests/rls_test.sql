@@ -21,7 +21,7 @@ select tt.cnt('trigger created 4 profiles','select 1 from profiles',4);
 -- ANON
 set role anon;
 select tt.cnt('anon reads events','select 1 from events',8);
-select tt.cnt('anon reads drinks','select 1 from drinks',10);
+select tt.cnt('anon reads drinks','select 1 from drinks',9);
 select tt.cnt('anon reads profiles','select 1 from profiles',4);
 select tt.cnt('anon CANNOT read member_keys','select 1 from member_keys',0);
 select tt.cnt('anon CANNOT read admin_invites','select 1 from admin_invites',0);

@@ -153,9 +153,8 @@ insert into drinks (id, label, hint, points, kind, sort) values
  ('d_beer50','Cerveja 0,5 L','caneca',4,'drink',4),
  ('d_sidra','Sidra garrafa','garrafa',3,'drink',5),
  ('d_wine','Vinho','tinto, branco, sangria',5,'drink',6),
- ('d_cock','Cocktail','mojito, spritz, gin tónico',8,'drink',7),
+ ('d_cock','Cocktail','mojito, spritz, gin tónico, whisky, vodka',8,'drink',7),
  ('d_shot','Shot','jäger, tequila, ginja',10,'drink',8),
- ('d_hard','Bebida forte','gin, vodka, whisky',12,'drink',9),
  ('d_home','Cheguei a casa','em segurança, 1 vez por noite',15,'care',10)
 on conflict (id) do nothing;
 
