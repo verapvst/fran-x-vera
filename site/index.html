@@ -109,6 +109,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 .rk-row .who b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15}
 .rk-row .sub{display:block;font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;opacity:.8}
 .rk-row .tot{font-family:var(--display);font-weight:900;font-size:1.9rem;line-height:1;font-variant-numeric:tabular-nums;text-align:right}
+.tbar{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tbi{display:flex;justify-content:space-between;align-items:center;gap:8px;border:2px solid var(--ink);background:var(--card);padding:10px 14px}
+.tbi.lead{background:var(--red)}
+.tbi span{font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.8rem}
+.tbi b{font-family:var(--display);font-weight:900;font-size:2.2rem;line-height:1;font-variant-numeric:tabular-nums}
 .rx{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .rxb{border:2px solid var(--ink);background:var(--bg);border-radius:999px;padding:4px 12px;font-weight:800;font-size:.9rem;cursor:pointer}
 .rxin{width:9.5em;border:2px solid var(--ink);border-radius:999px;padding:4px 12px;font-size:1rem;background:var(--bg);color:var(--ink)}
@@ -352,16 +357,12 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         <h2 class="bf-logo">Booze<i>Feed</i></h2>
         <span class="chip red">Trending</span>
       </div>
-      <p class="note">O site número 1 do mundo em notícias que ninguém pediu. Máximo de 2 bebidas por hora.</p>
-      <div class="howto band light" style="display:block;margin:0 0 16px;padding:10px 16px">
-        <p style="margin:0 0 3px"><b>1.</b> O primeiro post mete-te numa equipa, até ao fim.</p>
-        <p style="margin:0 0 3px"><b>2.</b> Cada bebida dá pontos, e cada hora na festa dá 5.</p>
-        <p style="margin:0"><b>3.</b> Ganha a equipa com mais pontos por pessoa.</p>
-      </div>
+      <p class="note">O site número 1 do mundo em notícias que ninguém pediu.</p>
       <div id="feedLocked" hidden></div>
       <div id="feedLive">
+      <div id="teamBar"></div>
+      <div class="row" style="margin:10px 0 18px"><button class="btn ghost small" data-nav="rankings">Ver rankings</button></div>
       <div id="composer"></div>
-      <div class="row" style="margin-top:18px"><button class="btn ghost small" data-nav="rankings">Ver rankings</button></div>
       <h2 class="h2" style="margin-top:34px">Últimas <em>notícias</em></h2>
       <div class="feed" id="feed"></div>
       </div>
@@ -1378,6 +1379,15 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       '<div class="scroll"><table class="tbl"><thead><tr><th>Bebida</th><th>Pontos</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
       (isRef() ? '<div class="row"><button class="btn red" data-act="unlocknow">Abrir agora</button><button class="btn ghost" data-act="relock">Fechar até quinta 19:00</button></div>' : '') + '</div>';
   }
+  // placar das equipas no BoozeFeed: só a equipa e os pontos finais (soma das pontuações de cada noite, como no ranking)
+  function renderTeamBar(){
+    var tot = {vera:0, fran:0}, any = false;
+    tboard.forEach(function(x){ if (tot[x.team] != null){ tot[x.team] += x.score; any = true; } });
+    var lead = any && tot.vera !== tot.fran ? (tot.vera > tot.fran ? 'vera' : 'fran') : null;
+    $('teamBar').innerHTML = '<div class="tbar">' + ['vera','fran'].map(function(t){
+      return '<div class="tbi'+(lead === t ? ' lead' : '')+'"><span>'+teamLabel(t)+'</span><b>'+(any ? nf(tot[t]) : '–')+'</b></div>';
+    }).join('') + '</div>';
+  }
   function renderFeed(){
     var lk = Date.now() < unlockMs;
     $('feedLocked').hidden = !lk; $('feedLive').hidden = lk;
@@ -1389,7 +1399,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       var ds = drinks.map(function(d){
         return '<button type="button" class="dk" data-act="drink" data-id="'+esc(d.id)+'" aria-pressed="'+(pick.drink===d.id)+'"><span class="p">'+pts(d.points)+'</span><b>'+esc(d.label)+'</b><span>'+esc(d.hint||'')+'</span></button>';
       }).join('');
-      var tn = nightInfo ? ((nightInfo.team ? '<div class="band light" style="margin-bottom:14px"><p><b>'+teamLabel(nightInfo.team)+'</b> · '+nightInfo.hours+' h na festa esta noite</p></div>' : '<div class="band light" style="margin-bottom:14px"><p>Ainda não tens equipa. O teu primeiro post mete-te numa.</p></div>')) : '';
+      var tn = '';
       var form = '<div class="card stack"><div class="pick"><label class="selfie" for="selfie">' +
         (pick.preview ? '<img src="'+pick.preview+'" alt="A tua selfie">' : 'Tira uma selfie') +
         '</label><div class="stack"><input id="selfie" type="file" accept="image/jpeg,image/png,image/webp" hidden><input id="selfieGal" type="file" accept="image/jpeg,image/png,image/webp" hidden>' +
@@ -1399,6 +1409,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         '<div class="row"><button class="btn" data-act="post" id="postBtn"'+(busy?' disabled':'')+'>Publicar</button><button class="btn ghost" data-act="cancelcompose" type="button">Cancelar</button></div></div>';
       c.innerHTML = tn + (composerOpen ? form : '<button class="btn red" data-act="compose" style="width:100%;font-size:1rem;padding:16px">Publicar no BoozeFeed</button>');
     }
+    renderTeamBar();
     renderPosts();
   }
   var rxOpen = null;
@@ -1681,15 +1692,16 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function guard(p){ return p.catch(function(e){ toast(e.message || 'Algo falhou.'); }); }
   function loadPlano(){ return guard(Promise.all([api.listEvents(), api.listRsvps(), user ? api.me().catch(function(){ return null; }) : Promise.resolve(null)]).then(function(r){ events = r[0]; rsvps = r[1]; if (r[2] && user) user.team = r[2].team || null; renderPlano(); })); }
   function loadFeed(){
-    return guard(Promise.all([api.listDrinks(), api.listPosts(postLimit), api.getUnlock(), api.listReactions().catch(function(){ return []; }), user ? api.myNight().catch(function(){ return null; }) : Promise.resolve(null)]).then(function(r){
-      drinks = r[0]; posts = r[1]; unlockMs = r[2]; reactions = normRx(r[3]); nightInfo = r[4]; feedSig = sigOf(posts, reactions);
+    return guard(Promise.all([api.listDrinks(), api.listPosts(postLimit), api.getUnlock(), api.listReactions().catch(function(){ return []; }), user ? api.myNight().catch(function(){ return null; }) : Promise.resolve(null), api.teamNightBoard().catch(function(){ return []; })]).then(function(r){
+      drinks = r[0]; posts = r[1]; unlockMs = r[2]; reactions = normRx(r[3]); nightInfo = r[4]; tboard = r[5]; feedSig = sigOf(posts, reactions);
       if (nightInfo && user) user.team = nightInfo.team;
       if (view === 'feed') renderFeed();
     }));
   }
   // a cada 30 s: só redesenha as notícias se houver novidades (nada de piscar nem de saltos ao fazer scroll)
   function refreshFeed(){
-    return Promise.all([api.listPosts(postLimit), api.listReactions().catch(function(){ return reactions; })]).then(function(r){
+    return Promise.all([api.listPosts(postLimit), api.listReactions().catch(function(){ return reactions; }), api.teamNightBoard().catch(function(){ return tboard; })]).then(function(r){
+      tboard = r[2]; if (view === 'feed' && Date.now() >= unlockMs) renderTeamBar();
       var sig = sigOf(r[0], r[1]); if (sig === feedSig) return;
       feedSig = sig; posts = r[0]; reactions = normRx(r[1]); if (view === 'feed' && Date.now() >= unlockMs) renderPosts();
     }).catch(function(){});
