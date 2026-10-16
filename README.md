@@ -39,6 +39,7 @@ O endereço é `https://verapvst.github.io/fran-x-vera/`. O Pages está configur
 * **Só se vota no jantar.** Ninguém se inscreve nos outros momentos. O Plano só tem o botão "Vou ao jantar".
 * **Equipa fixa, atribuída no primeiro post de sempre.** Quem chega vai para a equipa com menos gente que já postou nessa noite (empate: a com menos membros; empate: Team Vera). Mantém-se nas noites todas. A noite vai das 08:00 às 08:00, hora de Lisboa. A Vera joga na Team Vera e a Fran na Team Fran (pelo nome).
 * **Pontos:** bebidas + horas na festa (5 pontos por hora entre o primeiro e o último post da noite, máximo 12 horas) + challenges aprovados. Para mudar o valor: `update app_settings set value = '8' where key = 'presence_points_per_hour';` (e `PRESENCE_RATE` em `site/index.html`, que só serve para o texto e o modo demonstração).
+* **Mudar os pontos de uma bebida** (painel referee, Mais, Pontos) atualiza também todos os posts já feitos com essa bebida e o ranking (`supabase/fase8.sql`).
 * **Pontuação da equipa:** pontos totais ÷ pessoas da equipa **que postaram nessa noite** (`team_score` em `supabase/fase2.sql`). O ranking mostra cada noite e o total.
 * **Hora dos posts:** é sempre a do servidor, ninguém inventa horas.
 * **Reações:** cada pessoa reage a cada foto com uma reação: quatro à mão (🔥 🍻 😂 💋) ou qualquer emoji do teclado (botão +). Carregar outra vez tira-a. Qualquer emoji precisa do `supabase/fase7.sql`.

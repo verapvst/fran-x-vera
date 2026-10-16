@@ -37,6 +37,8 @@ sed "s/TOKEN_VERA/$TV/g; s/TOKEN_FRAN/$TF/g" tests/fase4_test.sql | psql -d fv_t
 
 Fase 5 (referees nas equipas, detalhe dos pontos): `supabase/fase5.sql` e `tests/fase5_test.sql` (corre com a fase 2, 3 e 4 já aplicadas; o ficheiro de teste aplica a fase 5 por si).
 
+Fase 8 (pontos de uma bebida mudam nos posts antigos): `tests/fase8_test.sql` (corre com as fases 2 a 5; o ficheiro de teste aplica a fase 8 por si).
+
 Os testes de `fase2_test.sql` correm só com a fase 2, e os de `fase3_test.sql` só com a fase 2 e 3 (sem a fase 4), porque cada fase seguinte muda as equipas e o check in.
 
 Tudo deve dizer PASS. Corre isto sempre que mudares `supabase/schema.sql`.

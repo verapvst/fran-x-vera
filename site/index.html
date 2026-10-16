@@ -1591,7 +1591,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       var x = rows[t], lead = x && x.score > (t === 'vera' ? sf : sv);
       if (!x) return '<div class="rk-team"><div class="tn">'+teamLabel(t)+'</div><div class="soon2">Ainda não alocado: o jogo começa quinta às 19:00.</div></div>';
       return '<div class="rk-team'+(lead ? ' lead' : '')+'"><div class="tn">'+teamLabel(t)+'</div><div class="sc">'+(Math.round(x.score*10)/10)+'</div><div class="lbl">pontuação</div>' +
-        '<div class="g3"><div><b>'+x.people+'</b>pessoas</div><div><b>'+(Math.round(x.hours*10)/10)+' h</b>horas</div><div><b>'+x.points+'</b>pontos</div></div></div>';
+        '<div class="g3"><div><b>'+x.people+'</b>'+(rkNight === 'total' ? 'presenças' : 'pessoas')+'</div><div><b>'+(Math.round(x.hours*10)/10)+' h</b>horas</div><div><b>'+x.points+'</b>pontos</div></div></div>';
     }).join('') + '</div>';
     if (ttot.length) out += '<p class="note" style="margin-top:8px">' + ['vera','fran'].map(function(t){ var x = ttot.filter(function(y){ return y.team === t; })[0]; return teamLabel(t)+': '+(x ? x.members : 0)+' pessoas'; }).join(' · ') + '. A equipa mantém-se nas noites todas.</p>';
     $('rkTeams').innerHTML = out;
