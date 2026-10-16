@@ -1019,7 +1019,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       },
       markNotified: function(ids){ asg.forEach(function(a){ if (ids.indexOf(a.id) > -1) a.notified = true; }); return Promise.resolve(ids.length); },
       notifyChallenges: function(){ asg.forEach(function(a){ a.notified = true; }); return Promise.resolve(true); },
-      broadcastMail: function(){ return Promise.resolve({ok:true, sent:users.filter(function(u){ return u.contact; }).length}); },
+      broadcastMail: function(kind, target){ return Promise.resolve({ok:true, sent:target ? 1 : users.filter(function(u){ return u.contact; }).length}); },
       listStops: function(){ return Promise.resolve(stops.slice().sort(function(a,b){ return a.position - b.position; })); },
       saveStop: function(s){
         if (s.id){ stops.forEach(function(x){ if (x.id === s.id){ x.name = s.name; x.note = s.note; x.position = s.position; } }); }
@@ -1243,11 +1243,11 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       setTeam: function(uid, team){ return sb.rpc('set_team', {p_user:uid, p_team:team}).then(fail); },
       drawChallenges: function(secret){ return sb.rpc('draw_challenges', {p_secret:!!secret}).then(fail); },
       markNotified: function(ids){ return sb.rpc('mark_notified', {p_ids:ids}).then(fail); },
-      broadcastMail: function(kind){
+      broadcastMail: function(kind, target){
         if (!CFG.MAIL_URL) return Promise.resolve(null);
         return sb.auth.getSession().then(function(s){
           var tok = s.data && s.data.session && s.data.session.access_token; if (!tok) return null;
-          var opts = {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({token:tok, action:'broadcast', kind:kind})};
+          var opts = {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({token:tok, action:'broadcast', kind:kind, target:target || ''})};
           return fetch(CFG.MAIL_URL, opts).then(function(r){ return r.json(); }, function(){
             // resposta ilegível (CORS): o pedido segue na mesma, e quem já recebeu não recebe outra vez
             return fetch(CFG.MAIL_URL, Object.assign({mode:'no-cors'}, opts)).then(function(){ return {ok:true, unknown:true}; }, function(){ return null; });
@@ -1659,8 +1659,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
           '<input class="in" type="number" value="'+esc(d.points)+'" data-edit="dr" data-id="'+esc(d.id)+'" data-f="points" aria-label="Pontos"></div>';
       });
     } else {
-      h += '<div class="card stack" style="max-width:640px;margin-bottom:16px"><b>Avisar toda a gente por email</b><p class="note" style="margin:0">Envia a todos os que criaram conta (e deixaram email) o aviso de que o BoozeFeed já está funcional, com o link pessoal de cada um. Cada pessoa recebe-o uma só vez, mesmo que carregues outra vez.</p><div class="row"><button class="btn" data-act="broadcast">Enviar: BoozeFeed já funciona</button></div></div>';
-      h += '<p class="note">Se alguém perder o link, copia o dele aqui e envia-lho.</p>' + (players.map(function(p){ return '<div class="listrow"><span class="who2">'+av(p.avatar,p.name,'')+esc(p.name)+(p.contact?' <span class="chip">'+esc(p.contact)+'</span>':'')+'</span><span class="row"><span class="chip">'+esc(p.role === 'referee' ? 'referee' : (regLabel(p.region) || 'player'))+'</span>'+(p.key?'<button class="btn small ghost" data-act="copykey" data-key="'+esc(p.key)+'">Copiar link</button><button class="btn small ghost" data-act="copycode" data-key="'+esc(p.key)+'">Copiar código</button>':'')+'</span></div>'; }).join('') || '<p class="note">Sem players ainda.</p>');
+      h += '<div class="card stack" style="max-width:640px;margin-bottom:16px"><b>Avisar toda a gente por email</b><p class="note" style="margin:0">Envia a todos os que criaram conta (e deixaram email) o aviso de que o segundo dia está on e o BoozeFeed já funciona, com o <b>link pessoal certo</b> e o código de reserva de cada um. Cada pessoa recebe-o uma só vez, mesmo que carregues outra vez. Testa primeiro numa pessoa: em baixo, cada um tem um botão "Enviar email".</p><div class="row"><button class="btn" data-act="broadcast" data-kind="dia2">Enviar a todos: dia 2 está on</button></div></div>';
+      h += '<p class="note">Se alguém perder o link, copia o dele aqui e envia-lho.</p>' + (players.map(function(p){ return '<div class="listrow"><span class="who2">'+av(p.avatar,p.name,'')+esc(p.name)+(p.contact?' <span class="chip">'+esc(p.contact)+'</span>':'')+'</span><span class="row"><span class="chip">'+esc(p.role === 'referee' ? 'referee' : (regLabel(p.region) || 'player'))+'</span>'+(p.key?'<button class="btn small ghost" data-act="copykey" data-key="'+esc(p.key)+'">Copiar link</button><button class="btn small ghost" data-act="copycode" data-key="'+esc(p.key)+'">Copiar código</button>':'')+(p.contact?'<button class="btn small" data-act="mailone" data-id="'+esc(p.id)+'">Enviar email</button>':'')+'</span></div>'; }).join('') || '<p class="note">Sem players ainda.</p>');
     }
     b.innerHTML = h;
   }
@@ -1836,12 +1836,14 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         });
       }));
     }
-    else if (act === 'broadcast'){
-      if (!confirm('Enviar um email a TODOS os que criaram conta a dizer que o BoozeFeed já está funcional?')) return;
-      toast('A enviar os emails...');
-      guard(api.broadcastMail('boozefeed').then(function(r){
+    else if (act === 'broadcast' || act === 'mailone'){
+      var one = act === 'mailone' ? id : '', who = one ? (players.filter(function(x){ return x.id === one; })[0] || {}).name : '';
+      if (!confirm(one ? 'Enviar o email do dia 2 a '+who+'?' : 'Enviar o email do dia 2 a TODOS os que criaram conta?')) return;
+      toast('A enviar...');
+      guard(api.broadcastMail(b.getAttribute('data-kind') || 'dia2', one).then(function(r){
         if (!r || r.ok === false){ toast('Não consegui enviar. Confirma que o script de email está atualizado.'); return; }
-        if (r.unknown) toast('Pedido enviado. Os emails chegam daqui a um minuto.');
+        if (r.unknown) toast('Pedido enviado. O email chega daqui a um minuto.');
+        else if (one) toast(r.sent ? 'Email enviado a '+who+'.' : 'Não enviei: '+who+' não tem email guardado.');
         else toast('Enviado a '+r.sent+' pessoa(s)'+(r.already ? ', '+r.already+' já tinham recebido' : '')+(r.quotaHit ? '. O limite diário do Gmail cortou: carrega outra vez amanhã para os restantes.' : '.'));
       }));
     }

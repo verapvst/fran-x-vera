@@ -12,7 +12,7 @@ function doPost(e) {
     var body = JSON.parse(e.postData.contents);
     var tok = String(body.token || '');
     if (body.action === 'challenges') return avisarChallenges_(tok);
-    if (body.action === 'broadcast') return avisarTodos_(tok, String(body.kind || ''));
+    if (body.action === 'broadcast') return avisarTodos_(tok, String(body.kind || ''), String(body.target || ''));
     if (tok.length < 20) return out_({ok: false, error: 'sem sessao'});
     var h = {apikey: SUPABASE_KEY, Authorization: 'Bearer ' + tok};
     var ru = UrlFetchApp.fetch(SUPABASE_URL + '/auth/v1/user', {headers: h, muteHttpExceptions: true});
@@ -111,6 +111,13 @@ function avisarChallenges_(tok) {
 // Referees: envia um aviso por email a toda a gente que criou conta (e tem email). Cada pessoa recebe cada aviso uma só vez
 // (se carregares duas vezes, ou se o limite diário do Gmail cortar a meio, só se envia a quem falta).
 var AVISOS = {
+  'dia2': {
+    assunto: 'O segundo dia está on! O BoozeFeed já funciona | FRAN × VERA',
+    linhas: ['O segundo dia está on!',
+             'O BoozeFeed já está a funcionar (ontem não estava, desculpem). Hoje não se esqueçam de postar, beber e divertirem-se muito.',
+             'Este é o teu link pessoal. Se tinhas um link antigo ou que não te levou ao teu perfil, usa este, que é o certo.'],
+    botao: 'Abrir o BoozeFeed'
+  },
   'boozefeed': {
     assunto: 'O BoozeFeed já está a funcionar | FRAN × VERA',
     linhas: ['O BoozeFeed já está funcional!',
@@ -119,7 +126,7 @@ var AVISOS = {
   }
 };
 
-function avisarTodos_(tok, kind) {
+function avisarTodos_(tok, kind, target) {
   var aviso = AVISOS[kind];
   if (!aviso) return out_({ok: false, error: 'aviso desconhecido'});
   if (tok.length < 20) return out_({ok: false, error: 'sem sessao'});
@@ -136,9 +143,10 @@ function avisarTodos_(tok, kind) {
   var props = PropertiesService.getScriptProperties();
   var enviados = 0, jaTinham = 0, semEmail = 0, cortou = false;
   keys.forEach(function (k) {
+    if (target && k.user_id !== target) return;   // teste a uma só pessoa
     if (!k.contact) { semEmail++; return; }
     var chave = 'bc_' + kind + '_' + k.user_id;
-    if (props.getProperty(chave)) { jaTinham++; return; }
+    if (!target && props.getProperty(chave)) { jaTinham++; return; }   // o envio a toda a gente não repete; o teste a uma pessoa envia sempre
     if (MailApp.getRemainingDailyQuota() < 1) { cortou = true; return; }
     var first = nome[k.user_id] ? String(nome[k.user_id]).split(' ')[0] : '';
     var link = SITE + (k.link_key ? '?k=' + k.link_key : '');
