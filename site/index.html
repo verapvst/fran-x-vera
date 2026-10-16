@@ -99,6 +99,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .rk-row .tot{font-family:var(--display);font-weight:900;font-size:1.8rem;line-height:1;font-variant-numeric:tabular-nums}
 .rx{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .rxb{border:2px solid var(--ink);background:var(--bg);border-radius:999px;padding:4px 12px;font-weight:800;font-size:.9rem;cursor:pointer}
+.rxin{width:9.5em;border:2px solid var(--ink);border-radius:999px;padding:4px 12px;font-size:1rem;background:var(--bg);color:var(--ink)}
 .rxb[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .howto li{font-size:.95rem}
 .gate{display:none}
@@ -804,7 +805,21 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function refTeam(){ var n = user ? String(user.name).toLowerCase() : ''; return n === 'vera' ? 'vera' : n === 'fran' ? 'fran' : null; }
   /* ---------- noites, equipas automáticas, presença ---------- */
   var PRESENCE_RATE = 5; // pontos por hora na festa (o valor a sério está na base de dados: app_settings)
-  var REACTIONS = [['fire','🔥'],['beer','🍻'],['laugh','😂'],['kiss','💋']];
+  // reações: qualquer emoji do teclado. Estas quatro estão sempre à mão. As antigas ('fire'...) convertem-se.
+  var REACTIONS = ['🔥','🍻','😂','💋'];
+  var LEGACY_RX = {fire:'🔥', beer:'🍻', laugh:'😂', kiss:'💋'};
+  function normRx(a){ return (a || []).map(function(r){ return {post_id:r.post_id, user_id:r.user_id, kind:LEGACY_RX[r.kind] || r.kind}; }); }
+  // o primeiro emoji de um texto (ou '' se não houver nenhum)
+  function firstEmoji(t){
+    t = String(t || '');
+    if (window.Intl && Intl.Segmenter){
+      var it = new Intl.Segmenter(undefined, {granularity:'grapheme'}).segment(t);
+      for (var x of it){ if (/\p{Extended_Pictographic}|\p{Regional_Indicator}/u.test(x.segment)) return x.segment; }
+      return '';
+    }
+    var m = t.match(/(?:\p{Regional_Indicator}{2}|\p{Extended_Pictographic}(?:\uFE0F|[\u{1F3FB}-\u{1F3FF}]|\u200D\p{Extended_Pictographic})*)/u);
+    return m ? m[0] : '';
+  }
   // a noite vai das 08:00 às 08:00 (hora de Lisboa): 01:00 de sexta ainda é a noite de quinta
   function nightKey(ms){ return new Date((ms || Date.now()) - 8*3600000).toLocaleDateString('sv-SE', {timeZone:'Europe/Lisbon'}); }
   function presenceOf(list){
@@ -1196,7 +1211,15 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         return getUserFast().then(function(u){
           var uid = u.data.user.id;
           return sb.from('reactions').delete().eq('post_id', postId).eq('user_id', uid).then(fail).then(function(){
-            return kind ? sb.from('reactions').insert({post_id:postId, kind:kind}).then(function(r){ if (r.error && r.error.code !== '23505') throw new Error(r.error.message || 'Erro.'); }) : null;
+            if (!kind) return null;
+            return sb.from('reactions').insert({post_id:postId, kind:kind}).then(function(r){
+              if (r.error && r.error.code === '23514'){  // fase 7 ainda não corrida: só aceita as chaves antigas
+                var old = {'🔥':'fire','🍻':'beer','😂':'laugh','💋':'kiss'}[kind];
+                if (!old) throw new Error('Para usares qualquer emoji falta correr o fase7.sql no Supabase.');
+                return sb.from('reactions').insert({post_id:postId, kind:old}).then(function(r2){ if (r2.error && r2.error.code !== '23505') throw new Error(r2.error.message || 'Erro.'); });
+              }
+              if (r.error && r.error.code !== '23505') throw new Error(r.error.message || 'Erro.');
+            });
           });
         });
       },
@@ -1361,13 +1384,37 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     }
     renderPosts();
   }
+  var rxOpen = null;
   function rxButtons(pid){
-    return REACTIONS.map(function(r){
-      var n = reactions.filter(function(x){ return x.post_id === pid && x.kind === r[0]; }).length, on = !!(user && reactions.some(function(x){ return x.post_id === pid && x.kind === r[0] && x.user_id === user.id; }));
-      return '<button type="button" class="rxb" data-act="react" data-id="'+esc(pid)+'" data-kind="'+r[0]+'" aria-pressed="'+on+'" aria-label="Reagir">'+r[1]+(n ? ' <span>'+n+'</span>' : '')+'</button>';
+    var mine = user ? reactions.filter(function(x){ return x.post_id === pid && x.user_id === user.id; })[0] : null, cnt = {}, extra = [];
+    reactions.forEach(function(x){ if (x.post_id === pid){ cnt[x.kind] = (cnt[x.kind] || 0) + 1; } });
+    Object.keys(cnt).forEach(function(k){ if (REACTIONS.indexOf(k) < 0) extra.push(k); });
+    extra.sort(function(a,b){ return cnt[b] - cnt[a]; });
+    var h = REACTIONS.concat(extra).map(function(k){
+      return '<button type="button" class="rxb" data-act="react" data-id="'+esc(pid)+'" data-kind="'+esc(k)+'" aria-pressed="'+(!!mine && mine.kind === k)+'" aria-label="Reagir com '+esc(k)+'">'+esc(k)+(cnt[k] ? ' <span>'+cnt[k]+'</span>' : '')+'</button>';
     }).join('');
+    h += rxOpen === pid
+      ? '<input class="rxin" data-rxin="'+esc(pid)+'" placeholder="Qualquer emoji" maxlength="16" autocomplete="off" aria-label="Escreve ou escolhe um emoji do teclado">'
+      : '<button type="button" class="rxb" data-act="rxmore" data-id="'+esc(pid)+'" aria-label="Escolher outro emoji">+</button>';
+    return h;
   }
   function patchRx(pid){ var el = document.querySelector('.rx[data-post="'+pid+'"]'); if (el) el.innerHTML = rxButtons(pid); }
+  function doReact(id, rk){
+    if (!need('Entra para reagires.')) return;
+    if (reactBusy[id]) return;
+    var curR = reactions.filter(function(x){ return x.post_id === id && x.user_id === user.id; })[0], nextR = curR && curR.kind === rk ? null : rk;
+    var before = reactions.slice();
+    reactions = reactions.filter(function(x){ return !(x.post_id === id && x.user_id === user.id); });
+    if (nextR) reactions.push({post_id:id, user_id:user.id, kind:nextR});
+    rxOpen = null; patchRx(id); reactBusy[id] = true;
+    api.react(id, nextR).catch(function(e){ reactions = before; patchRx(id); toast(e.message || 'Não consegui reagir.'); }).then(function(){ delete reactBusy[id]; });
+  }
+  document.addEventListener('input', function(ev){
+    var t = ev.target; if (!t.getAttribute || !t.getAttribute('data-rxin')) return;
+    var em = firstEmoji(t.value);
+    if (em){ doReact(t.getAttribute('data-rxin'), em); }
+    else if (t.value){ t.value = ''; toast('Escolhe um emoji do teclado.'); }
+  });
   var postLimit = 30, feedSig = '', reactBusy = {};
   function sigOf(ps, rs){ return ps.map(function(p){ return p.id+':'+p.points; }).join(',') + '|' + rs.map(function(r){ return r.post_id+r.user_id+r.kind; }).join(''); }
   function renderPosts(){
@@ -1617,7 +1664,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function loadPlano(){ return guard(Promise.all([api.listEvents(), api.listRsvps(), user ? api.me().catch(function(){ return null; }) : Promise.resolve(null)]).then(function(r){ events = r[0]; rsvps = r[1]; if (r[2] && user) user.team = r[2].team || null; renderPlano(); })); }
   function loadFeed(){
     return guard(Promise.all([api.listDrinks(), api.listPosts(postLimit), api.getUnlock(), api.listReactions().catch(function(){ return []; }), user ? api.myNight().catch(function(){ return null; }) : Promise.resolve(null)]).then(function(r){
-      drinks = r[0]; posts = r[1]; unlockMs = r[2]; reactions = r[3]; nightInfo = r[4]; feedSig = sigOf(posts, reactions);
+      drinks = r[0]; posts = r[1]; unlockMs = r[2]; reactions = normRx(r[3]); nightInfo = r[4]; feedSig = sigOf(posts, reactions);
       if (nightInfo && user) user.team = nightInfo.team;
       if (view === 'feed') renderFeed();
     }));
@@ -1626,7 +1673,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function refreshFeed(){
     return Promise.all([api.listPosts(postLimit), api.listReactions().catch(function(){ return reactions; })]).then(function(r){
       var sig = sigOf(r[0], r[1]); if (sig === feedSig) return;
-      feedSig = sig; posts = r[0]; reactions = r[1]; if (view === 'feed' && Date.now() >= unlockMs) renderPosts();
+      feedSig = sig; posts = r[0]; reactions = normRx(r[1]); if (view === 'feed' && Date.now() >= unlockMs) renderPosts();
     }).catch(function(){});
   }
   function loadIdeas(){ return guard(api.listIdeas().then(function(r){ ideas = r; renderIdeas(); })); }
@@ -1811,15 +1858,11 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       var inp = $('pts-'+id), v = inp ? parseInt(inp.value, 10) : null;
       guard(api.reviewAssignment(id, act === 'approve', act === 'approve' && !isNaN(v) ? v : null).then(function(){ toast(act === 'approve' ? 'Aprovado.' : 'Rejeitado.'); return loadRef(); }));
     }
-    else if (act === 'react'){
+    else if (act === 'react'){ doReact(id, b.getAttribute('data-kind')); }
+    else if (act === 'rxmore'){
       if (!need('Entra para reagires.')) return;
-      if (reactBusy[id]) return;
-      var rk = b.getAttribute('data-kind'), curR = reactions.filter(function(x){ return x.post_id === id && x.user_id === user.id; })[0], nextR = curR && curR.kind === rk ? null : rk;
-      var before = reactions.slice();
-      reactions = reactions.filter(function(x){ return !(x.post_id === id && x.user_id === user.id); });
-      if (nextR) reactions.push({post_id:id, user_id:user.id, kind:nextR});
-      patchRx(id); reactBusy[id] = true;
-      api.react(id, nextR).catch(function(e){ reactions = before; patchRx(id); toast(e.message || 'Não consegui reagir.'); }).then(function(){ delete reactBusy[id]; });
+      var prevOpen = rxOpen; rxOpen = id; if (prevOpen) patchRx(prevOpen); patchRx(id);
+      var inpRx = document.querySelector('[data-rxin="'+id+'"]'); if (inpRx) inpRx.focus();
     }
     else if (act === 'moreposts'){ postLimit += 30; loadFeed(); }
     else if (act === 'swapteam'){ guard(api.setTeam(id, b.getAttribute('data-team') === 'vera' ? 'fran' : 'vera').then(loadRef)); }

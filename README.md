@@ -41,7 +41,7 @@ O endereço é `https://verapvst.github.io/fran-x-vera/`. O Pages está configur
 * **Pontos:** bebidas + horas na festa (5 pontos por hora entre o primeiro e o último post da noite, máximo 12 horas) + challenges aprovados. Para mudar o valor: `update app_settings set value = '8' where key = 'presence_points_per_hour';` (e `PRESENCE_RATE` em `site/index.html`, que só serve para o texto e o modo demonstração).
 * **Pontuação da equipa:** pontos totais ÷ pessoas da equipa **que postaram nessa noite** (`team_score` em `supabase/fase2.sql`). O ranking mostra cada noite e o total.
 * **Hora dos posts:** é sempre a do servidor, ninguém inventa horas.
-* **Reações:** cada pessoa reage a cada foto com uma reação (fogo, cerveja, riso, beijo), e carregar outra vez tira-a.
+* **Reações:** cada pessoa reage a cada foto com uma reação: quatro à mão (🔥 🍻 😂 💋) ou qualquer emoji do teclado (botão +). Carregar outra vez tira-a. Qualquer emoji precisa do `supabase/fase7.sql`.
 * **Challenges:** as referees criam e entregam a quem já postou nessa noite: todos, uma equipa, nacionais, internacionais ou pessoas específicas (lista só de quem já postou), secretos ou à vista de todos. "Sortear" dá a cada pessoa presente um da lista que ainda não tenha recebido. "Avisar por email" envia um email a quem tem challenges novos (precisa do `apps-script/Code.gs` atualizado). A Vera valida a Team Fran e a Fran valida a Team Vera.
 * **Rally:** as referees adicionam as paragens (Painel referee, Mais, Rally). Os players dão nota de 1 a 5 ao croquete e à tasca, e a página mostra o melhor croquete.
 * **Painel referee:** Jantar (quem vai), Hoje (quem já postou, com a equipa e troca manual), Challenges, Validar, e Mais (Eventos, Pontos, Players, Rally).
