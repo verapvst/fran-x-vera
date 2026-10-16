@@ -1412,6 +1412,9 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     renderTeamBar();
     renderPosts();
   }
+  // depois de entregar challenges, envia o email passados uns segundos (junta vários numa só mensagem por pessoa)
+  var mailTimer = null;
+  function autoMail(){ clearTimeout(mailTimer); mailTimer = setTimeout(function(){ api.notifyChallenges().catch(function(){}); }, 6000); }
   var rxOpen = null;
   function rxButtons(pid){
     var mine = user ? reactions.filter(function(x){ return x.post_id === pid && x.user_id === user.id; })[0] : null, cnt = {}, extra = [];
@@ -1831,7 +1834,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     else if (act === 'delpost'){ guard(api.deletePost(id).then(loadFeed)); }
     else if (act === 'delidea'){ guard(api.deleteIdea(id).then(loadIdeas)); }
     else if (act === 'chassign'){
-      guard(api.assignChallenge(id, cs.aud, pickedIds(), cs.secret).then(function(n){ toast(n ? 'Entregue a '+n+' pessoa(s).' : 'Ninguém novo para receber, ainda.'); return loadRef(); }));
+      guard(api.assignChallenge(id, cs.aud, pickedIds(), cs.secret).then(function(n){ toast(n ? 'Entregue a '+n+' pessoa(s). Email a caminho.' : 'Ninguém novo para receber, ainda.'); if (n) autoMail(); return loadRef(); }));
     }
     else if (act === 'chsave' || act === 'chsend'){
       saveChalForm();
@@ -1842,7 +1845,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       guard(api.saveChallenge({text:ctx, points:cpt}).then(function(cid){
         cs.text = '';
         if (act === 'chsave'){ toast('Guardado na lista.'); return loadRef(); }
-        return api.assignChallenge(cid, cs.aud, pickedIds(), cs.secret).then(function(n){ toast(n ? 'Entregue a '+n+' pessoa(s).' : 'Guardado. Ninguém recebeu: ainda não há quem tenha postado esta noite.'); return loadRef(); });
+        return api.assignChallenge(cid, cs.aud, pickedIds(), cs.secret).then(function(n){ toast(n ? 'Entregue a '+n+' pessoa(s). Email a caminho.' : 'Guardado. Ninguém recebeu: ainda não há quem tenha postado esta noite.'); if (n) autoMail(); return loadRef(); });
       }));
     }
     else if (act === 'chdraw'){
