@@ -43,3 +43,9 @@ Os testes de `fase2_test.sql` correm só com a fase 2, e os de `fase3_test.sql` 
 
 Tudo deve dizer PASS. Corre isto sempre que mudares `supabase/schema.sql`.
 Isto NAO substitui testar num projeto Supabase real e em telemoveis reais.
+
+Fase 11 (Rally por etapas: paragens secretas, notas de 1 a 10, resultados escondidos): corre `supabase/fase9.sql`, `supabase/fase10.sql` e usa `tests/fase11_test.sql` (que corre `supabase/fase11.sql` duas vezes). Precisa de uma base com `stub.sql`, `schema.sql` e `fase2` a `fase10` já corridos:
+
+```
+psql -d fv_test -At -f tests/fase11_test.sql | grep -E "^(PASS|FAIL)"
+```
