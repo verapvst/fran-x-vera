@@ -399,7 +399,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         <li class="step"><h3>Recebes um challenge</h3><p>Escolhido para quem está na festa.</p></li>
         <li class="step"><h3>Envias a prova</h3><p>Foto ou vídeo. Sem prova, não há pontos.</p></li>
         <li class="step"><h3>A referee valida</h3><p>A Vera valida a Team Fran. A Fran valida a Team Vera.</p></li>
-        <li class="step"><h3>Pontos para a equipa</h3><p>Somam ao ranking individual e ao da equipa, normalizado por pessoa presente.</p></li>
+        <li class="step"><h3>Pontos para a equipa</h3><p>Somam ao ranking individual e ao da equipa (soma dos pontos de todos).</p></li>
       </ol>
       <h2 class="h2" style="margin-top:34px">Os meus <em>challenges</em></h2>
       <div id="myChal" style="max-width:640px"></div>
@@ -1379,10 +1379,10 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       '<div class="scroll"><table class="tbl"><thead><tr><th>Bebida</th><th>Pontos</th></tr></thead><tbody>'+rows+'</tbody></table></div>' +
       (isRef() ? '<div class="row"><button class="btn red" data-act="unlocknow">Abrir agora</button><button class="btn ghost" data-act="relock">Fechar até quinta 19:00</button></div>' : '') + '</div>';
   }
-  // placar das equipas no BoozeFeed: só a equipa e os pontos finais (soma das pontuações de cada noite, como no ranking)
+  // placar das equipas no BoozeFeed: só a equipa e os pontos totais (soma dos pontos de cada noite, como no ranking)
   function renderTeamBar(){
     var tot = {vera:0, fran:0}, any = false;
-    tboard.forEach(function(x){ if (tot[x.team] != null){ tot[x.team] += x.score; any = true; } });
+    tboard.forEach(function(x){ if (tot[x.team] != null){ tot[x.team] += x.points; any = true; } });
     var lead = any && tot.vera !== tot.fran ? (tot.vera > tot.fran ? 'vera' : 'fran') : null;
     $('teamBar').innerHTML = '<div class="tbar">' + ['vera','fran'].map(function(t){
       return '<div class="tbi'+(lead === t ? ' lead' : '')+'"><span>'+teamLabel(t)+'</span><b>'+(any ? nf(tot[t]) : '–')+'</b></div>';
@@ -1605,20 +1605,20 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     if (rkNight !== 'total' && nights.indexOf(rkNight) < 0) rkNight = 'total';
     var rows = {};
     if (rkNight === 'total'){
-      tboard.forEach(function(x){ var t = rows[x.team] = rows[x.team] || {team:x.team, people:0, hours:0, points:0, score:0}; t.people += x.people; t.hours += x.hours; t.points += x.points; t.score += x.score; });
+      tboard.forEach(function(x){ var t = rows[x.team] = rows[x.team] || {team:x.team, people:0, hours:0, points:0, score:0}; t.people += x.people; t.hours += x.hours; t.points += x.points; });
     } else {
       tboard.filter(function(x){ return x.night === rkNight; }).forEach(function(x){ rows[x.team] = x; });
     }
-    var sv = rows.vera ? rows.vera.score : 0, sf = rows.fran ? rows.fran.score : 0;
+    var sv = rows.vera ? rows.vera.points : 0, sf = rows.fran ? rows.fran.points : 0;
     var tabs = nights.map(function(n){ return '<button type="button" data-act="rknight" data-n="'+n+'" aria-pressed="'+(rkNight === n)+'">'+(NIGHTS[n] || n.slice(5))+'</button>'; }).join('') +
       (nights.length > 1 ? '<button type="button" data-act="rknight" data-n="total" aria-pressed="'+(rkNight === 'total')+'">Total</button>' : '');
     var members = {}; ttot.forEach(function(y){ members[y.team] = y.members; });
     var out = (tabs && nights.length > 1 ? '<div class="seg" role="group" aria-label="Escolher a noite">'+tabs+'</div>' : '') + '<div class="rk-cards">' + ['vera','fran'].map(function(t){
-      var x = rows[t], lead = x && x.score > (t === 'vera' ? sf : sv), mem = members[t] != null ? '<small>'+members[t]+' membros</small>' : '';
+      var x = rows[t], lead = x && x.points > (t === 'vera' ? sf : sv), mem = members[t] != null ? '<small>'+members[t]+' membros</small>' : '';
       if (!x) return '<div class="rk-team"><div class="tn">'+teamLabel(t)+mem+'</div><div class="soon2">Ainda não alocado: o jogo começa quinta às 19:00.</div></div>';
-      return '<div class="rk-team'+(lead ? ' lead' : '')+'">'+(lead ? '<span class="rk-front">à frente</span>' : '')+'<div class="tn">'+teamLabel(t)+mem+'</div><div class="sc">'+nf(x.score)+'</div><div class="lbl">pontuação</div>' +
-        '<div class="stl"><div><span>'+(rkNight === 'total' ? 'Presenças' : 'Pessoas')+'</span><b>'+x.people+'</b></div><div><span>Horas</span><b>'+nf(x.hours)+' h</b></div><div><span>Pontos</span><b>'+x.points+'</b></div></div></div>';
-    }).join('') + '</div><p class="rk-note">Pontuação = pontos da equipa ÷ pessoas que postaram nessa noite. Assim ninguém ganha só por ser mais.</p>';
+      return '<div class="rk-team'+(lead ? ' lead' : '')+'">'+(lead ? '<span class="rk-front">à frente</span>' : '')+'<div class="tn">'+teamLabel(t)+mem+'</div><div class="sc">'+nf(x.points)+'</div><div class="lbl">pontos</div>' +
+        '<div class="stl"><div><span>'+(rkNight === 'total' ? 'Presenças' : 'Pessoas')+'</span><b>'+x.people+'</b></div><div><span>Horas</span><b>'+nf(x.hours)+' h</b></div></div></div>';
+    }).join('') + '</div><p class="rk-note">Pontos = soma dos pontos de todos os da equipa. Horas = soma das horas de presença.</p>';
     $('rkTeams').innerHTML = out;
 
     // individual
