@@ -988,7 +988,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         var c = chs.filter(function(x){ return x.id === cid; })[0], n = 0, nk = nightKey(), pr = presenceOf(ps);
         var here = users.filter(function(u){ return nts[u.id] && pr[u.id + '|' + nk]; });
         var pool = here.filter(function(u){
-          return aud === 'tonight' || aud === nts[u.id] || aud === u.region || (aud === 'users' && picked && picked.indexOf(u.id) > -1);
+          return aud === 'all' || aud === 'tonight' || aud === nts[u.id] || aud === u.region || (aud === 'users' && picked && picked.indexOf(u.id) > -1);
         });
         pool.forEach(function(u){
           if (asg.some(function(a){ return a.challenge_id === cid && a.user_id === u.id; })) return;
@@ -1361,7 +1361,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   var adminToken = (String(location.hash).match(/a=([a-z0-9-]+)/) || [])[1] || null;
   var unlockMs = 0, UNLOCK_DEFAULT = '2026-10-15T19:00:00+01:00';
   function regLabel(r){ return r === 'international' ? 'Internacional' : r === 'national' ? 'Nacional' : ''; }
-  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [], checkins = [], chals = [], asg = [], tboard = [], reactions = [], nightInfo = null, tonight = [], composerOpen = false, stops = [], rbd = {board:[], mine:{}}, rdraft = {}, ttot = [], cs = {text:'', points:20, aud:'tonight', picked:{}, secret:false};
+  var events = [], rsvps = [], drinks = [], posts = [], board = [], ideas = [], players = [], checkins = [], chals = [], asg = [], tboard = [], reactions = [], nightInfo = null, tonight = [], composerOpen = false, stops = [], rbd = {board:[], mine:{}}, rdraft = {}, ttot = [], cs = {text:'', points:20, aud:'all', picked:{}, secret:false};
   var pick = {drink:null, blob:null, preview:null, caption:''}, signup = {blob:null};
   var busy = false;
   function isRef(){ return !!(user && user.role === 'referee'); }
@@ -1578,7 +1578,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   /* referee: challenges */
   function refChal(){
     var pr = tonight.slice().sort(function(a,b){ return String(a.name).localeCompare(String(b.name)); });
-    var AUD = [['tonight','Todos os que já postaram esta noite'],['vera','Team Vera (esta noite)'],['fran','Team Fran (esta noite)'],['national','Nacionais (esta noite)'],['international','Internacionais (esta noite)'],['users','Pessoas específicas']];
+    var AUD = [['all','Toda a gente (todos os que têm conta)'],['tonight','Só quem já postou esta noite'],['vera','Team Vera (esta noite)'],['fran','Team Fran (esta noite)'],['national','Nacionais (esta noite)'],['international','Internacionais (esta noite)'],['users','Pessoas específicas']];
     var unnotified = asg.filter(function(a){ return !a.notified && a.status === 'open'; }).length;
     var h = '<p class="note">Só recebe quem já postou esta noite. Usa [B] no texto para meter o nome de outra pessoa presente (de preferência da outra equipa).</p>' +
       '<div class="card stack" id="chalBox" style="max-width:640px;margin-bottom:16px">' +

@@ -49,3 +49,5 @@ Fase 11 (Rally por etapas: paragens secretas, notas de 1 a 10, resultados escond
 ```
 psql -d fv_test -At -f tests/fase11_test.sql | grep -E "^(PASS|FAIL)"
 ```
+
+Fase 12 (challenges para toda a gente): usa `tests/fase12_test.sql` (que corre `supabase/fase12.sql` duas vezes), com a mesma base da fase 11.
