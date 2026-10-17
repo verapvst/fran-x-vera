@@ -243,6 +243,42 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 .cam .tx{border:2px solid #fff;background:transparent;color:#fff;border-radius:999px;padding:12px 18px;font-weight:800;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
 .cam .tx.go{background:#fff;color:#000}
 .cam .rv{flex:none;display:flex;justify-content:center;gap:12px;padding:14px 20px calc(20px + env(safe-area-inset-bottom,0px))}
+
+/* rally por etapas */
+.rmap{height:280px;border:2px solid var(--ink);background:var(--soft);margin:0 0 6px;z-index:0}
+.rmap-note{font-size:.78rem;font-weight:600;margin:0 0 18px}
+.rpin span{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);background:var(--red);color:var(--ink);font-family:var(--display);font-weight:900;font-size:1rem}
+.rpin.st-visited span{background:var(--ink);color:var(--bg)}
+.rpin.st-open span{background:var(--good);color:#fff}
+.rs{border:2px solid var(--ink);background:var(--card);margin-bottom:12px;overflow:hidden}
+.rs-img{display:block;width:100%;height:150px;object-fit:cover;border-bottom:2px solid var(--ink)}
+.rs-top{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.rs-n{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:900;font-size:1.15rem}
+.rs-t{flex:1;min-width:0}
+.rs-t b{display:block;font-size:1.08rem;line-height:1.2}
+.rs-time{display:block;font-size:.8rem;font-weight:700;color:var(--red)}
+.rs-st.st-open{background:var(--good);color:#fff;border-color:var(--good)}
+.rs-st.st-visited{background:var(--ink);color:var(--bg)}
+.rs-body{padding:0 14px 14px}
+.rs-body p{margin:0 0 8px;font-size:.9rem;font-weight:600}
+.rs-lock{border:2px dashed var(--ink);padding:10px 12px;font-size:.86rem;font-weight:700;background:var(--bg)}
+.rs-scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px}
+.rs-scale .rxb{padding:8px 0;text-align:center}
+.rs-lbl{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 0}
+.rs.skip{opacity:.55}.rs.skip .rs-t b{text-decoration:line-through}
+.rs.ghost{background:repeating-linear-gradient(135deg,var(--card),var(--card) 10px,var(--soft) 10px,var(--soft) 20px);border-style:dashed}
+.rs.ghost .rs-t b{filter:blur(5px);user-select:none}
+.rs.ghost .rs-time{color:var(--ink)}
+.rs.ghost.final{border-color:var(--red)}
+.rs-win{border:2px solid var(--ink);background:var(--ink);color:var(--bg);padding:14px 16px;font-weight:800;margin-top:18px}
+.rl-adm .edrow2{border:2px solid var(--ink);background:var(--card);padding:10px;margin-bottom:8px}
+.rl-adm .stline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rl-adm .stline b{flex:1;min-width:120px}
+.rl-adm details{margin-top:8px}.rl-adm summary{cursor:pointer;font-weight:800;font-size:.82rem}
+.rl-form{display:grid;gap:8px;margin-top:8px}
+.rl-form .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.loc-res button{display:block;width:100%;text-align:left;border:2px solid var(--ink);background:var(--bg);padding:8px 10px;margin-top:6px;font-size:.82rem;cursor:pointer}
+.loc-c{font-size:.76rem;font-weight:700}
 </style>
 
 <nav class="nav" aria-label="Principal">
@@ -850,7 +886,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   var demo = (function(){
     var users = [], me = null;
     var ev = JSON.parse(JSON.stringify(EVENTS_SEED)), dr = JSON.parse(JSON.stringify(DRINKS_SEED));
-    var cks = [], chs = [], asg = [], rx = [], nts = {}, stops = [], rates = [];
+    var cks = [], chs = [], asg = [], rx = [], nts = {}, stops = [{id:'s0', name:'Portugália Belém', note:'Cervejaria à beira-rio. Croquete e imperial para começar.', position:1, address:'Av. Brasília, Edifício Espelho d\'Água, 1400-038 Lisboa', lat:38.6938995, lng:-9.2069216, kind:'start', state:'revealed', time_label:'19:00', photo_url:null}, {id:'s1', name:'Tosco', note:'Tasca em Alcântara.', position:2, address:'R. Alcântara 14A', lat:38.7061, lng:-9.1757, kind:'stop', state:'hidden', time_label:'20:15', photo_url:null}], rates = [], demoResults = false;
     var rs = [], ps = [], ideas = [], seq = 1, unlockAt = new Date('2026-10-15T19:00:00+01:00').getTime();
     var sample = document.querySelector('.art .hands').src;
     users.push({id:'x1', name:'Convidado exemplo', role:'player', region:'national', avatar:sample, key:'x1.demo', contact:'a@exemplo.pt'}, {id:'x2', name:'Outro exemplo', role:'player', region:'international', avatar:sample, key:'x2.demo', contact:'ex@exemplo.pt'});
@@ -1032,22 +1068,28 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       markNotified: function(ids){ asg.forEach(function(a){ if (ids.indexOf(a.id) > -1) a.notified = true; }); return Promise.resolve(ids.length); },
       notifyChallenges: function(){ asg.forEach(function(a){ a.notified = true; }); return Promise.resolve(true); },
       broadcastMail: function(kind, target){ return Promise.resolve({ok:true, sent:target ? 1 : users.filter(function(u){ return u.contact; }).length}); },
-      listStops: function(){ return Promise.resolve(stops.slice().sort(function(a,b){ return a.position - b.position; })); },
+      listStops: function(){ var rf = me && me.role === 'referee'; return Promise.resolve(stops.filter(function(x){ return x.state !== 'hidden' || rf; }).sort(function(a,b){ return a.position - b.position; })); },
       saveStop: function(s){
-        if (s.id){ stops.forEach(function(x){ if (x.id === s.id){ x.name = s.name; x.note = s.note; x.position = s.position; } }); }
-        else stops.push({id:'s'+(++seq), name:s.name, note:s.note, position:s.position});
+        var F = ['name','note','position','address','lat','lng','kind','state','time_label','photo_url'];
+        if (s.id){ stops.forEach(function(x){ if (x.id === s.id){ F.forEach(function(f){ if (s[f] !== undefined) x[f] = s[f]; }); } }); }
+        else { var n = {id:'s'+(++seq), name:'', note:null, position:stops.length + 1, address:null, lat:null, lng:null, kind:'stop', state:'hidden', time_label:null, photo_url:null}; F.forEach(function(f){ if (s[f] !== undefined) n[f] = s[f]; }); stops.push(n); }
         return Promise.resolve();
       },
+      rallyResultsOpen: function(){ return Promise.resolve(!!demoResults); },
+      setRallyResults: function(on){ demoResults = !!on; return Promise.resolve(); },
       deleteStop: function(id){ stops = stops.filter(function(s){ return s.id !== id; }); rates = rates.filter(function(r){ return r.stop_id !== id; }); return Promise.resolve(); },
       listRatings: function(){
         var mine = {}; rates.forEach(function(r){ if (me && r.user_id === me.id) mine[r.stop_id] = {croquete:r.croquete, tasca:r.tasca}; });
-        var board = stops.map(function(s){
-          var rr = rates.filter(function(r){ return r.stop_id === s.id; }), n = rr.length;
-          return {stop_id:s.id, name:s.name, position:s.position, croquete:n ? Math.round(rr.reduce(function(a,r){ return a + r.croquete; }, 0) / n * 100) / 100 : null, tasca:n ? Math.round(rr.reduce(function(a,r){ return a + r.tasca; }, 0) / n * 100) / 100 : null, votes:n};
+        var rfD = me && me.role === 'referee';
+        var board = stops.filter(function(s){ return s.state !== 'hidden' || rfD; }).map(function(s){
+          var rr = rates.filter(function(r){ return r.stop_id === s.id; }), n = rr.length, show = demoResults || rfD;
+          return {stop_id:s.id, name:s.name, position:s.position, croquete:n && show ? Math.round(rr.reduce(function(a,r){ return a + r.croquete; }, 0) / n * 100) / 100 : null, tasca:n && show ? Math.round(rr.reduce(function(a,r){ return a + r.tasca; }, 0) / n * 100) / 100 : null, votes:n};
         });
         return Promise.resolve({board:board, mine:mine});
       },
       rate: function(stopId, c, t){
+        var stx = stops.filter(function(x){ return x.id === stopId; })[0];
+        if (!stx || (stx.state !== 'open' && stx.state !== 'visited')) return Promise.reject(new Error('As notas desta paragem ainda estão fechadas.'));
         rates = rates.filter(function(r){ return !(r.stop_id === stopId && r.user_id === me.id); });
         rates.push({stop_id:stopId, user_id:me.id, croquete:c, tasca:t});
         return Promise.resolve();
@@ -1273,8 +1315,21 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
           return fetch(CFG.MAIL_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({token:tok, action:'challenges'})}).then(function(){ return true; }, function(){ return false; });
         }).catch(function(){ return false; });
       },
-      listStops: function(){ return sb.from('rally_stops').select('id,position,name,note').order('position').then(fail); },
-      saveStop: function(s){ var row = {name:s.name, note:s.note || null, position:s.position}; return (s.id ? sb.from('rally_stops').update(row).eq('id', s.id) : sb.from('rally_stops').insert(row)).then(fail); },
+      listStops: function(){
+        var cols = 'id,position,name,note,address,lat,lng,kind,state,time_label,photo_url';
+        return sb.from('rally_stops').select(cols).order('position').then(function(r){
+          if (!r.error) return r.data || [];
+          // base de dados ainda sem a fase 11: o rally antigo continua a funcionar
+          return sb.from('rally_stops').select('id,position,name,note').order('position').then(fail).then(function(a){ return a.map(function(x){ return Object.assign({address:null, lat:null, lng:null, kind:'stop', state:'open', time_label:null, photo_url:null}, x); }); });
+        });
+      },
+      saveStop: function(s){
+        var row = {}; ['name','note','position','address','lat','lng','kind','state','time_label','photo_url'].forEach(function(f){ if (s[f] !== undefined) row[f] = (s[f] === '' ? null : s[f]); });
+        if (row.name === null) delete row.name;
+        return (s.id ? sb.from('rally_stops').update(row).eq('id', s.id) : sb.from('rally_stops').insert(row)).then(fail);
+      },
+      rallyResultsOpen: function(){ return sb.rpc('rally_results_open').then(function(r){ return r.error ? false : !!r.data; }); },
+      setRallyResults: function(on){ return sb.rpc('rally_set_results', {p:!!on}).then(fail); },
       deleteStop: function(id){ return sb.from('rally_stops').delete().eq('id', id).then(fail); },
       listRatings: function(){
         return Promise.all([
@@ -1543,43 +1598,157 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function saveChalForm(){ var t = $('chalText'), p = $('chalPts'); if (t) cs.text = t.value; if (p) cs.points = p.value; }
   function pickedIds(){ return Object.keys(cs.picked).filter(function(k){ return cs.picked[k]; }); }
   /* referee: rally */
+  var locDraft = {}, locRes = {};
+  function parseCoords(t){
+    t = String(t || '');
+    var m = t.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) || t.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/) || t.match(/[?&](?:q|ll)=(-?\d+\.\d+),(-?\d+\.\d+)/) || t.match(/^\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*$/);
+    return m ? {lat:parseFloat(m[1]), lng:parseFloat(m[2])} : null;
+  }
+  function shortAddr(d){ return String(d || '').split(',').slice(0, 3).join(',').trim(); }
+  function locWidget(id, s){
+    var d = locDraft[id], lat = d ? d.lat : s.lat, lng = d ? d.lng : s.lng, addr = d && d.address != null ? d.address : (s.address || '');
+    return '<div class="rl-form"><label class="f" for="st-a-'+esc(id)+'">Onde é (morada, nome do sítio ou link do Google Maps)</label>' +
+      '<input class="in" id="st-a-'+esc(id)+'" value="'+esc(addr)+'" maxlength="200" placeholder="Ex.: Tosco, Rua de Alcântara 14A">' +
+      '<div class="row"><button type="button" class="btn small" data-act="locsearch" data-id="'+esc(id)+'">Procurar no mapa</button><button type="button" class="btn small ghost" data-act="locgps" data-id="'+esc(id)+'">📍 Estou aqui</button></div>' +
+      '<div class="loc-res" id="st-r-'+esc(id)+'">'+(locRes[id] ? locRes[id].map(function(r,i){ return '<button type="button" data-act="locpick" data-id="'+esc(id)+'" data-i="'+i+'">'+esc(shortAddr(r.display_name))+'</button>'; }).join('') : '')+'</div>' +
+      '<div class="loc-c" id="st-c-'+esc(id)+'">'+(typeof lat === 'number' ? '📍 Localização guardada ('+lat.toFixed(5)+', '+lng.toFixed(5)+')' : 'Sem localização no mapa ainda.')+'</div></div>';
+  }
+  function refreshLoc(id){
+    var r = $('st-r-'+id), c = $('st-c-'+id), d = locDraft[id];
+    if (r) r.innerHTML = (locRes[id] || []).map(function(x, i){ return '<button type="button" data-act="locpick" data-id="'+esc(id)+'" data-i="'+i+'">'+esc(shortAddr(x.display_name))+'</button>'; }).join('');
+    if (c && d) c.textContent = '📍 Localização guardada ('+d.lat.toFixed(5)+', '+d.lng.toFixed(5)+')';
+  }
+  function stopFields(id, s){
+    var k = s.kind || 'stop';
+    return '<div class="rl-form"><div class="two"><div><label class="f" for="st-n-'+esc(id)+'">Nome</label><input class="in" id="st-n-'+esc(id)+'" value="'+esc(s.name || '')+'" maxlength="80"></div>' +
+      '<div><label class="f" for="st-h-'+esc(id)+'">Hora (opcional)</label><input class="in" id="st-h-'+esc(id)+'" value="'+esc(s.time_label || '')+'" maxlength="20" placeholder="20:15"></div></div></div>' +
+      locWidget(id, s) +
+      '<div class="rl-form"><label class="f" for="st-t-'+esc(id)+'">Nota curta (opcional)</label><input class="in" id="st-t-'+esc(id)+'" value="'+esc(s.note || '')+'" maxlength="160">' +
+      '<label class="f" for="st-f-'+esc(id)+'">Foto (link https, opcional)</label><input class="in" id="st-f-'+esc(id)+'" value="'+esc(s.photo_url || '')+'" maxlength="400" placeholder="https://...">' +
+      '<div class="two"><div><label class="f" for="st-k-'+esc(id)+'">Tipo</label><select class="in" id="st-k-'+esc(id)+'"><option value="stop"'+(k === 'stop' ? ' selected' : '')+'>Paragem</option><option value="start"'+(k === 'start' ? ' selected' : '')+'>Início</option><option value="final"'+(k === 'final' ? ' selected' : '')+'>Final da noite</option></select></div>' +
+      (id === 'new' ? '<div><label class="f" for="st-s-new">Estado</label><select class="in" id="st-s-new"><option value="hidden">Secreta</option><option value="revealed">Desbloqueada (visível, notas fechadas)</option><option value="open">Estamos aqui (notas abertas)</option></select></div>' : '') +
+      '</div></div>';
+  }
   function refRally(){
-    var h = '<p class="note">As paragens do rally por ordem. Quando a rota estiver definida, adiciona-as aqui e as pessoas passam a dar nota (tasca e croquete) na página Rally.</p>' +
-      '<div class="card stack" style="max-width:640px;margin-bottom:16px"><div class="row"><input class="in" id="stName" placeholder="Nome da paragem" style="flex:1;min-width:180px" maxlength="80"><input class="in" id="stNote" placeholder="Nota (opcional): morada, hora" style="flex:1;min-width:180px" maxlength="160"><button class="btn small" data-act="stopadd">Adicionar</button></div></div>';
-    h += stops.length ? stops.map(function(s){
-      return '<div class="edrow" style="grid-template-columns:70px minmax(0,1fr) minmax(0,1fr) auto"><input class="in" type="number" id="st-p-'+esc(s.id)+'" value="'+esc(s.position)+'" aria-label="Ordem"><input class="in" id="st-n-'+esc(s.id)+'" value="'+esc(s.name)+'" aria-label="Nome" maxlength="80"><input class="in" id="st-t-'+esc(s.id)+'" value="'+esc(s.note || '')+'" aria-label="Nota" maxlength="160">' +
-        '<span class="row"><button class="btn small" data-act="stopsave" data-id="'+esc(s.id)+'">Guardar</button><button class="btn small ghost" data-act="stopdel" data-id="'+esc(s.id)+'">Apagar</button></span></div>';
-    }).join('') : '<div class="empty">Ainda sem paragens. A página Rally mostra "rota em breve".</div>';
+    var all = stops.slice().sort(byOrder);
+    var NEXT = {
+      hidden:[['Mostrar','revealed','red']],
+      revealed:[['Estamos aqui: abrir notas','open','red'],['Esconder','hidden','ghost'],['Ignorar','skipped','ghost']],
+      open:[['Visitada','visited','red'],['Fechar notas','revealed','ghost']],
+      visited:[['Reabrir notas','open','ghost']],
+      skipped:[['Repor','revealed','ghost']]
+    };
+    var h = '<p class="note">O rally por etapas: as pessoas só veem as paragens que mostrares. Em cada uma, primeiro "Mostrar" (aparece no mapa, notas fechadas), depois "Estamos aqui" (abre as notas) e no fim "Visitada".</p>' +
+      '<div class="card stack rl-adm" style="max-width:640px;margin-bottom:16px"><div class="row" style="justify-content:space-between"><div><b>Resultados dos croquetes</b><p class="note" style="margin:2px 0 0">'+(rallyResults ? 'Revelados a toda a gente.' : 'Escondidos: só vocês veem as médias.')+'</p></div><button class="btn small'+(rallyResults ? ' ghost' : ' red')+'" data-act="rallyresults" data-on="'+(rallyResults ? 0 : 1)+'">'+(rallyResults ? 'Esconder' : 'Revelar resultados')+'</button></div></div>' +
+      '<div class="card rl-adm" style="max-width:640px;margin-bottom:16px"><b>Acrescentar paragem</b>' + stopFields('new', {}) + '<div class="row" style="margin-top:12px"><button class="btn small" data-act="stopadd">Adicionar</button></div></div>';
+    h += all.length ? '<div class="rl-adm" style="max-width:640px">' + all.map(function(x, i){
+      return '<div class="edrow2"><div class="stline"><span class="chip">'+(i + 1)+'</span><b>'+esc(x.name)+'</b><span class="chip rs-st st-'+esc(x.state)+'">'+esc(RSTATE[x.state] || x.state)+'</span>' +
+        '<button class="btn small ghost" data-act="stopmove" data-id="'+esc(x.id)+'" data-dir="-1" aria-label="Subir">▲</button><button class="btn small ghost" data-act="stopmove" data-id="'+esc(x.id)+'" data-dir="1" aria-label="Descer">▼</button></div>' +
+        (x.address ? '<p class="note" style="margin:6px 0 0">'+esc(x.address)+(x.time_label ? ' · '+esc(x.time_label) : '')+'</p>' : '') +
+        '<div class="row" style="margin-top:8px">' + (NEXT[x.state] || []).map(function(a){ return '<button class="btn small'+(a[2] === 'ghost' ? ' ghost' : ' red')+'" data-act="stopstate" data-id="'+esc(x.id)+'" data-to="'+a[1]+'">'+a[0]+'</button>'; }).join('') + '</div>' +
+        '<details><summary>Editar</summary>' + stopFields(x.id, x) + '<div class="row" style="margin-top:12px"><button class="btn small" data-act="stopsave" data-id="'+esc(x.id)+'">Guardar</button><button class="btn small ghost" data-act="stopdel" data-id="'+esc(x.id)+'">Apagar</button></div></details></div>';
+    }).join('') + '</div>' : '<div class="empty">Ainda sem paragens.</div>';
     return h;
   }
+  function readStop(id){
+    var out = {name:$('st-n-'+id).value.trim(), time_label:$('st-h-'+id).value.trim(), note:$('st-t-'+id).value.trim(), photo_url:$('st-f-'+id).value.trim(), kind:$('st-k-'+id).value, address:$('st-a-'+id).value.trim()};
+    var d = locDraft[id]; if (d){ out.lat = d.lat; out.lng = d.lng; }
+    else { var pc = parseCoords(out.address); if (pc){ out.lat = pc.lat; out.lng = pc.lng; out.address = ''; } }
+    return out;
+  }
 
-  /* rally: página pública */
-  function stars(sid, field, cur){
-    var h = ''; for (var v = 1; v <= 5; v++) h += '<button type="button" class="rxb" data-act="rate" data-stop="'+esc(sid)+'" data-field="'+field+'" data-v="'+v+'" aria-pressed="'+(cur === v)+'">'+v+'</button>';
+  /* rally: página pública (paragens por etapas) */
+  var RSTATE = {hidden:'Secreta', revealed:'Notas fechadas', open:'Estamos aqui', visited:'Visitada', skipped:'Ignorada'};
+  var rmap = null, rallyResults = false, rallySig = '', rallyPrev = null, leafletP = null;
+  function byOrder(a, b){ return (a.kind === 'final' ? 1 : 0) - (b.kind === 'final' ? 1 : 0) || a.position - b.position; }
+  function hasPos(x){ return typeof x.lat === 'number' && typeof x.lng === 'number'; }
+  function mapsLink(x){ return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(x.lat + ',' + x.lng) + '&travelmode=walking'; }
+  function ensureLeaflet(){
+    if (window.L) return Promise.resolve(true);
+    if (leafletP) return leafletP;
+    leafletP = new Promise(function(res){
+      var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'vendor/leaflet.css'; document.head.appendChild(l);
+      var sc = document.createElement('script'); sc.src = 'vendor/leaflet.js'; sc.onload = function(){ res(true); }; sc.onerror = function(){ leafletP = null; res(false); }; document.head.appendChild(sc);
+    });
+    return leafletP;
+  }
+  function drawRallyMap(pts){
+    var el = $('rmap'); if (!el) return;
+    if (rmap){ try { rmap.remove(); } catch(e){} rmap = null; }
+    ensureLeaflet().then(function(ok){
+      el = $('rmap'); if (!el) return;
+      if (!ok || !window.L){ el.style.height = 'auto'; el.innerHTML = '<p class="note" style="padding:14px;margin:0">Não consegui carregar o mapa. Usa o botão "Como chegar a pé" em cada paragem.</p>'; return; }
+      if (!pts.length){ el.innerHTML = ''; return; }
+      rmap = L.map(el, {scrollWheelZoom:false});
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(rmap);
+      var ll = pts.map(function(x){ return [x.lat, x.lng]; });
+      pts.forEach(function(x){
+        L.marker([x.lat, x.lng], {icon:L.divIcon({className:'rpin st-' + x.state, html:'<span>' + (x._n || '') + '</span>', iconSize:[30,30], iconAnchor:[15,15]}), title:x.name}).addTo(rmap);
+      });
+      if (ll.length > 1){ L.polyline(ll, {color:'#e8421f', weight:3, dashArray:'6 8'}).addTo(rmap); rmap.fitBounds(ll, {padding:[34,34], maxZoom:16}); }
+      else rmap.setView(ll[0], 15);
+      setTimeout(function(){ if (rmap) rmap.invalidateSize(); }, 200);
+    });
+  }
+  function scaleChips(sid, field, cur){
+    var h = ''; for (var v = 1; v <= 10; v++) h += '<button type="button" class="rxb" data-act="rate" data-stop="'+esc(sid)+'" data-field="'+field+'" data-v="'+v+'" aria-pressed="'+(cur === v)+'" aria-label="'+(field === 'croquete' ? 'Croquete' : 'Tasca')+' '+v+'">'+v+'</button>';
     return h;
   }
   function renderRally(){
-    var b = rbd.board.slice().sort(function(x,y){ return x.position - y.position; });
-    if (!b.length){
-      $('rallyBody').innerHTML = '<p class="soon">ROTA EM BREVE</p><p class="sub" style="margin-left:0;margin-top:14px">A rota do rally de sábado, 17 de outubro, ainda está a ser definida e aparece aqui: um rally pelas tascas, com challenges e pontos ao longo do percurso.</p>' +
-        '<ol class="steps" style="margin-top:22px"><li class="step"><h3>Vês a rota</h3><p>Todas as paragens, por ordem.</p></li><li class="step"><h3>Dás a tua nota</h3><p>Em cada paragem, avalias a tasca e o croquete de 1 a 5.</p></li><li class="step"><h3>Sai o ranking</h3><p>No fim, sabemos qual foi o melhor croquete.</p></li></ol>';
-      return;
+    var vis = stops.filter(function(x){ return x.state !== 'hidden'; }).sort(byOrder);
+    var stat = {}; rbd.board.forEach(function(b){ stat[b.stop_id] = b; });
+    var showAvg = rallyResults || isRef();
+    var n = 0; vis.forEach(function(x){ if (x.state !== 'skipped') x._n = ++n; else x._n = 0; });
+    var h = '<p class="note" style="max-width:60ch">Croquetes, imperiais e tascas à portuguesa. O percurso vai-se revelando ao longo da noite. <b>Encontro às 18:00 em Belém, primeira prova às 19:00.</b></p>' +
+      '<div id="rmap" class="rmap" role="img" aria-label="Mapa das paragens reveladas"></div><p class="rmap-note">O mapa só mostra as paragens que já foram reveladas.</p>';
+    if (!user) h += '<div class="band light" style="margin-bottom:14px"><p>Entra para dares nota ao croquete e à tasca quando as notas abrirem.</p><button class="btn small" data-nav="login">Entrar</button></div>';
+    var shown = vis.filter(function(x){ return x.kind !== 'final'; }), fin = vis.filter(function(x){ return x.kind === 'final'; });
+    function card(x){
+      var st = stat[x.id] || {votes:0}, mine = Object.assign({}, rbd.mine[x.id] || {}, rdraft[x.id] || {});
+      var c = '<article class="rs'+(x.state === 'skipped' ? ' skip' : '')+'">' +
+        (x.photo_url ? '<img class="rs-img" src="'+esc(x.photo_url)+'" alt="'+esc(x.name)+'" loading="lazy" onerror="this.style.display=\'none\'">' : '') +
+        '<div class="rs-top"><span class="rs-n">'+(x._n || '–')+'</span><div class="rs-t"><b>'+esc(x.name)+'</b>'+(x.time_label ? '<span class="rs-time">'+esc(x.time_label)+'</span>' : '')+'</div><span class="chip rs-st st-'+esc(x.state)+'">'+esc(RSTATE[x.state] || x.state)+'</span></div><div class="rs-body">';
+      if (x.address) c += '<p>'+esc(x.address)+'</p>';
+      if (x.note) c += '<p>'+esc(x.note)+'</p>';
+      if (hasPos(x) && x.state !== 'skipped' && x.state !== 'visited') c += '<p><a class="btn small" href="'+esc(mapsLink(x))+'" target="_blank" rel="noopener">Como chegar a pé</a></p>';
+      if (x.state === 'revealed') c += '<div class="rs-lock">🔒 As notas abrem quando lá chegarmos.</div>';
+      else if (x.state === 'open' || x.state === 'visited'){
+        if (user) c += '<div class="rs-lbl">Croquete (1 a 10)</div><div class="rs-scale">'+scaleChips(x.id,'croquete',mine.croquete)+'</div><div class="rs-lbl">Tasca (1 a 10)</div><div class="rs-scale">'+scaleChips(x.id,'tasca',mine.tasca)+'</div>';
+        c += '<p class="note" style="margin:10px 0 0">' + (st.votes ? st.votes+' nota'+(st.votes === 1 ? '' : 's') : 'Ainda sem notas') + (showAvg && st.croquete != null ? ' · croquete '+nf(st.croquete)+' · tasca '+nf(st.tasca)+(rallyResults ? '' : ' (só vocês veem)') : '') + '</p>';
+      }
+      return c + '</div></article>';
     }
-    var best = b.filter(function(x){ return x.votes > 0 && x.croquete != null; }).sort(function(x,y){ return y.croquete - x.croquete || y.votes - x.votes; }).slice(0, 5);
-    var h = '<h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem)">Melhor <em>croquete</em></h2>' +
-      (best.length ? '<div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>Paragem</th><th>Notas</th><th>Croquete</th></tr></thead><tbody>' + best.map(function(x,i){ return '<tr><td>'+(i+1)+'</td><td>'+esc(x.name)+'</td><td>'+x.votes+'</td><td><b>'+x.croquete+'</b></td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="note">Ainda sem notas. Dá a primeira abaixo.</p>');
-    h += '<h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:26px">Paragens</h2>';
-    if (!user) h += '<div class="band light" style="margin-bottom:12px"><p>Entra para dares nota ao croquete e à tasca.</p><button class="btn small" data-nav="login">Entrar</button></div>';
-    h += b.map(function(x, i){
-      var d = Object.assign({}, rbd.mine[x.stop_id] || {}, rdraft[x.stop_id] || {}), st = stops.filter(function(s){ return s.id === x.stop_id; })[0] || {};
-      return '<div class="card" style="margin-bottom:12px;max-width:none"><div class="row" style="justify-content:space-between"><b style="font-size:1.1rem">'+(i+1)+'. '+esc(x.name)+'</b><span class="chip">'+(x.votes ? 'croquete '+x.croquete+' · tasca '+x.tasca+' · '+x.votes+' notas' : 'sem notas')+'</span></div>' +
-        (st.note ? '<p class="note" style="margin:6px 0 0">'+esc(st.note)+'</p>' : '') +
-        (user ? '<div style="margin-top:10px"><div class="f" style="margin-bottom:4px">Croquete</div><div class="rx">'+stars(x.stop_id,'croquete',d.croquete)+'</div><div class="f" style="margin:8px 0 4px">Tasca</div><div class="rx">'+stars(x.stop_id,'tasca',d.tasca)+'</div></div>' : '') + '</div>';
-    }).join('');
+    h += shown.map(card).join('');
+    if (!rallyResults){
+      h += '<article class="rs ghost"><div class="rs-top"><span class="rs-n">?</span><div class="rs-t"><b>Próxima tasca secreta</b><span class="rs-time">revela-se quando lá chegarmos</span></div><span class="chip">🔒</span></div></article>' +
+        '<article class="rs ghost"><div class="rs-top"><span class="rs-n">?</span><div class="rs-t"><b>Outra tasca secreta</b><span class="rs-time">e o croquete que se segue</span></div><span class="chip">🔒</span></div></article>';
+    }
+    if (fin.length) h += fin.map(card).join('');
+    else if (!rallyResults) h += '<article class="rs ghost final"><div class="rs-top"><span class="rs-n">🌙</span><div class="rs-t"><b>Final da noite</b><span class="rs-time">onde e quando é segredo</span></div><span class="chip">🔒</span></div></article>';
+    var best = vis.filter(function(x){ var st = stat[x.id]; return st && st.votes > 0 && st.croquete != null; }).sort(function(x,y){ return stat[y.id].croquete - stat[x.id].croquete || stat[y.id].votes - stat[x.id].votes; }).slice(0, 5);
+    if (showAvg && best.length){
+      h += '<h2 class="h2" style="font-size:clamp(1.8rem,5vw,2.8rem);margin-top:26px">Melhor <em>croquete</em></h2>' + (rallyResults ? '' : '<p class="note">Só tu vês isto até revelares os resultados.</p>') +
+        '<div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>Paragem</th><th>Notas</th><th>Croquete</th></tr></thead><tbody>' + best.map(function(x,i){ return '<tr><td>'+(i+1)+'</td><td>'+esc(x.name)+'</td><td>'+stat[x.id].votes+'</td><td><b>'+nf(stat[x.id].croquete)+'</b></td></tr>'; }).join('') + '</tbody></table></div>';
+    } else if (!showAvg) h += '<div class="rs-win">🏆 O melhor croquete da noite revela-se no fim.</div>';
     $('rallyBody').innerHTML = h;
+    drawRallyMap(vis.filter(function(x){ return hasPos(x) && x.state !== 'skipped'; }));
   }
-  function loadRally(){
-    return guard(Promise.all([api.listStops().catch(function(){ return []; }), api.listRatings().catch(function(){ return {board:[], mine:{}}; })]).then(function(r){ stops = r[0]; rbd = r[1]; renderRally(); }));
+  function rallySigOf(){
+    return JSON.stringify([user && user.id, isRef(), rallyResults, stops.map(function(x){ return [x.id,x.name,x.state,x.position,x.kind,x.address,x.lat,x.lng,x.time_label,x.photo_url,x.note]; }), rbd.board.map(function(b){ return [b.stop_id,b.votes,b.croquete,b.tasca]; }), rbd.mine, rdraft]);
+  }
+  function loadRally(quiet){
+    return guard(Promise.all([api.listStops().catch(function(){ return stops; }), api.listRatings().catch(function(){ return rbd; }), api.rallyResultsOpen().catch(function(){ return rallyResults; })]).then(function(r){
+      stops = r[0]; rbd = r[1]; rallyResults = !!r[2];
+      var prev = rallyPrev; rallyPrev = {}; stops.forEach(function(x){ rallyPrev[x.id] = x.state; });
+      if (quiet && prev){
+        stops.forEach(function(x){
+          if (isRef()) return;
+          if (prev[x.id] == null && x.state !== 'hidden') toast('Nova paragem revelada: '+x.name);
+          else if (prev[x.id] && prev[x.id] !== 'open' && x.state === 'open') toast('Estamos na '+x.name+': já podes dar nota!');
+        });
+      }
+      var sg = rallySigOf(); if (quiet && sg === rallySig) return; rallySig = sg; renderRally();
+    }));
   }
   /* referee: validar */
   function refReview(){
@@ -1712,7 +1881,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   function loadIdeas(){ return guard(api.listIdeas().then(function(r){ ideas = r; renderIdeas(); })); }
   function loadRef(){
     if (!isRef()) return renderRef();
-    return guard(Promise.all([api.listEvents(), api.listRsvps(), api.listDrinks(), api.listPlayers(), api.listTonight().catch(function(){ return []; }), api.listChallenges().catch(function(){ return []; }), api.listAssignments().catch(function(){ return []; }), api.listStops().catch(function(){ return []; })]).then(function(r){ events = r[0]; rsvps = r[1]; drinks = r[2]; players = r[3]; tonight = r[4]; chals = r[5]; asg = r[6]; stops = r[7]; renderRef(); }));
+    return guard(Promise.all([api.listEvents(), api.listRsvps(), api.listDrinks(), api.listPlayers(), api.listTonight().catch(function(){ return []; }), api.listChallenges().catch(function(){ return []; }), api.listAssignments().catch(function(){ return []; }), api.listStops().catch(function(){ return []; }), api.rallyResultsOpen().catch(function(){ return rallyResults; })]).then(function(r){ events = r[0]; rsvps = r[1]; drinks = r[2]; players = r[3]; tonight = r[4]; chals = r[5]; asg = r[6]; stops = r[7]; rallyResults = !!r[8]; renderRef(); }));
   }
 
   function loadPerfil(){
@@ -1874,14 +2043,56 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         else toast('Enviado a '+r.sent+' pessoa(s)'+(r.already ? ', '+r.already+' já tinham recebido' : '')+(r.quotaHit ? '. O limite diário do Gmail cortou: carrega outra vez amanhã para os restantes.' : '.'));
       }));
     }
-    else if (act === 'stopadd'){
-      var sn = $('stName').value.trim(); if (!sn){ toast('Escreve o nome da paragem.'); return; }
-      guard(api.saveStop({name:sn, note:$('stNote').value.trim(), position:stops.length + 1}).then(function(){ toast('Paragem adicionada.'); return loadRef(); }));
+    else if (act === 'stopadd' || act === 'stopsave'){
+      var sid2 = act === 'stopadd' ? 'new' : id, fs = readStop(sid2);
+      if (!fs.name){ toast('Escreve o nome da paragem.'); return; }
+      if (fs.photo_url && !/^https:\/\//.test(fs.photo_url)){ toast('A foto tem de ser um link que comece por https.'); return; }
+      if (act === 'stopadd'){ fs.position = stops.length ? Math.max.apply(null, stops.map(function(x){ return x.position; })) + 1 : 1; fs.state = $('st-s-new').value; }
+      else fs.id = id;
+      guard(api.saveStop(fs).then(function(){ locDraft[sid2] = null; locRes[sid2] = null; toast(act === 'stopadd' ? 'Paragem adicionada.' : 'Guardado.'); return loadRef(); }));
     }
-    else if (act === 'stopsave'){
-      guard(api.saveStop({id:id, name:$('st-n-'+id).value.trim(), note:$('st-t-'+id).value.trim(), position:parseInt($('st-p-'+id).value, 10) || 0}).then(function(){ toast('Guardado.'); return loadRef(); }));
+    else if (act === 'stopstate'){
+      var to = b.getAttribute('data-to'), MSG = {revealed:'Paragem visível no mapa.', open:'Notas abertas.', visited:'Marcada como visitada.', hidden:'Paragem escondida.', skipped:'Paragem ignorada.'};
+      guard(api.saveStop({id:id, state:to}).then(function(){ toast(MSG[to] || 'Feito.'); return loadRef(); }));
+    }
+    else if (act === 'stopmove'){
+      var lst = stops.slice().sort(byOrder), i0 = lst.map(function(x){ return x.id; }).indexOf(id), j0 = i0 + parseInt(b.getAttribute('data-dir'), 10);
+      if (i0 < 0 || j0 < 0 || j0 >= lst.length) return;
+      var tmp = lst[i0]; lst[i0] = lst[j0]; lst[j0] = tmp;
+      var saves = []; lst.forEach(function(x, k){ if (x.position !== k + 1) saves.push(api.saveStop({id:x.id, position:k + 1})); });
+      guard(Promise.all(saves).then(loadRef));
     }
     else if (act === 'stopdel'){ if (confirm('Apagar esta paragem e as notas dela?')) guard(api.deleteStop(id).then(loadRef)); }
+    else if (act === 'rallyresults'){
+      var on = b.getAttribute('data-on') === '1';
+      if (on && !confirm('Revelar a toda a gente as médias e o melhor croquete?')) return;
+      guard(api.setRallyResults(on).then(function(){ rallyResults = on; toast(on ? 'Resultados revelados.' : 'Resultados escondidos.'); return loadRef(); }));
+    }
+    else if (act === 'locsearch'){
+      var q = $('st-a-'+id).value.trim(); if (!q){ toast('Escreve uma morada, o nome do sítio ou cola um link do Google Maps.'); return; }
+      var pcs = parseCoords(q); if (pcs){ locDraft[id] = {lat:pcs.lat, lng:pcs.lng, address:''}; locRes[id] = null; $('st-a-'+id).value = ''; refreshLoc(id); toast('Localização lida. Escreve a morada, se quiseres, e guarda.'); return; }
+      toast('A procurar...');
+      fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=pt&q=' + encodeURIComponent(/lisboa|oeiras|almada/i.test(q) ? q : q + ', Lisboa')).then(function(r){ return r.json(); }).then(function(a){
+        locRes[id] = a || []; refreshLoc(id); toast(a && a.length ? 'Escolhe o sítio certo.' : 'Não encontrei. Tenta o nome da rua e o número, ou usa "Estou aqui".');
+      }).catch(function(){ toast('A pesquisa falhou. Cola um link do Google Maps ou usa "Estou aqui".'); });
+    }
+    else if (act === 'locpick'){
+      var rr = (locRes[id] || [])[parseInt(b.getAttribute('data-i'), 10)]; if (!rr) return;
+      locDraft[id] = {lat:parseFloat(rr.lat), lng:parseFloat(rr.lon), address:shortAddr(rr.display_name)}; locRes[id] = null;
+      $('st-a-'+id).value = locDraft[id].address; if (!$('st-n-'+id).value.trim() && rr.name) $('st-n-'+id).value = rr.name;
+      refreshLoc(id);
+    }
+    else if (act === 'locgps'){
+      if (!navigator.geolocation){ toast('Este telemóvel não dá a localização.'); return; }
+      toast('A obter a localização...');
+      navigator.geolocation.getCurrentPosition(function(pos){
+        var la = pos.coords.latitude, lo = pos.coords.longitude;
+        locDraft[id] = {lat:la, lng:lo, address:$('st-a-'+id).value.trim()}; locRes[id] = null; refreshLoc(id);
+        fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + la + '&lon=' + lo).then(function(r){ return r.json(); }).then(function(d){
+          if (d && d.display_name){ if (!$('st-a-'+id).value.trim()){ locDraft[id].address = shortAddr(d.display_name); $('st-a-'+id).value = locDraft[id].address; } if (!$('st-n-'+id).value.trim() && d.name) $('st-n-'+id).value = d.name; }
+        }).catch(function(){}); toast('Localização guardada: carrega em Adicionar/Guardar.');
+      }, function(){ toast('Não consegui a localização. Ativa-a para este site nas definições do telemóvel.'); }, {enableHighAccuracy:true, timeout:15000, maximumAge:0});
+    }
     else if (act === 'rate'){
       if (!need('Entra para dares nota.')) return;
       var sid = b.getAttribute('data-stop'), fld = b.getAttribute('data-field'), val = parseInt(b.getAttribute('data-v'), 10);
@@ -1981,6 +2192,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
   });
 
   setInterval(function(){ if (view === 'feed' && !busy && !document.hidden) refreshFeed(); }, 30000);
+  setInterval(function(){ if (view === 'rally' && !document.hidden) loadRally(true); }, 15000);
 
   $('modeNote').textContent = api.label;
   $('demoAdminBtn').hidden = LIVE;
