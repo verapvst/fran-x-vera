@@ -262,9 +262,8 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
 .rs-body{padding:0 14px 14px}
 .rs-body p{margin:0 0 8px;font-size:.9rem;font-weight:600}
 .rs-lock{border:2px dashed var(--ink);padding:10px 12px;font-size:.86rem;font-weight:700;background:var(--bg)}
-.rs-scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px}
-.rs-scale .rxb{padding:8px 0;text-align:center}
-.rs-lbl{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:12px 0 0}
+.rs-edit{border:2px solid var(--ink);background:var(--bg);padding:12px;margin-top:6px}
+.rs-edit .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .rs.skip{opacity:.55}.rs.skip .rs-t b{text-decoration:line-through}
 .rs.ghost{background:repeating-linear-gradient(135deg,var(--card),var(--card) 10px,var(--soft) 10px,var(--soft) 20px);border-style:dashed}
 .rs.ghost .rs-t b{filter:blur(5px);user-select:none}
@@ -1698,9 +1697,17 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       setTimeout(function(){ if (rmap) rmap.invalidateSize(); }, 200);
     });
   }
-  function scaleChips(sid, field, cur){
-    var h = ''; for (var v = 1; v <= 10; v++) h += '<button type="button" class="rxb" data-act="rate" data-stop="'+esc(sid)+'" data-field="'+field+'" data-v="'+v+'" aria-pressed="'+(cur === v)+'" aria-label="'+(field === 'croquete' ? 'Croquete' : 'Tasca')+' '+v+'">'+v+'</button>';
-    return h;
+  var rateOpen = {};
+  function noteOptions(cur){ var h = '<option value="">–</option>'; for (var v = 10; v >= 1; v--) h += '<option value="'+v+'"'+(cur === v ? ' selected' : '')+'>'+v+'</option>'; return h; }
+  function ratingBlock(x){
+    var mine = rbd.mine[x.id];
+    if (rateOpen[x.id]){
+      return '<div class="rs-edit"><div class="two"><div><label class="f" for="rt-c-'+esc(x.id)+'">Croquete</label><select class="in" id="rt-c-'+esc(x.id)+'">'+noteOptions(mine && mine.croquete)+'</select></div>' +
+        '<div><label class="f" for="rt-t-'+esc(x.id)+'">Tasca</label><select class="in" id="rt-t-'+esc(x.id)+'">'+noteOptions(mine && mine.tasca)+'</select></div></div>' +
+        '<div class="row" style="margin-top:10px"><button class="btn small" data-act="ratesave" data-stop="'+esc(x.id)+'">Guardar</button><button class="btn small ghost" data-act="ratecancel">Cancelar</button></div></div>';
+    }
+    if (mine) return '<div class="row" style="justify-content:space-between;margin-top:6px"><span class="chip">A tua nota: croquete '+mine.croquete+' · tasca '+mine.tasca+'</span><button class="btn small ghost" data-act="rateopen" data-stop="'+esc(x.id)+'">Editar</button></div>';
+    return '<div style="margin-top:6px"><button class="btn small red" data-act="rateopen" data-stop="'+esc(x.id)+'">Avaliar</button></div>';
   }
   function renderRally(){
     var vis = stops.filter(function(x){ return x.state !== 'hidden'; }).sort(byOrder);
@@ -1712,7 +1719,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
     if (!user) h += '<div class="band light" style="margin-bottom:14px"><p>Entra para dares nota ao croquete e à tasca quando as notas abrirem.</p><button class="btn small" data-nav="login">Entrar</button></div>';
     var shown = vis.filter(function(x){ return x.kind !== 'final'; }), fin = vis.filter(function(x){ return x.kind === 'final'; });
     function card(x){
-      var st = stat[x.id] || {votes:0}, mine = Object.assign({}, rbd.mine[x.id] || {}, rdraft[x.id] || {});
+      var st = stat[x.id] || {votes:0};
       var c = '<article class="rs'+(x.state === 'skipped' ? ' skip' : '')+'">' +
         (x.photo_url ? '<img class="rs-img" src="'+esc(x.photo_url)+'" alt="'+esc(x.name)+'" loading="lazy" onerror="this.style.display=\'none\'">' : '') +
         '<div class="rs-top"><span class="rs-n">'+(x._n || '–')+'</span><div class="rs-t"><b>'+esc(x.name)+'</b>'+(x.time_label ? '<span class="rs-time">'+esc(x.time_label)+'</span>' : '')+'</div><span class="chip rs-st st-'+esc(x.state)+'">'+esc(RSTATE[x.state] || x.state)+'</span></div><div class="rs-body">';
@@ -1721,7 +1728,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
       if (hasPos(x) && x.state !== 'skipped' && x.state !== 'visited') c += '<p><a class="btn small" href="'+esc(mapsLink(x))+'" target="_blank" rel="noopener">Como chegar a pé</a></p>';
       if (x.state === 'revealed') c += '<div class="rs-lock">🔒 As notas abrem quando lá chegarmos.</div>';
       else if (x.state === 'open' || x.state === 'visited'){
-        if (user) c += '<div class="rs-lbl">Croquete (1 a 10)</div><div class="rs-scale">'+scaleChips(x.id,'croquete',mine.croquete)+'</div><div class="rs-lbl">Tasca (1 a 10)</div><div class="rs-scale">'+scaleChips(x.id,'tasca',mine.tasca)+'</div>';
+        if (user) c += ratingBlock(x);
         c += '<p class="note" style="margin:10px 0 0">' + (st.votes ? st.votes+' nota'+(st.votes === 1 ? '' : 's') : 'Ainda sem notas') + (showAvg && st.croquete != null ? ' · croquete '+nf(st.croquete)+' · tasca '+nf(st.tasca)+(rallyResults ? '' : ' (só vocês veem)') : '') + '</p>';
       }
       return c + '</div></article>';
@@ -1755,7 +1762,7 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
           else if (prev[x.id] && prev[x.id] !== 'open' && x.state === 'open') toast('Estamos na '+x.name+': já podes dar nota!');
         });
       }
-      var sg = rallySigOf(); if (quiet && sg === rallySig) return; rallySig = sg; renderRally();
+      var sg = rallySigOf(); if (quiet && (sg === rallySig || Object.keys(rateOpen).length)) return; rallySig = sg; renderRally();
     }));
   }
   /* referee: validar */
@@ -2103,12 +2110,13 @@ label.f{display:block;font-weight:800;font-size:.76rem;letter-spacing:.07em;text
         }).catch(function(){}); toast('Localização guardada: carrega em Adicionar/Guardar.');
       }, function(){ toast('Não consegui a localização. Ativa-a para este site nas definições do telemóvel.'); }, {enableHighAccuracy:true, timeout:15000, maximumAge:0});
     }
-    else if (act === 'rate'){
+    else if (act === 'rateopen'){ if (!need('Entra para dares nota.')) return; rateOpen = {}; rateOpen[b.getAttribute('data-stop')] = true; renderRally(); }
+    else if (act === 'ratecancel'){ rateOpen = {}; renderRally(); }
+    else if (act === 'ratesave'){
       if (!need('Entra para dares nota.')) return;
-      var sid = b.getAttribute('data-stop'), fld = b.getAttribute('data-field'), val = parseInt(b.getAttribute('data-v'), 10);
-      var dr = rdraft[sid] = Object.assign({}, rbd.mine[sid] || {}, rdraft[sid] || {}); dr[fld] = val;
-      if (dr.croquete && dr.tasca){ guard(api.rate(sid, dr.croquete, dr.tasca).then(function(){ delete rdraft[sid]; toast('Nota guardada.'); return loadRally(); })); }
-      else { renderRally(); toast('Falta dar a outra nota.'); }
+      var rs = b.getAttribute('data-stop'), rc = parseInt($('rt-c-'+rs).value, 10), rt = parseInt($('rt-t-'+rs).value, 10);
+      if (!rc || !rt){ toast('Escolhe a nota do croquete e da tasca.'); return; }
+      guard(api.rate(rs, rc, rt).then(function(){ rateOpen = {}; toast('Nota guardada.'); return loadRally(); }));
     }
     else if (act === 'chdel'){ if (confirm('Apagar este challenge?')) guard(api.deleteChallenge(id).then(loadRef)); }
     else if (act === 'approve' || act === 'reject'){
