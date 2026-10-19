@@ -1,0 +1,1 @@
+Scripts que geraram o site da memória e o vídeo (fotos tratadas, prémios, cenas). Os dados brutos vieram do Supabase com a chave pública; já não são precisos.
