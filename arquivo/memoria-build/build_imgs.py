@@ -15,7 +15,7 @@ def work(j):
         im=Image.open('raw/'+src); im=ImageOps.exif_transpose(im).convert('RGB')  # re-codificar tira o EXIF (GPS incluido)
         if kind=='post':
             w,h=im.size
-            a=im.copy(); a.thumbnail((1280,1280)); a.save(f'{OUT}/fotos/{name}.webp','WEBP',quality=80,method=4)
+            a=im.copy(); a.thumbnail((1280,1280)); a.save(f'{OUT}/fotos/{name}.jpg','JPEG',quality=86,optimize=True,progressive=True)
             t=im.copy(); t.thumbnail((480,480)); t.save(f'{OUT}/thumbs/{name}.webp','WEBP',quality=72,method=4)
             return (name,w,h,None)
         else:

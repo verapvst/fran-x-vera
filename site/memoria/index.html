@@ -51,7 +51,10 @@ section{padding-block:44px;border-top:2px solid var(--ink)}
 .team .lb{font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
 .team dl{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px;margin:12px 0 0;font-size:.86rem}
 .team dt{font-weight:600}.team dd{margin:0;text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
-.crown{position:absolute;top:-14px;right:14px;background:var(--red);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-weight:800;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.crown{position:absolute;top:-14px;left:14px;background:var(--red);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-weight:800;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.teams.has-stk{padding-top:215px}
+.stk{position:absolute;right:12px;bottom:calc(100% - 38px);width:190px;height:auto;pointer-events:none;filter:drop-shadow(0 5px 0 rgba(13,10,11,.18))}
+@media(min-width:720px){.teams.has-stk{padding-top:230px}.stk{width:210px}}
 /* prémios */
 .awards{display:grid;gap:12px}
 @media(min-width:720px){.awards{grid-template-columns:1fr 1fr}}
@@ -103,6 +106,7 @@ select{border:2px solid var(--ink);background:var(--card);padding:9px 12px;borde
 .lb .cap b{display:block;line-height:1.1}
 .lb .cap span{font-size:.8rem;opacity:.85}
 .lb .cap p{margin:4px 0 0;font-size:.9rem;font-weight:600}
+.lb .dl{margin-top:12px;background:var(--bg);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:10px 20px;font-weight:800;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;text-decoration:none}
 .lb .x,.lb .nx,.lb .pv{position:absolute;background:rgba(251,241,245,.95);color:var(--ink);border:2px solid var(--ink);border-radius:50%;width:46px;height:46px;font-size:1.4rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .lb .x{top:max(12px,env(safe-area-inset-top));right:12px}
 .lb .pv{left:8px;top:50%;transform:translateY(-50%)}.lb .nx{right:8px;top:50%;transform:translateY(-50%)}
@@ -151,12 +155,13 @@ footer small{display:block;font-weight:600;margin-top:6px}
   <h2 class="h2">A <em>galeria</em></h2><p class="lead" id="galLead"></p>
   <div class="filters"><div class="seg" id="segNight" role="group" aria-label="Escolher a noite"></div><select id="selPerson" aria-label="Escolher a pessoa"></select><select id="selDrink" aria-label="Escolher a bebida"></select><span class="count" id="count"></span></div>
   <div class="grid" id="grid"></div>
+  <div class="more" style="margin-top:22px"><a class="btn" href="fotos-todas.zip" download="FRAN-x-VERA-fotos.zip">Descarregar todas as fotos (ZIP, 37 MB)</a></div>
   <div class="more"><button class="btn ghost" id="gridMore" hidden>Ver mais</button></div>
 </div></section>
 
 <footer><div class="wrap">FRAN × VERA · 15 a 18 de outubro de 2026 · Lisboa<small>Obrigada a todos por terem vindo. Quem não quiser aparecer aqui, diz à Vera e a foto sai.</small></div></footer>
 
-<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Foto"><button class="x" id="lbX" aria-label="Fechar">×</button><button class="pv" id="lbP" aria-label="Anterior">‹</button><button class="nx" id="lbN" aria-label="Seguinte">›</button><img id="lbImg" alt=""><div class="cap" id="lbCap"></div></div>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Foto"><button class="x" id="lbX" aria-label="Fechar">×</button><button class="pv" id="lbP" aria-label="Anterior">‹</button><button class="nx" id="lbN" aria-label="Seguinte">›</button><img id="lbImg" alt=""><div class="cap" id="lbCap"></div><a class="dl" id="lbDl" download>Descarregar esta foto</a></div>
 
 <script src="data.js"></script>
 <script>
@@ -186,9 +191,10 @@ footer small{display:block;font-weight:600;margin-top:6px}
 
   // equipas
   var tf = M.teams.fran, tv = M.teams.vera, winT = tf.points >= tv.points ? 'fran' : 'vera';
+  $('teams').className = 'teams' + (winT === 'fran' ? ' has-stk' : '');
   $('teams').innerHTML = ['fran','vera'].map(function(t){
     var x = M.teams[t], w = t === winT;
-    return '<div class="team'+(w ? ' win' : '')+'">'+(w ? '<span class="crown">Vencedora</span>' : '')+'<div class="tn">'+tl(t)+'</div><div class="sc">'+x.points+'</div><div class="lb">pontos</div>' +
+    return '<div class="team'+(w ? ' win' : '')+'">'+(w ? '<span class="crown">Vencedora</span>' : '')+(w && t === 'fran' ? '<img class="stk" src="team-fran.webp" alt="#TeamFran" width="190" height="253">' : '')+'<div class="tn">'+tl(t)+'</div><div class="sc">'+x.points+'</div><div class="lb">pontos</div>' +
       '<dl><dt>Horas somadas</dt><dd>'+nf(x.hours)+' h</dd><dt>Membros</dt><dd>'+x.members+'</dd></dl></div>';
   }).join('');
 
@@ -220,7 +226,7 @@ footer small{display:block;font-weight:600;margin-top:6px}
   $('selPerson').innerHTML = '<option value="all">Todas as pessoas</option>' + ppl.map(function(k){ return '<option value="'+k+'">'+esc(P[k].name)+'</option>'; }).join('');
   var dk = Object.keys(DRINK).filter(function(d){ return pic.some(function(p){ return p.d === d; }); });
   $('selDrink').innerHTML = '<option value="all">Todas as bebidas</option>' + dk.map(function(d){ return '<option value="'+d+'">'+DRINK[d][1]+' '+DRINK[d][0]+'</option>'; }).join('');
-  $('galLead').textContent = pic.length + ' selfies, por ordem de chegada. Toca numa para ver grande.';
+  $('galLead').textContent = pic.length + ' selfies, por ordem de chegada. Toca numa para ver grande e descarregá-la.';
   function drawGrid(){
     list = pic.filter(function(p){ return (night === 'all' || p.night === night) && (person === 'all' || p.u === person) && (drink === 'all' || p.d === drink); });
     $('count').textContent = list.length + ' foto' + (list.length === 1 ? '' : 's');
@@ -237,10 +243,10 @@ footer small{display:block;font-weight:600;margin-top:6px}
   var cur = -1, lb = $('lb');
   function open(i){
     if (i < 0 || i >= list.length) return; cur = i; var p = list[i];
-    $('lbImg').src = 'fotos/' + p.n + '.webp'; $('lbImg').alt = 'Selfie de ' + P[p.u].name;
+    $('lbImg').src = 'fotos/' + p.n + '.jpg'; $('lbDl').href = 'fotos/' + p.n + '.jpg'; $('lbDl').setAttribute('download', 'FRAN-x-VERA-' + P[p.u].name.replace(/[^A-Za-z0-9]+/g, '-') + '-' + p.n + '.jpg'); $('lbImg').alt = 'Selfie de ' + P[p.u].name;
     $('lbCap').innerHTML = av(p.u) + '<div><b>'+esc(P[p.u].name)+'</b><span>'+DRINK[p.d][1]+' '+DRINK[p.d][0]+' · '+tlabel(p.t)+'</span>'+(p.c ? '<p>'+esc(p.c)+'</p>' : '')+'</div>';
     lb.classList.add('on'); document.body.style.overflow = 'hidden';
-    if (list[i + 1]) new Image().src = 'fotos/' + list[i + 1].n + '.webp';
+    if (list[i + 1]) new Image().src = 'fotos/' + list[i + 1].n + '.jpg';
   }
   function close(){ lb.classList.remove('on'); document.body.style.overflow = ''; $('lbImg').removeAttribute('src'); }
   $('grid').onclick = function(e){ var b = e.target.closest('button'); if (b) open(parseInt(b.getAttribute('data-i'), 10)); };

@@ -30,10 +30,10 @@ PH_CSS="""
 .top i{color:var(--red);font-style:normal}
 """
 def photo(i,r):
-    p=posts[r['i']]; nm=html.escape(P[p['u']]['name']); src=f"SITE/memoria/fotos/{p['n']}.webp"
-    add(f"ph{i:02d}",f"<div class=bg style=\"background-image:url('file://{src}')\"></div><div class=top>FRAN <i>×</i> VERA</div><div class=fr><img src='file://{src}'></div><div class=chip><b>{nm}</b><span>{DR[p['d']]}<br>{when(p['t'])}</span></div>",1.3,'photo',PH_CSS)
+    p=posts[r['i']]; nm=html.escape(P[p['u']]['name']); src=f"SITE/memoria/fotos/{p['n']}.jpg"
+    add(f"ph{i:02d}",f"<div class=bg style=\"background-image:url('file://{src}')\"></div><div class=top>FRAN <i>×</i> VERA</div><div class=fr><img src='file://{src}'></div><div class=chip><b>{nm}</b><span>{DR[p['d']]}<br>{when(p['t'])}</span></div>",0.8,'photo',PH_CSS)
 # fotos escolhidas (32 espalhadas)
-sel=[pick[int(k*len(pick)/32)] for k in range(32)]
+sel=pick[:60]
 # intro
 add('intro',"<div class=c><div style='font-size:34px;font-weight:800;letter-spacing:.14em;text-transform:uppercase'>15 a 18 de outubro · Lisboa</div><div class=d style='font-size:300px;line-height:.8;margin-top:30px'>FRAN<br><span style='color:var(--red)'>×</span><br>VERA</div><div class=d style='font-size:96px;margin-top:50px'>23H30 de festa</div><div style='font-size:40px;font-weight:800;margin-top:20px'>A memória</div></div>",3.2)
 T=M['totals']; nf=lambda x:str(round(x,1)).replace('.',',')
@@ -51,17 +51,17 @@ def team(t,x):
     w=t==win; bg='var(--ink)' if w else 'var(--card)'; fg='var(--bg)' if w else 'var(--ink)'
     return f"<div style='background:{bg};color:{fg};border:8px solid var(--ink);padding:40px 30px;width:470px;position:relative'>{'<div style=\"position:absolute;top:-34px;right:20px;background:var(--red);color:var(--ink);border:6px solid var(--ink);border-radius:99px;padding:6px 28px;font-weight:800;font-size:32px;letter-spacing:.08em;text-transform:uppercase\">Vencedora</div>' if w else ''}<div class=d style='font-size:80px;line-height:1'>Team {'Fran' if t=='fran' else 'Vera'}</div><div class=d style='font-size:230px;line-height:.9;color:var(--red)'>{x['points']}</div><div style='font-size:30px;font-weight:800;text-transform:uppercase;letter-spacing:.08em'>pontos</div><div style='font-size:38px;font-weight:800;margin-top:22px'>{nf(x['hours'])} h de festa</div></div>"
 add('equipas',f"<div class=c><div class=d style='font-size:130px;line-height:.9;margin-bottom:60px'>A guerra das <span style='color:var(--red)'>equipas</span></div><div style='display:flex;gap:26px'>{team('fran',tf)}{team('vera',tv)}</div></div>",4.4)
-add('outro',"<div class=c><div class=d style='font-size:230px;line-height:.85'>Obrigada<br><span style='color:var(--red)'>por tudo</span></div><div class=d style='font-size:100px;margin-top:60px'>FRAN × VERA</div><div style='font-size:38px;font-weight:800;margin-top:26px'>verapvst.github.io/fran-x-vera/memoria</div></div>",4.0)
+add('outro',"<div class=c style='justify-content:flex-start;padding-top:90px'><div class=d style='font-size:170px;line-height:.85'>Obrigada <span style='color:var(--red)'>por tudo</span></div><img src='file://STICKER' style='width:1000px;margin-top:-20px'><div class=d style='font-size:96px;margin-top:-10px'>FRAN × VERA</div><div style='font-size:36px;font-weight:800;margin-top:14px'>verapvst.github.io/fran-x-vera/memoria</div></div>",6.0)
 # montagem da sequência: intro, 8 fotos, números, 5 fotos, prémios (2 + 3 fotos) ..., equipas, 6 fotos, outro
 seq=['intro']; ph=iter(range(len(sel)))
 photos={}
 for i,r in enumerate(sel): photo(i,r)
 def take(n): return [f'ph{next(ph):02d}' for _ in range(n)]
-seq+=take(8)+['numeros']+take(4)
+seq+=take(12)+['numeros']+take(6)
 for k in range(0,len(order),2):
     for j in (k,k+1):
         award(order[j],j); seq.append(f'aw{j:02d}')
-    seq+=take(3 if k<6 else 2)
+    seq+=take(7 if k<6 else 5)
 seq+=['equipas']+take(max(0,len(sel)-sum(1 for s in seq if s.startswith('ph'))))+['outro']
 by={s['n']:s for s in scenes}
 json.dump([by[n] for n in seq],open('vid/seq.json','w'))
