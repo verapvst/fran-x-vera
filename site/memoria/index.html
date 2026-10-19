@@ -25,7 +25,7 @@ section{padding-block:44px;border-top:2px solid var(--ink)}
 /* hero */
 .hero{padding-block:34px 28px;border-top:0}
 .hero .k{font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.78rem;margin:0 0 8px}
-.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(4rem,19vw,10rem);line-height:.82;margin:0;letter-spacing:.01em}
+.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(3.2rem,17vw,9.5rem);line-height:.82;margin:0;letter-spacing:.01em}
 .hero h1 span{color:var(--red)}
 .hero .sub{font-family:var(--display);font-weight:900;font-size:clamp(1.5rem,6vw,2.6rem);margin:10px 0 0}
 .strip{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:26px}
@@ -34,7 +34,16 @@ section{padding-block:44px;border-top:2px solid var(--ink)}
 .ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
 .btn{font-weight:800;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--ink);background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:999px;cursor:pointer;text-decoration:none;display:inline-block}
 .btn.ghost{background:transparent;color:var(--ink)}
-.vid{display:block;width:min(100%,400px);aspect-ratio:9/16;border:2px solid var(--ink);background:#000}
+/* vídeo no topo */
+.herorow{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+.playcard{position:relative;flex:none;width:clamp(104px,27vw,250px);aspect-ratio:9/16;padding:0;border:2px solid var(--ink);background:#000;cursor:pointer;overflow:hidden;transform:rotate(2deg);box-shadow:6px 6px 0 var(--ink)}
+.playcard img{width:100%;height:100%;object-fit:cover;display:block}
+.playcard .pl{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:var(--red);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:7px 14px;font-weight:800;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.vm{position:fixed;inset:0;z-index:60;background:rgba(13,10,11,.95);display:none;flex-direction:column;align-items:center;justify-content:center;padding:14px;gap:12px}
+.vm.on{display:flex}
+.vm video{max-width:100%;max-height:calc(100dvh - 130px);aspect-ratio:9/16;background:#000;border:2px solid #fff}
+.vm .x{position:absolute;top:max(12px,env(safe-area-inset-top));right:12px;background:rgba(251,241,245,.95);color:var(--ink);border:2px solid var(--ink);border-radius:50%;width:46px;height:46px;font-size:1.4rem;line-height:1;cursor:pointer}
+.vm .dl{background:var(--bg);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:10px 20px;font-weight:800;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;text-decoration:none}
 /* números */
 .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(min-width:720px){.stats{grid-template-columns:repeat(4,1fr)}}
@@ -114,20 +123,15 @@ select{border:2px solid var(--ink);background:var(--card);padding:9px 12px;borde
 footer{border-top:2px solid var(--ink);padding-block:30px 44px;font-weight:700}
 footer small{display:block;font-weight:600;margin-top:6px}
 </style></head><body>
-<header class="nav"><div class="wrap"><b>FRAN × VERA</b><a href="#video">Vídeo</a><a href="#numeros">Números</a><a href="#equipas">Equipas</a><a href="#premios">Prémios</a><a href="#ranking">Ranking</a><a href="#galeria">Galeria</a></div></header>
+<header class="nav"><div class="wrap"><b>FRAN X VERA</b><a href="#numeros">Números</a><a href="#equipas">Equipas</a><a href="#premios">Prémios</a><a href="#ranking">Ranking</a><a href="#galeria">Galeria</a></div></header>
 
 <section class="hero"><div class="wrap">
   <p class="k">15 a 18 de outubro · Lisboa · 2026</p>
-  <h1>FRAN <span>×</span><br>VERA</h1>
+  <div class="herorow"><h1>FRAN <span>X</span><br>VERA</h1>
+    <button type="button" class="playcard" id="playBtn" aria-label="Ver o vídeo da festa"><img src="video/festa.jpg" alt="" width="270" height="480"><span class="pl">▶ Play</span></button></div>
   <p class="sub">23H30 de festa. A memória.</p>
   <div class="strip" id="strip" aria-hidden="true"></div>
   <div class="ctas"><a class="btn" href="#premios">Ver os prémios</a><a class="btn ghost" href="#galeria">Ver as fotos</a></div>
-</div></section>
-
-<section id="video"><div class="wrap">
-  <h2 class="h2">O <em>vídeo</em></h2><p class="lead">Mais de um minuto e meio de memórias e prémios, em vertical, para ver no telemóvel.</p>
-  <video class="vid" controls playsinline preload="metadata" poster="video/festa.jpg"><source src="video/festa.mp4" type="video/mp4">O teu browser não mostra vídeo. Descarrega-o abaixo.</video>
-  <div class="ctas"><a class="btn" href="video/festa.mp4" download="FRAN-x-VERA-memoria.mp4">Descarregar o vídeo</a></div>
 </div></section>
 
 <section id="numeros"><div class="wrap">
@@ -159,8 +163,9 @@ footer small{display:block;font-weight:600;margin-top:6px}
   <div class="more"><button class="btn ghost" id="gridMore" hidden>Ver mais</button></div>
 </div></section>
 
-<footer><div class="wrap">FRAN × VERA · 15 a 18 de outubro de 2026 · Lisboa<small>Obrigada a todos por terem vindo. Quem não quiser aparecer aqui, diz à Vera e a foto sai.</small></div></footer>
+<footer><div class="wrap">FRAN × VERA · 15 a 18 de outubro de 2026 · Lisboa<small>Música: "Advertime", de FreePD (domínio público, CC0).</small><small>Obrigada a todos por terem vindo. Quem não quiser aparecer aqui, diz à Vera e a foto sai.</small></div></footer>
 
+<div class="vm" id="vm" role="dialog" aria-modal="true" aria-label="Vídeo da festa"><button class="x" id="vmX" aria-label="Fechar">×</button><video id="vmV" controls playsinline preload="none"></video><a class="dl" href="video/festa.mp4" download="FRAN-x-VERA-memoria.mp4">Descarregar o vídeo</a></div>
 <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Foto"><button class="x" id="lbX" aria-label="Fechar">×</button><button class="pv" id="lbP" aria-label="Anterior">‹</button><button class="nx" id="lbN" aria-label="Seguinte">›</button><img id="lbImg" alt=""><div class="cap" id="lbCap"></div><a class="dl" id="lbDl" download>Descarregar esta foto</a></div>
 
 <script src="data.js"></script>
@@ -239,6 +244,12 @@ footer small{display:block;font-weight:600;margin-top:6px}
   $('gridMore').onclick = function(){ shown += 90; drawGrid(); };
   drawGrid();
 
+  // vídeo
+  var vm = $('vm'), vv = $('vmV');
+  function openVideo(){ vv.src = 'video/festa.mp4'; vm.classList.add('on'); document.body.style.overflow = 'hidden'; var pr = vv.play(); if (pr && pr.catch) pr.catch(function(){}); }
+  function closeVideo(){ vv.pause(); vv.removeAttribute('src'); vv.load(); vm.classList.remove('on'); document.body.style.overflow = ''; }
+  $('playBtn').onclick = openVideo; $('vmX').onclick = closeVideo; vm.onclick = function(e){ if (e.target === vm) closeVideo(); };
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && vm.classList.contains('on')) closeVideo(); });
   // lightbox
   var cur = -1, lb = $('lb');
   function open(i){
