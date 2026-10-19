@@ -25,7 +25,7 @@ section{padding-block:44px;border-top:2px solid var(--ink)}
 /* hero */
 .hero{padding-block:34px 28px;border-top:0}
 .hero .k{font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.78rem;margin:0 0 8px}
-.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(3.2rem,17vw,9.5rem);line-height:.82;margin:0;letter-spacing:.01em}
+.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(3rem,15vw,9.5rem);line-height:.82;margin:0;letter-spacing:.01em}
 .hero h1 span{color:var(--red)}
 .hero .sub{font-family:var(--display);font-weight:900;font-size:clamp(1.5rem,6vw,2.6rem);margin:10px 0 0}
 .strip{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:26px}
@@ -36,9 +36,13 @@ section{padding-block:44px;border-top:2px solid var(--ink)}
 .btn.ghost{background:transparent;color:var(--ink)}
 /* vídeo no topo */
 .herorow{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
-.playcard{position:relative;flex:none;width:clamp(104px,27vw,250px);aspect-ratio:9/16;padding:0;border:2px solid var(--ink);background:#000;cursor:pointer;overflow:hidden;transform:rotate(2deg);box-shadow:6px 6px 0 var(--ink)}
+.playcard{position:relative;flex:none;width:clamp(138px,37vw,300px);aspect-ratio:9/16;padding:0;border:2px solid var(--ink);background:#000;cursor:pointer;overflow:hidden;transform:rotate(2deg);box-shadow:6px 6px 0 var(--ink)}
 .playcard img{width:100%;height:100%;object-fit:cover;display:block}
-.playcard .pl{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:var(--red);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:7px 14px;font-weight:800;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.playcard .pl{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:62%;aspect-ratio:1;border-radius:50%;background:var(--red);color:var(--ink);border:3px solid var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--display);font-weight:900;line-height:.9;box-shadow:0 0 0 0 rgba(232,66,31,.7);animation:pulse 1.8s infinite}
+.playcard .pl b{font-size:clamp(2.2rem,9vw,4.2rem);padding-left:6%}
+.playcard .pl span{font-size:clamp(1.1rem,4.4vw,1.9rem);letter-spacing:.06em}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(232,66,31,.65)}70%{box-shadow:0 0 0 22px rgba(232,66,31,0)}100%{box-shadow:0 0 0 0 rgba(232,66,31,0)}}
+@media(prefers-reduced-motion:reduce){.playcard .pl{animation:none}}
 .vm{position:fixed;inset:0;z-index:60;background:rgba(13,10,11,.95);display:none;flex-direction:column;align-items:center;justify-content:center;padding:14px;gap:12px}
 .vm.on{display:flex}
 .vm video{max-width:100%;max-height:calc(100dvh - 130px);aspect-ratio:9/16;background:#000;border:2px solid #fff}
@@ -128,7 +132,7 @@ footer small{display:block;font-weight:600;margin-top:6px}
 <section class="hero"><div class="wrap">
   <p class="k">15 a 18 de outubro · Lisboa · 2026</p>
   <div class="herorow"><h1>FRAN <span>X</span><br>VERA</h1>
-    <button type="button" class="playcard" id="playBtn" aria-label="Ver o vídeo da festa"><img src="video/festa.jpg" alt="" width="270" height="480"><span class="pl">▶ Play</span></button></div>
+    <button type="button" class="playcard" id="playBtn" aria-label="Ver o vídeo da festa"><img src="video/festa.jpg" alt="" width="270" height="480"><span class="pl"><b>▶</b><span>PLAY</span></span></button></div>
   <p class="sub">23H30 de festa. A memória.</p>
   <div class="strip" id="strip" aria-hidden="true"></div>
   <div class="ctas"><a class="btn" href="#premios">Ver os prémios</a><a class="btn ghost" href="#galeria">Ver as fotos</a></div>
