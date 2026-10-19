@@ -1,5 +1,5 @@
 import json,html,collections
-B=60/120.15   # uma batida (a música tem 120,15 bpm); todas as cenas duram um número inteiro de batidas
+B=60/127.55   # uma batida (a música tem 127,55 bpm); todas as cenas duram um número inteiro de batidas
 _d=open('SITE/memoria/data.js').read(); M=json.loads(_d[_d.index('=')+1:].rstrip(';')); pick=json.load(open('data/pick.json'))
 P=M['people']; posts={int(p['n'][1:]):p for p in M['posts']}
 DR={'d_beer20':'🍺 Cerveja','d_beer33':'🍺 Cerveja','d_beer50':'🍺 Caneca','d_sidra':'🍏 Sidra','d_wine':'🍷 Vinho','d_cock':'🍸 Cocktail','d_shot':'🥃 Shot','d_na':'💧 Água','d_home':'🏠 Em casa'}
